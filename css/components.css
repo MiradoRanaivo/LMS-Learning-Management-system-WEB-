@@ -1,0 +1,387 @@
+/* =====================================================================
+   LMS Web - Composants d'Interface (Components UI)
+   Conformes aux 18 écrans de référence
+   ===================================================================== */
+
+/* 1. Boutons Universitaires */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, color 0.15s ease-in-out;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background-color: var(--emerald-700);
+  color: var(--white);
+  border-color: var(--emerald-700);
+}
+
+.btn-primary:hover {
+  background-color: var(--emerald-800);
+  border-color: var(--emerald-800);
+}
+
+.btn-secondary {
+  background-color: var(--white);
+  color: var(--slate-800);
+  border-color: var(--slate-300);
+}
+
+.btn-secondary:hover {
+  background-color: var(--slate-50);
+  border-color: var(--slate-400);
+}
+
+.btn-disabled {
+  background-color: var(--slate-100);
+  color: var(--slate-400);
+  border-color: var(--slate-200);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn-sm {
+  padding: 5px 12px;
+  font-size: 12.5px;
+}
+
+.btn-lg {
+  padding: 10px 20px;
+  font-size: 14.5px;
+}
+
+/* 2. Cartes & Conteneurs */
+.card {
+  background-color: var(--white);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--slate-900);
+}
+
+.card-link {
+  font-size: 12px;
+  color: var(--emerald-700);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.card-link:hover {
+  text-decoration: underline;
+}
+
+/* 3. Badges de Statut */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.badge-active {
+  background-color: var(--status-active-bg);
+  color: var(--status-active-text);
+}
+
+.badge-completed {
+  background-color: var(--status-completed-bg);
+  color: var(--status-completed-text);
+}
+
+.badge-upcoming {
+  background-color: var(--status-upcoming-bg);
+  color: var(--status-upcoming-text);
+}
+
+.badge-late {
+  background-color: var(--status-late-bg);
+  color: var(--status-late-text);
+}
+
+/* 4. Barres et Cercles de Progression */
+.progress-bar-container {
+  width: 100%;
+  height: 6px;
+  background-color: var(--slate-100);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: var(--emerald-600);
+  border-radius: var(--radius-full);
+  transition: width 0.4s ease;
+}
+
+.progress-circle {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-circle svg {
+  transform: rotate(-90deg);
+}
+
+.progress-circle-text {
+  position: absolute;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--slate-900);
+}
+
+/* 5. Stat KPI Cards */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.kpi-card {
+  background-color: var(--white);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+}
+
+.kpi-label {
+  font-size: 12.5px;
+  color: var(--slate-500);
+  margin-bottom: 6px;
+}
+
+.kpi-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--slate-900);
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+
+.kpi-trend {
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+.kpi-trend.positive {
+  color: var(--emerald-700);
+}
+
+.kpi-trend.negative {
+  color: var(--status-late-text);
+}
+
+/* 6. Form Controls & Champs de Saisie */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--slate-700);
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid var(--slate-300);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  background-color: var(--white);
+  color: var(--slate-900);
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--emerald-600);
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.12);
+}
+
+.form-input::placeholder, .form-textarea::placeholder { color: #64748B; opacity: 1; }
+.form-group label, .form-label { line-height: 1.45; }
+.card { box-shadow: var(--shadow-card); }
+.btn:focus-visible, .tab-btn:focus-visible, .quiz-option:focus-visible { outline: 3px solid rgba(4, 120, 87, .28); outline-offset: 2px; }
+.lms-table th { background: #F8FAFC; }
+.lms-table td, .lms-table th { font-size: 13px; }
+.badge-upcoming { background-color: #FFFBEB; color: #92400E; }
+.badge-late { background-color: #FEF2F2; color: #B91C1C; }
+
+@media (max-width: 640px) {
+  .card { padding: 16px; }
+  .tabs-nav { overflow-x: auto; }
+  .tab-btn { min-height: 44px; white-space: nowrap; }
+}
+
+/* 7. Quiz Question Options */
+.quiz-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background-color: var(--white);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-bottom: 10px;
+}
+
+.quiz-option:hover {
+  border-color: var(--emerald-400);
+  background-color: var(--emerald-50);
+}
+
+.quiz-option.selected {
+  border-color: var(--emerald-600);
+  background-color: var(--emerald-50);
+}
+
+.quiz-radio-custom {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--slate-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.quiz-option.selected .quiz-radio-custom {
+  border-color: var(--emerald-600);
+}
+
+.quiz-option.selected .quiz-radio-custom::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background-color: var(--emerald-600);
+  border-radius: 50%;
+}
+
+.quiz-option-code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--slate-800);
+}
+
+/* 8. Tableaux Modernes */
+.lms-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.lms-table th {
+  padding: 10px 14px;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--slate-500);
+  border-bottom: 1px solid var(--slate-200);
+}
+
+.lms-table td {
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--slate-700);
+  border-bottom: 1px solid var(--slate-100);
+  vertical-align: middle;
+}
+
+.lms-table tr:hover td {
+  background-color: var(--slate-50);
+}
+
+/* 9. Navigation Tabs */
+.tabs-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--slate-200);
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--slate-500);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  margin-bottom: -1px;
+  transition: all 0.15s ease;
+}
+
+.tab-btn:hover {
+  color: var(--slate-800);
+}
+
+.tab-btn.active {
+  color: var(--emerald-700);
+  border-bottom-color: var(--emerald-700);
+  font-weight: 600;
+}
+
+/* Academic Green shared form and data surfaces */
+:where(.card, .kpi-card, .account-menu-card) { box-shadow: var(--shadow-card); }
+:where(button, input, select, textarea, a):focus-visible {
+  outline: 3px solid rgba(4, 120, 87, .28);
+  outline-offset: 2px;
+}
+.form-input, .form-select, .form-textarea {
+  min-height: 44px;
+  border-color: var(--color-border);
+  border-radius: var(--radius-control);
+  color: var(--color-text);
+  font-size: 14px;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(4, 120, 87, .12);
+}
+.btn-primary { background: var(--color-primary); border-color: var(--color-primary); }
+.btn-primary:hover { background: var(--color-primary-hover); border-color: var(--color-primary-hover); }
+.card { border-radius: var(--radius-surface); box-shadow: var(--shadow-card); }

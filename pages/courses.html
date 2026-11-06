@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mes cours - LMS Web</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="lms-layout">
+    <aside class="lms-sidebar">
+      <div class="lms-brand">
+        <div class="lms-logo-icon">LMS</div>
+        <div class="lms-brand-text">
+          <span class="lms-brand-title">LMS Web</span>
+          <span class="lms-brand-subtitle">E-LEARNING</span>
+        </div>
+      </div>
+
+      <div class="lms-nav-container">
+        <div class="lms-nav-group">
+          <div class="lms-nav-heading">Navigation</div>
+          <a href="dashboard-student.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+            Tableau de bord
+          </a>
+          <a href="courses.html" class="lms-nav-link active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+            Mes cours
+          </a>
+          <a href="quiz.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+            Évaluations / Quiz
+          </a>
+          <a href="forum.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Forum
+          </a>
+          <a href="resources.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+            Ressources
+          </a>
+          <a href="calendar.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+            Calendrier
+          </a>
+        </div>
+      </div>
+
+      <div class="lms-sidebar-user">
+        <div class="lms-avatar-circle" id="sidebar-user-avatar">AR</div>
+        <div class="lms-user-info">
+          <span class="lms-user-name" id="sidebar-user-name">Andry Rakoto</span>
+          <span class="lms-user-role" id="sidebar-user-role">Étudiant</span>
+        </div>
+        <a href="login.html" title="Déconnexion" style="margin-left: auto; color: #94A3B8;">
+          <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+        </a>
+      </div>
+    </aside>
+
+    <div class="lms-main">
+      <header class="lms-header">
+        <div class="lms-search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" placeholder="Rechercher un cours...">
+        </div>
+      </header>
+
+      <div class="lms-content-wrapper">
+        <div style="margin-bottom: 20px;">
+          <h1 style="font-size: 20px; font-weight: 700; color: #0F172A;">Mes cours</h1>
+          <p style="font-size: 12.5px; color: #64748B; margin-top: 2px;">Progression dans vos modules universitaires</p>
+        </div>
+
+        <!-- Tabs : En cours (4), Terminés (2), Tous (6) matching Screen 4 -->
+        <div class="tabs-nav">
+          <button class="tab-btn active">En cours (4)</button>
+          <button class="tab-btn">Terminés (2)</button>
+          <button class="tab-btn">Tous (6)</button>
+        </div>
+
+        <div id="courses-list" style="display: flex; flex-direction: column; gap: 14px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script>
+    const filters = {
+      status: 'all',
+      query: ''
+    };
+
+    function getCourseStatus(course) {
+      if (course.enrollment_status === 'en_cours' || course.enrollment_status === 'termine') {
+        return course.enrollment_status;
+      }
+      const progress = Number(course.progress_percent || 0);
+      if (progress >= 100) return 'termine';
+      if (progress > 0) return 'en_cours';
+      return 'all';
+    }
+
+    function renderCourses(items) {
+      const container = document.getElementById('courses-list');
+      if (!container) return;
+
+      if (!items.length) {
+        container.innerHTML = '<div class="card" style="padding: 20px; color: #64748B;">Aucun cours ne correspond à votre recherche.</div>';
+        return;
+      }
+
+      container.innerHTML = items.map((course) => {
+        const code = (course.code || 'COUR').replace(/\s+/g, '').slice(0, 5).toUpperCase();
+        const title = course.title || 'Cours';
+        const progress = Number(course.progress_percent || 0);
+        const lessonText = course.total_chapters ? `Chapitre ${Math.min(Math.max(1, course.total_chapters), 4)} : ${title}` : 'Cours disponible';
+        const accent = course.color_accent || '#059669';
+        const subjectImage = /base|donn|sql/i.test(title)
+          ? 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?auto=format&fit=crop&w=240&h=180&q=85'
+          : /réseau|reseau|système|systeme/i.test(title)
+          ? 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=240&h=180&q=85'
+          : /sécurité|securite|crypto/i.test(title)
+          ? 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=240&h=180&q=85'
+          : 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=240&h=180&q=85';
+        return `
+          <div class="card" style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px;">
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <img class="course-topic-image" src="${subjectImage}" alt="Illustration du cours ${title}" loading="lazy" onerror="this.hidden=true; this.nextElementSibling.hidden=false;" style="width: 64px; height: 52px; border-radius: 10px; object-fit: cover; flex-shrink: 0;">
+              <div hidden style="width: 64px; height: 52px; border-radius: 10px; background: ${accent}; color: white; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">${code}</div>
+              <div>
+                <h3 style="font-size: 14px; font-weight: 600; color: #0F172A;">${title}</h3>
+                <p style="font-size: 12px; color: #64748B;">${lessonText}</p>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 24px;">
+              <div style="width: 180px; display: flex; align-items: center; gap: 12px;">
+                <div class="progress-bar-container"><div class="progress-bar-fill" style="width: ${progress}%;"></div></div>
+                <span style="font-size: 12px; font-weight: 600; width: 35px; text-align: right;">${progress}%</span>
+              </div>
+              <span style="font-size: 12px; color: #64748B;">${course.hours_total || 3}h</span>
+              <a href="course-detail.html?id=${course.id}" class="btn btn-primary btn-sm">Continuer</a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function loadCourses() {
+      try {
+        const me = await API.getMe();
+        if (me && me.authenticated && me.user) {
+          const userFullname = document.getElementById('sidebar-user-name');
+          const userRole = document.getElementById('sidebar-user-role');
+          const userAvatar = document.getElementById('sidebar-user-avatar');
+          if (userFullname) userFullname.textContent = `${me.user.firstname || ''} ${me.user.lastname || ''}`.trim();
+          if (userRole) userRole.textContent = me.user.role === 'teacher' ? 'Enseignant' : me.user.role === 'admin' ? 'Administrateur' : 'Étudiant';
+          if (userAvatar) userAvatar.textContent = ((me.user.firstname || 'A')[0] + (me.user.lastname || 'A')[0]).toUpperCase();
+        }
+
+        const res = await API.getCourses('all');
+        const courses = Array.isArray(res?.courses) ? res.courses : [];
+
+        const ongoingCount = courses.filter((course) => getCourseStatus(course) === 'en_cours').length;
+        const completedCount = courses.filter((course) => getCourseStatus(course) === 'termine').length;
+        const allCount = courses.length;
+        const tabs = document.querySelectorAll('.tabs-nav .tab-btn');
+        if (tabs[0]) tabs[0].textContent = `En cours (${ongoingCount})`;
+        if (tabs[1]) tabs[1].textContent = `Terminés (${completedCount})`;
+        if (tabs[2]) tabs[2].textContent = `Tous (${allCount})`;
+
+        const filtered = courses.filter((course) => {
+          const statusMatch = filters.status === 'all' || getCourseStatus(course) === filters.status;
+          const queryMatch = !filters.query || `${course.title || ''} ${course.code || ''}`.toLowerCase().includes(filters.query.toLowerCase());
+          return statusMatch && queryMatch;
+        });
+
+        renderCourses(filtered);
+      } catch (error) {
+        console.error('API de cours indisponible:', error);
+        const container = document.getElementById('courses-list');
+        if (container) container.innerHTML = '<div class="card" style="padding:20px;color:#B91C1C;">Impossible de charger vos cours. Vérifiez votre connexion puis réessayez.</div>';
+      }
+    }
+
+    document.querySelectorAll('.tab-btn').forEach((button) => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach((btn) => btn.classList.remove('active'));
+        button.classList.add('active');
+        const label = button.textContent || '';
+        if (label.includes('En cours')) filters.status = 'en_cours';
+        else if (label.includes('Terminés')) filters.status = 'termine';
+        else filters.status = 'all';
+        loadCourses();
+      });
+    });
+
+    const searchInput = document.querySelector('.lms-search-box input');
+    if (searchInput) {
+      searchInput.addEventListener('input', (event) => {
+        filters.query = event.target.value.trim();
+        loadCourses();
+      });
+    }
+
+    loadCourses();
+  </script>
+</body>
+</html>

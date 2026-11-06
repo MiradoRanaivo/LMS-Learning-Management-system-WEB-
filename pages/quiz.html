@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz - LMS Web</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="lms-layout">
+    <aside class="lms-sidebar">
+      <div class="lms-brand">
+        <div class="lms-logo-icon">LMS</div>
+        <div class="lms-brand-text">
+          <span class="lms-brand-title">LMS Web</span>
+          <span class="lms-brand-subtitle">E-LEARNING</span>
+        </div>
+      </div>
+
+      <div class="lms-nav-container">
+        <div class="lms-nav-group">
+          <div class="lms-nav-heading">Navigation</div>
+          <a href="dashboard-student.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+            Tableau de bord
+          </a>
+          <a href="courses.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+            Mes cours
+          </a>
+          <a href="quiz.html" class="lms-nav-link active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+            Évaluations / Quiz
+          </a>
+          <a href="forum.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Forum
+          </a>
+          <a href="resources.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+            Ressources
+          </a>
+          <a href="calendar.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+            Calendrier
+          </a>
+        </div>
+
+        <div class="lms-nav-group">
+          <div class="lms-nav-heading">Compte</div>
+          <a href="profile.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Profil
+          </a>
+          <a href="settings.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            Paramètres
+          </a>
+        </div>
+      </div>
+
+      <div class="lms-sidebar-user">
+        <div class="lms-avatar-circle">AR</div>
+        <div class="lms-user-info">
+          <span class="lms-user-name">Andry Rakoto</span>
+          <span class="lms-user-role">Étudiant</span>
+        </div>
+      </div>
+    </aside>
+
+    <div class="lms-main">
+      <header class="lms-header">
+        <div class="lms-search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" placeholder="Rechercher...">
+        </div>
+      </header>
+
+      <div class="lms-content-wrapper" style="max-width: 780px;">
+        <!-- Header du Quiz matching Screen 6 / 7 -->
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;"><label for="quiz-select" style="font-size:12px;color:#64748B;">Quiz disponible</label><select id="quiz-select" class="form-input" style="max-width:320px;"></select><button type="button" id="create-quiz-button" class="btn btn-secondary btn-sm" hidden>+ Créer un quiz</button></div>
+        <div class="card" id="quiz-header-card" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=160&h=160&q=85" alt="Étudiant préparant un quiz" loading="lazy" style="width: 52px; height: 52px; border-radius: 10px; object-fit: cover; flex-shrink: 0;">
+            <div>
+              <h2 id="quiz-title" style="font-size: 15px; font-weight: 700; color: #0F172A;">Chargement du quiz…</h2>
+              <p id="quiz-meta" style="font-size: 11.5px; color: #64748B;"></p>
+            </div>
+          </div>
+          <span style="font-size: 12px; font-weight: 700; color: #047857; background: #ECFDF5; padding: 4px 10px; border-radius: 6px;">
+            <span id="quiz-progress">0 / 0</span>
+          </span>
+        </div>
+
+        <!-- Question Card -->
+        <div class="card" style="padding: 24px;">
+          <div id="quiz-question-counter" style="font-size: 12px; color: #64748B; margin-bottom: 8px;"></div>
+          <h3 id="quiz-question-text" style="font-size: 14px; font-weight: 600; color: #0F172A; margin-bottom: 20px;"></h3>
+
+          <div style="display: flex; flex-direction: column; gap: 10px;" id="quiz-options-container">
+            <div style="padding:12px;color:#64748B;">Récupération des questions…</div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 16px; border-top: 1px solid #F1F5F9;">
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-previous-question">← Précédent</button>
+            <button type="button" class="btn btn-primary btn-sm" id="btn-submit-quiz">Suivant →</button>
+          </div>
+
+          <div id="quiz-result-box" style="display: none; margin-top: 20px; padding: 14px; background: #ECFDF5; border-radius: 8px; border: 1px solid #A7F3D0;">
+            <p style="font-weight: 700; color: #064E3B; font-size: 13px;">Soumission enregistrée :</p>
+            <p style="font-size: 12px; color: #047857; margin-top: 4px;" id="quiz-result-text"></p>
+          </div>
+        </div>
+
+        <section id="teacher-attempts" class="card" hidden style="margin-top: 20px; padding: 24px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;">
+            <div>
+              <h2 style="font-size:15px;font-weight:700;color:#0F172A;">Résultats et corrections</h2>
+              <p style="font-size:12px;color:#64748B;">Tentatives des étudiants inscrits à vos cours</p>
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" id="refresh-quiz-attempts">Actualiser</button>
+          </div>
+          <div id="quiz-attempts-container" style="display:flex;flex-direction:column;gap:14px;">
+            <p style="font-size:12px;color:#64748B;">Chargement des tentatives…</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script>
+    let requestedQuizId = Number(new URLSearchParams(window.location.search).get('id') || 0);
+    let quizData = null;
+    let quizList = [];
+    let currentUserRole = '';
+    let questionIndex = 0;
+    const answers = {};
+    const optionFields = ['option_a', 'option_b', 'option_c', 'option_d'];
+    const optionLetters = ['a', 'b', 'c', 'd'];
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+    }
+
+    function renderQuestion() {
+      const question = quizData.questions[questionIndex];
+      const type = question.question_type || 'single';
+      document.getElementById('quiz-progress').textContent = `${questionIndex + 1} / ${quizData.questions.length}`;
+      document.getElementById('quiz-question-counter').textContent = `Question ${questionIndex + 1} / ${quizData.questions.length}`;
+      document.getElementById('quiz-question-text').textContent = question.question_text;
+      const options = document.getElementById('quiz-options-container');
+      if (type === 'short_text' || type === 'essay') {
+        const value = escapeHtml(answers[question.id] || '');
+        options.innerHTML = type === 'essay'
+          ? `<textarea class="form-input" name="answer" rows="6" aria-label="Votre réponse" placeholder="Rédigez votre réponse…">${value}</textarea>`
+          : `<input class="form-input" name="answer" type="text" aria-label="Votre réponse" placeholder="Votre réponse…" value="${value}">`;
+        options.querySelector('[name="answer"]').addEventListener('input', event => { answers[question.id] = event.target.value; });
+      } else {
+        const fields = type === 'truefalse' ? optionFields.slice(0, 2) : optionFields;
+        const inputType = type === 'multiple' ? 'checkbox' : 'radio';
+        const selectedValues = Array.isArray(answers[question.id]) ? answers[question.id] : [answers[question.id]];
+        options.innerHTML = fields.map((field, index) => {
+          const letter = optionLetters[index];
+          const selected = selectedValues.includes(letter);
+          return `<label class="quiz-option${selected ? ' selected' : ''}"><input type="${inputType}" name="answer" value="${letter}" ${selected ? 'checked' : ''} style="accent-color:#047857;"><span class="quiz-option-code">${escapeHtml(question[field])}</span></label>`;
+        }).join('');
+        options.querySelectorAll('.quiz-option').forEach(option => option.querySelector('input').addEventListener('change', () => {
+          options.querySelectorAll('.quiz-option').forEach(item => item.classList.toggle('selected', item.querySelector('input').checked));
+          const selected = [...options.querySelectorAll('input[name="answer"]:checked')].map(input => input.value);
+          answers[question.id] = type === 'multiple' ? selected : selected[0];
+        }));
+      }
+      document.getElementById('btn-previous-question').disabled = questionIndex === 0;
+      document.getElementById('btn-submit-quiz').textContent = questionIndex === quizData.questions.length - 1 ? 'Terminer le quiz' : 'Suivant →';
+      document.getElementById('quiz-result-box').style.display = 'none';
+    }
+
+    async function loadQuiz() {
+      const container = document.getElementById('quiz-options-container');
+      try {
+        if (!quizList.length) {
+          const list = await API.getQuizzes();
+          quizList = list.quizzes || [];
+          const selector = document.getElementById('quiz-select');
+          selector.innerHTML = quizList.map(item => `<option value="${item.id}">${item.title} · ${item.course_title}</option>`).join('');
+          if (!requestedQuizId && quizList.length) requestedQuizId = Number(quizList[0].id);
+          if (requestedQuizId) selector.value = String(requestedQuizId);
+          const me = await API.getMe();
+          const currentUser = me.user || {};
+          currentUserRole = currentUser.role || '';
+          const fullName = `${currentUser.firstname || ''} ${currentUser.lastname || ''}`.trim();
+          const roleLabels = { student: 'Étudiant', teacher: 'Enseignant', admin: 'Administrateur' };
+          document.querySelector('.lms-sidebar-user .lms-user-name').textContent = fullName || 'Utilisateur';
+          document.querySelector('.lms-sidebar-user .lms-user-role').textContent = roleLabels[currentUser.role] || 'Utilisateur';
+          document.querySelector('.lms-sidebar-user .lms-avatar-circle').textContent = currentUser.avatar_initials || `${currentUser.firstname?.[0] || ''}${currentUser.lastname?.[0] || ''}`.toUpperCase();
+          const createQuizButton = document.getElementById('create-quiz-button');
+          const canCreateQuiz = ['teacher', 'admin'].includes(currentUser.role);
+          createQuizButton.hidden = !canCreateQuiz;
+          createQuizButton.style.display = canCreateQuiz ? '' : 'none';
+          const attemptsPanel = document.getElementById('teacher-attempts');
+          attemptsPanel.hidden = currentUser.role !== 'teacher';
+        }
+        if (!requestedQuizId) throw new Error('Aucun quiz disponible pour ce compte.');
+        quizData = await API.getQuiz(requestedQuizId);
+        if (!quizData.questions?.length) throw new Error('Ce quiz ne contient aucune question.');
+        document.getElementById('quiz-title').textContent = quizData.quiz.title;
+        document.getElementById('quiz-meta').textContent = `${quizData.quiz.course_title} · ${quizData.total_questions} questions · ${quizData.quiz.duration_minutes} min`;
+        renderQuestion();
+        if (currentUserRole === 'teacher') await loadTeacherAttempts();
+      } catch (error) {
+        container.innerHTML = `<p style="color:#B91C1C;">Impossible de charger ce quiz : ${error.message}</p>`;
+      }
+    }
+
+    async function loadTeacherAttempts() {
+      const container = document.getElementById('quiz-attempts-container');
+      if (!requestedQuizId || currentUserRole !== 'teacher') return;
+      try {
+        const response = await API.getQuizAttempts(requestedQuizId);
+        const attempts = response.attempts || [];
+        if (!attempts.length) {
+          container.innerHTML = '<p style="font-size:12px;color:#64748B;">Aucune tentative enregistrée pour ce quiz.</p>';
+          return;
+        }
+        container.innerHTML = attempts.map(attempt => {
+          const statusText = attempt.status === 'manual_review' ? 'En attente de correction' : (Number(attempt.result_published) ? (attempt.passed ? 'Réussi · publié' : 'À retravailler · publié') : 'Corrigé · résultat non publié');
+          const manualQuestions = (attempt.questions || []).filter(question => question.needs_manual_review);
+          const gradingForm = attempt.manual_review && manualQuestions.length
+            ? `<div style="margin-top:14px;padding-top:12px;border-top:1px solid #E2E8F0;">
+                ${manualQuestions.map(question => {
+                  const grade = question.grade || {};
+                  return `<div style="padding:10px 0;border-bottom:1px solid #F1F5F9;">
+                    <p style="font-size:12px;font-weight:600;color:#0F172A;">${escapeHtml(question.question_text)} <span style="color:#64748B;font-weight:400;">(${question.points} pts max.)</span></p>
+                    <p style="white-space:pre-wrap;font-size:12px;color:#475569;margin:6px 0;">Réponse : ${escapeHtml(question.student_answer || 'Aucune réponse')}</p>
+                    <label style="display:block;font-size:11px;color:#64748B;margin-bottom:4px;" for="grade-${attempt.attempt_id}-${question.id}">Note attribuée</label>
+                    <input class="form-input" id="grade-${attempt.attempt_id}-${question.id}" data-grade-question="${question.id}" type="number" min="0" max="${question.points}" step="1" value="${grade.points_awarded ?? 0}" style="max-width:140px;">
+                    <label style="display:block;font-size:11px;color:#64748B;margin:8px 0 4px;" for="comment-${attempt.attempt_id}-${question.id}">Commentaire (facultatif)</label>
+                    <textarea class="form-input" id="comment-${attempt.attempt_id}-${question.id}" data-grade-comment="${question.id}" rows="2" maxlength="10000" placeholder="Commentaire de correction…">${escapeHtml(grade.teacher_comment || '')}</textarea>
+                  </div>`;
+                }).join('')}
+                <button type="button" class="btn btn-primary btn-sm" data-save-attempt="${attempt.attempt_id}" style="margin-top:12px;">Enregistrer la correction</button>
+              </div>`
+            : manualQuestions.map(question => `<div style="margin-top:10px;padding-top:10px;border-top:1px solid #F1F5F9;">
+                <p style="font-size:12px;font-weight:600;color:#0F172A;">${escapeHtml(question.question_text)}</p>
+                <p style="white-space:pre-wrap;font-size:12px;color:#475569;margin:6px 0;">Réponse : ${escapeHtml(question.student_answer || 'Aucune réponse')}</p>
+                <p style="font-size:11px;color:#047857;">Correction : ${question.grade?.points_awarded ?? 0} / ${question.points} points${question.grade?.teacher_comment ? ` — ${escapeHtml(question.grade.teacher_comment)}` : ''}</p>
+              </div>`).join('');
+          return `<article style="border:1px solid #E2E8F0;border-radius:10px;padding:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+              <div><strong style="font-size:13px;color:#0F172A;">${escapeHtml(attempt.firstname)} ${escapeHtml(attempt.lastname)}</strong><p style="font-size:11px;color:#64748B;">${escapeHtml(attempt.assessment_type === 'exam' ? 'Examen' : 'Quiz')} · ${escapeHtml(attempt.email)} · ${escapeHtml(attempt.attempted_at)}</p></div>
+              <div style="text-align:right;font-size:12px;color:#475569;">${escapeHtml(statusText)}<br><strong>${attempt.score} / ${attempt.max_score} (${Number(attempt.percentage).toFixed(2)}%)</strong></div>
+            </div>${gradingForm}${attempt.manual_review ? '' : `<button type="button" class="btn btn-secondary btn-sm" data-toggle-attempt-publication="${attempt.attempt_id}" data-published="${Number(attempt.result_published)}" style="margin-top:12px;">${Number(attempt.result_published) ? 'Dépublier le résultat' : 'Publier le résultat'}</button>`}
+          </article>`;
+        }).join('');
+        container.querySelectorAll('[data-save-attempt]').forEach(button => button.addEventListener('click', () => saveManualGrades(Number(button.dataset.saveAttempt))));
+        container.querySelectorAll('[data-toggle-attempt-publication]').forEach(button => button.addEventListener('click', async () => {
+          const action = button.dataset.published === '1' ? 'unpublish' : 'publish';
+          try { await API.setGradePublication('quiz', Number(button.dataset.toggleAttemptPublication), action); await loadTeacherAttempts(); }
+          catch (error) { alert(error.message || 'Impossible de modifier la publication du résultat.'); }
+        }));
+      } catch (error) {
+        container.innerHTML = `<p style="font-size:12px;color:#B91C1C;">Impossible de charger les tentatives : ${escapeHtml(error.message)}</p>`;
+      }
+    }
+
+    async function saveManualGrades(attemptId) {
+      const container = document.getElementById('quiz-attempts-container');
+      const attemptCard = container.querySelector(`[data-save-attempt="${attemptId}"]`)?.closest('article');
+      if (!attemptCard) return;
+      const grades = [...attemptCard.querySelectorAll('[data-grade-question]')].map(input => ({
+        question_id: Number(input.dataset.gradeQuestion),
+        points_awarded: Number(input.value),
+        teacher_comment: attemptCard.querySelector(`[data-grade-comment="${input.dataset.gradeQuestion}"]`)?.value || ''
+      }));
+      try {
+        const result = await API.gradeQuizAttempt(attemptId, grades);
+        await loadTeacherAttempts();
+        const box = document.getElementById('quiz-result-box');
+        document.getElementById('quiz-result-text').textContent = `Correction enregistrée : ${result.score} / ${result.max_score} (${Number(result.percentage).toFixed(2)}%)${result.manual_review ? ' — correction restante' : (result.passed ? ' — Réussi' : ' — À retravailler')}`;
+        box.style.display = 'block';
+      } catch (error) {
+        alert('Erreur lors de l’enregistrement de la correction : ' + error.message);
+      }
+    }
+
+    document.getElementById('refresh-quiz-attempts').addEventListener('click', loadTeacherAttempts);
+
+    document.getElementById('quiz-select').addEventListener('change', () => {
+      requestedQuizId = Number(document.getElementById('quiz-select').value);
+      questionIndex = 0;
+      Object.keys(answers).forEach(key => delete answers[key]);
+      document.getElementById('btn-submit-quiz').disabled = false;
+      loadQuiz();
+    });
+
+    document.getElementById('create-quiz-button').addEventListener('click', async () => {
+      const courseId = Number(prompt('Identifiant de votre cours :'));
+      if (!courseId) return;
+      const title = prompt('Titre du quiz :');
+      if (!title) return;
+      const description = prompt('Description :') || '';
+      const duration = Number(prompt('Durée en minutes :', '20')) || 20;
+      const assessmentType = (prompt('Type d’évaluation (quiz ou exam) :', 'quiz') || 'quiz').trim().toLowerCase();
+      if (!['quiz', 'exam'].includes(assessmentType)) { alert('Le type doit être quiz ou exam.'); return; }
+      const questionText = prompt('Énoncé de la première question :');
+      if (!questionText) return;
+      const optionA = prompt('Choix A :');
+      const optionB = prompt('Choix B :');
+      const optionC = prompt('Choix C :');
+      const optionD = prompt('Choix D :');
+      const correctOption = (prompt('Bonne réponse (a, b, c ou d) :', 'a') || '').trim().toLowerCase();
+      const explanation = prompt('Explication (facultative) :') || '';
+      if (!optionA || !optionB || !optionC || !optionD || !['a', 'b', 'c', 'd'].includes(correctOption)) {
+        alert('Les quatre choix et une réponse correcte (a, b, c ou d) sont nécessaires.');
+        return;
+      }
+      try { await API.createQuiz({ course_id: courseId, title, assessment_type: assessmentType, description, duration_minutes: duration, questions: [{ question_text: questionText, option_a: optionA, option_b: optionB, option_c: optionC, option_d: optionD, correct_option: correctOption, explanation }] }); window.location.reload(); }
+      catch (error) { alert(error.message || 'Impossible de créer le quiz.'); }
+    });
+
+    document.getElementById('btn-previous-question').addEventListener('click', () => {
+      if (questionIndex > 0) { questionIndex--; renderQuestion(); }
+    });
+
+    document.getElementById('btn-submit-quiz').addEventListener('click', async () => {
+      if (!quizData) return;
+      const question = quizData.questions[questionIndex];
+      if ((question.question_type || 'single') === 'multiple') {
+        answers[question.id] = [...document.querySelectorAll('input[name="answer"]:checked')].map(input => input.value);
+      } else {
+        const selected = document.querySelector('input[name="answer"]:checked');
+        if (selected) answers[question.id] = selected.value;
+      }
+      if (questionIndex < quizData.questions.length - 1) {
+        questionIndex++;
+        renderQuestion();
+        return;
+      }
+      const hasMissingAnswer = quizData.questions.some(item => {
+        const answer = answers[item.id];
+        return Array.isArray(answer) ? answer.length === 0 : String(answer ?? '').trim() === '';
+      });
+      if (hasMissingAnswer) {
+        alert('Répondez à chaque question avant de terminer le quiz.');
+        return;
+      }
+      try {
+        const result = await API.submitQuiz(requestedQuizId, answers);
+        document.getElementById('quiz-result-text').textContent = result.manual_review
+          ? 'Réponses enregistrées — en attente de correction manuelle et de publication.'
+          : 'Réponses enregistrées et corrigées automatiquement. Le résultat sera visible après sa publication par l’enseignant.';
+        document.getElementById('quiz-result-box').style.display = 'block';
+        document.getElementById('btn-submit-quiz').disabled = true;
+      } catch (error) {
+        alert('Erreur de soumission : ' + error.message);
+      }
+    });
+
+    loadQuiz();
+  </script>
+</body>
+</html>

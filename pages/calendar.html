@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendrier - LMS Web</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="lms-layout">
+    <aside class="lms-sidebar">
+      <div class="lms-brand">
+        <div class="lms-logo-icon">LMS</div>
+        <div class="lms-brand-text">
+          <span class="lms-brand-title">LMS Web</span>
+          <span class="lms-brand-subtitle">E-LEARNING</span>
+        </div>
+      </div>
+
+      <div class="lms-nav-container">
+        <div class="lms-nav-group">
+          <div class="lms-nav-heading">Navigation</div>
+          <a href="dashboard-student.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+            Tableau de bord
+          </a>
+          <a href="courses.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+            Mes cours
+          </a>
+          <a href="quiz.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+            Évaluations / Quiz
+          </a>
+          <a href="forum.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Forum
+          </a>
+          <a href="resources.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+            Ressources
+          </a>
+          <a href="calendar.html" class="lms-nav-link active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+            Calendrier
+          </a>
+        </div>
+
+        <div class="lms-nav-group">
+          <div class="lms-nav-heading">Compte</div>
+          <a href="profile.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Profil
+          </a>
+          <a href="settings.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            Paramètres
+          </a>
+        </div>
+      </div>
+
+      <div class="lms-sidebar-user">
+        <div class="lms-avatar-circle">AR</div>
+        <div class="lms-user-info">
+          <span class="lms-user-name">Andry Rakoto</span>
+          <span class="lms-user-role">Étudiant</span>
+        </div>
+      </div>
+    </aside>
+
+    <div class="lms-main">
+      <header class="lms-header">
+        <div class="lms-search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" placeholder="Rechercher...">
+        </div>
+      </header>
+
+      <div class="lms-content-wrapper">
+        <div style="margin-bottom: 24px;">
+          <h1 style="font-size: 20px; font-weight: 700; color: #0F172A;">Calendrier</h1>
+          <p style="font-size: 12.5px; color: #64748B; margin-top: 2px;">Planification des séances, devoirs et examens</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <button id="calendar-prev" type="button" class="btn btn-secondary btn-sm" aria-label="Mois précédent">‹</button>
+              <h2 id="calendar-month-title" style="font-size: 15px; font-weight: 700; color: #0F172A;"></h2>
+              <div style="display:flex;align-items:center;gap:8px;"><span id="calendar-today" style="font-size:12px;color:#64748B;"></span><button id="calendar-next" type="button" class="btn btn-secondary btn-sm" aria-label="Mois suivant">›</button></div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; font-size: 11px; font-weight: 600; color: #64748B; margin-bottom: 8px;">
+              <span>Lu</span><span>Ma</span><span>Me</span><span>Je</span><span>Ve</span><span>Sa</span><span>Di</span>
+            </div>
+
+            <div id="calendar-grid" style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;font-size:12px;"></div>
+          </div>
+
+          <!-- Événements Column -->
+          <div class="card">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:16px;"><h3 style="font-size:14px;font-weight:600;color:#0F172A;">Événements</h3><button type="button" id="add-event-button" class="btn btn-secondary btn-sm">+ Ajouter</button></div>
+            <div id="calendar-events" style="display:flex;flex-direction:column;gap:12px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script>
+    let calendarMonth = new Date();
+    let eventsByDate = {};
+    const monthTitle = document.getElementById('calendar-month-title');
+    const eventContainer = document.getElementById('calendar-events');
+
+    function monthKey(date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`; }
+    function renderCalendar() {
+      const year = calendarMonth.getFullYear();
+      const month = calendarMonth.getMonth();
+      monthTitle.textContent = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(calendarMonth);
+      const today = new Date();
+      document.getElementById('calendar-today').textContent = `Aujourd'hui : ${new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(today)}`;
+      const firstDay = new Date(year, month, 1);
+      const offset = (firstDay.getDay() + 6) % 7;
+      const startDate = new Date(year, month, 1 - offset);
+      const grid = document.getElementById('calendar-grid');
+      const dateCells = [];
+      for (let i = 0; i < 42; i++) {
+        const date = new Date(startDate);
+        date.setDate(startDate.getDate() + i);
+        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        const inMonth = date.getMonth() === month;
+        const isToday = date.toDateString() === today.toDateString();
+        const hasEvent = Boolean(eventsByDate[key]);
+        dateCells.push(`<div class="calendar-day-cell" style="height:52px;border:1px solid ${isToday ? '#047857' : '#F1F5F9'};border-radius:8px;padding:4px;color:${!inMonth ? '#CBD5E1' : isToday ? '#047857' : '#334155'};background:${isToday ? '#ECFDF5' : '#fff'};font-weight:${isToday ? '700' : '400'};">${date.getDate()}${hasEvent ? '<span style="display:block;width:6px;height:6px;margin:5px auto 0;border-radius:50%;background:#059669;"></span>' : ''}</div>`);
+      }
+      grid.innerHTML = dateCells.join('');
+    }
+
+    async function loadCalendar() {
+      eventContainer.innerHTML = '<p style="color:#64748B;font-size:12px;">Chargement…</p>';
+      try {
+        const response = await API.getCalendarEvents(monthKey(calendarMonth));
+        const events = response.events || [];
+        eventsByDate = events.reduce((map, event) => { map[event.event_date] = true; return map; }, {});
+        renderCalendar();
+        eventContainer.innerHTML = events.length ? events.map(event => `<article style="padding:12px;border:1px solid #E2E8F0;border-radius:8px;background:#F8FAFC;"><div style="font-size:12.5px;font-weight:600;color:#0F172A;">${event.title}</div><div style="font-size:11px;color:#64748B;margin-top:3px;">${event.course_title || 'Événement'} · ${new Intl.DateTimeFormat('fr-FR',{dateStyle:'medium'}).format(new Date(`${event.event_date}T00:00:00`))} · ${event.event_time}</div></article>`).join('') : '<p style="color:#64748B;font-size:12px;">Aucun événement ce mois-ci.</p>';
+      } catch (error) {
+        renderCalendar();
+        eventContainer.innerHTML = `<p style="color:#B91C1C;font-size:12px;">Impossible de charger les événements : ${error.message}</p>`;
+      }
+    }
+
+    document.getElementById('calendar-prev').addEventListener('click', () => { calendarMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1, 1); loadCalendar(); });
+    document.getElementById('calendar-next').addEventListener('click', () => { calendarMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1); loadCalendar(); });
+    document.getElementById('add-event-button').addEventListener('click', async () => {
+      const title = prompt('Titre de l’événement :');
+      if (!title) return;
+      const eventDate = prompt('Date (AAAA-MM-JJ) :', `${monthKey(calendarMonth)}-01`);
+      if (!eventDate) return;
+      try { await API.addCalendarEvent({ title: title.trim(), event_date: eventDate.trim(), event_time: '10:00', event_type: 'cours' }); await loadCalendar(); }
+      catch (error) { alert(error.message || 'Impossible d’ajouter cet événement.'); }
+    });
+    loadCalendar();
+  </script>
+</body>
+</html>

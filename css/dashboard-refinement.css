@@ -1,0 +1,116 @@
+/* =====================================================================
+   LMS Web — Dashboard refinement
+   Interface SaaS sobre, verte, responsive et commune aux trois profils.
+   Chargée uniquement sur les dashboards afin de préserver les autres pages.
+   ===================================================================== */
+:root {
+  --primary-color: #047857;
+  --primary-dark: #065f46;
+  --primary-soft: #ecfdf5;
+  --dashboard-bg: var(--color-background);
+  --dashboard-border: var(--color-border);
+  --dashboard-shadow: 0 1px 2px rgba(15, 23, 42, .025), 0 5px 18px rgba(15, 23, 42, .025);
+}
+body.lms-dashboard { background: var(--dashboard-bg); color: var(--color-text); font-size: 15px; }
+.lms-dashboard .lms-layout { min-height: 100vh; }
+.lms-dashboard .lms-sidebar { background: #fff; border-right-color: #e8edf2; box-shadow: 2px 0 12px rgba(15,23,42,.018); }
+.lms-dashboard .lms-brand { height: 72px; padding-inline: 22px; border-bottom-color: #edf1f5; }
+.lms-dashboard .lms-logo-icon { width: 35px; height: 35px; border-radius: 10px; letter-spacing: -.04em; box-shadow: 0 3px 8px rgba(4,120,87,.18); }
+.lms-dashboard .lms-brand-title { font-size: 15px; letter-spacing: -.025em; }
+.lms-dashboard .lms-brand-subtitle { font-size: 9px; letter-spacing: .095em; }
+.lms-dashboard .lms-nav-container { padding: 22px 12px 18px; gap: 25px; }
+.lms-dashboard .lms-nav-heading { padding: 5px 12px 8px; color: #8a98aa; font-size: 10px; letter-spacing: .09em; }
+.lms-dashboard .lms-nav-link { min-height: 39px; padding: 9px 11px; gap: 11px; border-radius: 8px; color: #516176; font-size: 12.5px; transition: background .16s ease, color .16s ease, transform .16s ease; }
+.lms-dashboard .lms-nav-link svg { width: 17px; height: 17px; flex: 0 0 17px; stroke-width: 1.8; }
+.lms-dashboard .lms-nav-link:hover { background: #f0f8f4; color: #047857; transform: translateX(1px); }
+.lms-dashboard .lms-nav-link:hover svg { color: #047857; }
+.lms-dashboard .lms-nav-link.active { background: var(--color-primary-subtle); color: var(--color-primary-dark); box-shadow: none; }
+.lms-dashboard .lms-nav-link.active svg { color: var(--color-primary); }
+.lms-dashboard .lms-sidebar-user { padding: 15px 14px; gap: 9px; background: #fff; border-top-color: #edf1f5; }
+.lms-dashboard .lms-avatar-circle { flex-shrink: 0; }
+.lms-dashboard .lms-user-name { max-width: 145px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11.5px; }
+.lms-dashboard .lms-user-role { color: #8190a4; font-size: 10.5px; }
+.lms-dashboard .lms-main { min-width: 0; background: var(--dashboard-bg); }
+.lms-dashboard .lms-header { height: 66px; padding: 0 30px; background: rgba(255,255,255,.96); border-bottom: 1px solid #e9eef3; box-shadow: none; }
+.lms-dashboard .lms-search-box { width: min(360px, 42vw); height: 38px; background: #f7f9fb; border: 1px solid #e7edf3; border-radius: 9px; }
+.lms-dashboard .lms-search-box:focus-within { background: #fff; border-color: #9ad8bd; box-shadow: 0 0 0 3px rgba(4,120,87,.07); }
+.lms-dashboard .lms-search-box input { font-size: 12px; }
+.lms-dashboard .lms-icon-btn { width: 38px; height: 38px; border-radius: 9px; }
+.lms-dashboard .lms-icon-btn:hover { background: #f0f8f4; color: #047857; }
+.lms-dashboard .lms-content-wrapper { width: 100%; max-width: 1600px; margin: 0 auto; padding: 28px 30px 34px; }
+.lms-dashboard .lms-content-wrapper h1 { color: #142238 !important; font-size: clamp(21px, 1.8vw, 27px) !important; letter-spacing: -.035em; line-height: 1.3; }
+.lms-dashboard .lms-content-wrapper h1 + p { margin-top: 6px !important; color: #748297 !important; font-size: 13px !important; }
+.lms-dashboard .kpi-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 14px; margin-bottom: 20px; }
+.lms-dashboard .kpi-card { position: relative; min-width: 0; min-height: 105px; padding: 18px 18px 16px; overflow: hidden; background: #fff; border: 1px solid var(--dashboard-border); border-radius: 10px; box-shadow: var(--dashboard-shadow); transition: border-color .18s ease; }
+.lms-dashboard .kpi-card:hover { border-color: #9ad8bd; }
+.lms-dashboard .kpi-label { color: #68788e; font-size: 11.5px; font-weight: 500; }
+.lms-dashboard .kpi-value { margin-top: 6px; color: #142238; font-size: 28px; font-weight: 700; line-height: 1.1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.lms-dashboard .card { min-width: 0; padding: 20px; background: #fff; border: 1px solid var(--dashboard-border); border-radius: 10px; box-shadow: var(--dashboard-shadow); }
+.lms-dashboard .card h3 { color: #18263b !important; font-size: 13px !important; font-weight: 650 !important; letter-spacing: -.01em; }
+.lms-dashboard .card-link { color: #047857; font-size: 11.5px; }
+.lms-dashboard .btn { min-height: 38px; border-radius: 8px; font-size: 12px; transition: transform .16s ease, box-shadow .16s ease, background .16s ease; }
+.lms-dashboard .btn-secondary { color: #334155; background: #fff; border-color: #dce5eb; }
+.lms-dashboard .btn-secondary:hover { color: #047857; background: #f5fbf8; border-color: #9ed5bd; }
+.lms-dashboard .btn-primary { background: #047857; border-color: #047857; box-shadow: 0 3px 7px rgba(4,120,87,.13); }
+.lms-dashboard .form-input, .lms-dashboard select { min-height: 36px; border-color: #dce5eb; border-radius: 8px; background-color: #fff; color: #334155; font-size: 12px; }
+.lms-dashboard .lms-footer { padding: 18px 30px; color: #8a97a8; border-top: 1px solid #e7edf2; background: #fff; font-size: 11px; }
+.lms-dashboard .lms-footer strong { color: #526176; }
+.lms-dashboard .account-menu-card { border: 1px solid #e2e8f0; border-radius: 14px; box-shadow: 0 18px 50px rgba(15,23,42,.16); }
+.lms-dashboard [id$="recent-users"] > div, .lms-dashboard [id$="recent-logs"] > div { padding: 10px 0; border-bottom: 1px solid #eef2f6; }
+.lms-dashboard .admin-user-row { padding: 12px 0 !important; border-bottom-color: #edf1f5 !important; }
+.lms-dashboard .admin-user-row .btn { min-height: 31px; padding: 5px 10px; }
+.lms-dashboard .lms-content-wrapper > div[style*="grid-template-columns"] { align-items: stretch; }
+.lms-dashboard .lms-content-wrapper > div[style*="grid-template-columns"] > .card { height: 100%; }
+.lms-dashboard .lms-content-wrapper > div[style*="grid-template-columns"] > .card > div[id] { min-width: 0; }
+.lms-dashboard .lms-content-wrapper > div[style*="grid-template-columns"] .btn { width: 100%; }
+.lms-dashboard svg { flex-shrink: 0; }
+.lms-dashboard button:focus-visible, .lms-dashboard a:focus-visible, .lms-dashboard input:focus-visible, .lms-dashboard select:focus-visible { outline: 3px solid rgba(4,120,87,.22); outline-offset: 2px; }
+.lms-dashboard .mobile-nav-toggle { border-color: #dce5eb; border-radius: 9px; color: #047857; }
+.lms-dashboard .lms-nav-link.active { font-weight: 650; }
+.lms-dashboard .kpi-card, .lms-dashboard .card { box-shadow: var(--shadow-card); }
+.lms-dashboard .form-input, .lms-dashboard select { min-height: 40px; border-color: var(--color-border); color: var(--color-text); }
+.lms-dashboard .btn-primary { background: var(--color-primary); border-color: var(--color-primary); box-shadow: none; }
+.lms-dashboard .btn-primary:hover { background: var(--color-primary-hover); border-color: var(--color-primary-hover); }
+
+/* Student-specific cards and course progress */
+.dashboard-student .lms-content-wrapper [id="progress-bar-fill"] { background: #047857 !important; }
+.dashboard-student .lms-content-wrapper [style*="background: #FFFFFF"][style*="border: 1px solid #E2E8F0"] { border-radius: 12px !important; box-shadow: var(--dashboard-shadow); }
+.dashboard-student .lms-content-wrapper [style*="background: #F1F5F9"] { background: #edf2f5 !important; }
+.dashboard-student .lms-content-wrapper [style*="background: #059669"] { background: #047857 !important; }
+.dashboard-student .lms-content-wrapper a { transition: color .16s ease; }
+.dashboard-student .lms-content-wrapper a:hover { color: #047857 !important; }
+
+@media (min-width: 1200px) {
+  .lms-dashboard .lms-content-wrapper > div[style*="grid-template-columns: 2fr 1fr"] { grid-template-columns: minmax(0,1.75fr) minmax(270px,.85fr) !important; gap: 20px !important; margin-bottom: 20px !important; }
+  .lms-dashboard .lms-content-wrapper > div[style*="grid-template-columns: 1fr 1fr"] { gap: 20px !important; }
+}
+@media (max-width: 1100px) {
+  .lms-dashboard .lms-header { padding-inline: 22px; }
+  .lms-dashboard .lms-content-wrapper { padding: 24px 22px 30px; }
+  .lms-dashboard .kpi-grid { gap: 11px; }
+  .lms-dashboard .kpi-card { padding: 15px; }
+  .lms-dashboard .kpi-value { font-size: 25px; }
+}
+@media (max-width: 768px) {
+  .lms-dashboard .lms-header { min-height: 64px; padding: 10px 14px; }
+  .lms-dashboard .lms-search-box { width: auto; flex: 1; }
+  .lms-dashboard .lms-content-wrapper { padding: 22px 14px 26px; }
+  .lms-dashboard .kpi-grid { grid-template-columns: repeat(2,minmax(0,1fr)) !important; gap: 10px; }
+  .lms-dashboard .kpi-card { min-height: 92px; padding: 14px; }
+  .lms-dashboard .kpi-value { font-size: 24px; }
+  .lms-dashboard .card { padding: 16px; }
+  .lms-dashboard .lms-footer { padding: 16px 14px; flex-wrap: wrap; gap: 6px; }
+  .lms-dashboard .lms-content-wrapper > div[style*="grid-template-columns"] { grid-template-columns: minmax(0,1fr) !important; gap: 14px !important; }
+  .dashboard-student .lms-header-actions > div:first-child { display: none !important; }
+}
+@media (max-width: 420px) {
+  .lms-dashboard .kpi-grid { grid-template-columns: minmax(0,1fr) !important; }
+  .lms-dashboard .lms-content-wrapper h1 { font-size: 21px !important; }
+  .lms-dashboard .card { padding: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lms-dashboard *, .lms-dashboard *::before, .lms-dashboard *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+.lms-dashboard .kpi-icon { display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; margin-bottom: 13px; color: #047857; background: #eaf7f0; border-radius: 9px; }
+.lms-dashboard .kpi-icon svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.lms-dashboard .kpi-card { padding-top: 15px; }

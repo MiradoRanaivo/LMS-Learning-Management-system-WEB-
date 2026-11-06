@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Devoirs & Évaluations - LMS Web</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="lms-layout">
+    <aside class="lms-sidebar">
+      <div class="lms-brand">
+        <div class="lms-logo-icon">LMS</div>
+        <div class="lms-brand-text">
+          <span class="lms-brand-title">LMS Web</span>
+          <span class="lms-brand-subtitle">E-LEARNING</span>
+        </div>
+      </div>
+
+      <div class="lms-nav-container">
+        <div class="lms-nav-group">
+          <div class="lms-nav-heading">Navigation</div>
+          <a href="dashboard-student.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+            Tableau de bord
+          </a>
+          <a href="courses.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+            Mes cours
+          </a>
+          <a href="assignments.html" class="lms-nav-link active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+            Évaluations / Devoirs
+          </a>
+          <a href="forum.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Forum
+          </a>
+          <a href="resources.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+            Ressources
+          </a>
+          <a href="calendar.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+            Calendrier
+          </a>
+        </div>
+      </div>
+
+      <div class="lms-sidebar-user">
+        <div class="lms-avatar-circle">AR</div>
+        <div class="lms-user-info">
+          <span class="lms-user-name">Andry Rakoto</span>
+          <span class="lms-user-role">Étudiant</span>
+        </div>
+      </div>
+    </aside>
+
+    <div class="lms-main">
+      <header class="lms-header">
+        <div class="lms-search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" placeholder="Rechercher...">
+        </div>
+      </header>
+
+      <div class="lms-content-wrapper">
+        <div style="margin-bottom: 24px;">
+          <h1 style="font-size: 20px; font-weight: 700; color: #0F172A;">Devoirs & Évaluations</h1>
+          <p style="font-size: 12.5px; color: #64748B; margin-top: 2px;">Dépôt de vos travaux et consultation des retours enseignants</p>
+        </div>
+
+        <form id="assignment-editor" class="card" style="display:none;padding:20px;margin-bottom:16px;" enctype="multipart/form-data">
+          <h2 style="font-size:15px;margin-bottom:14px;">Créer un devoir</h2>
+          <input type="hidden" name="id" value="">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
+            <label style="font-size:12px;color:#475569;">Cours<select class="form-select" name="course_id" required></select></label>
+            <label style="font-size:12px;color:#475569;">Titre<input class="form-input" name="title" maxlength="200" required></label>
+            <label style="font-size:12px;color:#475569;">Date de publication<input class="form-input" type="datetime-local" name="publication_date" required></label>
+            <label style="font-size:12px;color:#475569;">Date limite<input class="form-input" type="datetime-local" name="due_date" required></label>
+            <label style="font-size:12px;color:#475569;">Barème maximal<input class="form-input" type="number" name="max_grade" min="0.01" max="99.99" step="0.01" value="20" required></label>
+            <label style="font-size:12px;color:#475569;">Fichier joint<input class="form-input" type="file" name="attachment" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip"></label>
+          </div>
+          <label style="display:block;margin-top:12px;font-size:12px;color:#475569;">Description<textarea class="form-textarea" name="description" rows="3" required></textarea></label>
+          <label style="display:block;margin-top:12px;font-size:12px;color:#475569;">Consignes<textarea class="form-textarea" name="instructions" rows="3"></textarea></label>
+          <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px;">
+            <button type="button" class="btn btn-secondary btn-sm" id="cancel-assignment-edit" style="display:none;">Annuler</button>
+            <button type="submit" class="btn btn-primary btn-sm">Enregistrer le brouillon</button>
+          </div>
+        </form>
+        <div id="assignments-list" style="display: flex; flex-direction: column; gap: 16px;" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script>
+    const assignmentImages = [
+      'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=320&h=180&q=85',
+      'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?auto=format&fit=crop&w=320&h=180&q=85'
+    ];
+
+    function formatDeadline(value) {
+      const date = new Date(String(value).replace(' ', 'T'));
+      return Number.isNaN(date.getTime()) ? escapeHtml(value) : new Intl.DateTimeFormat('fr-FR', { dateStyle: 'medium', timeStyle: 'short' }).format(date);
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+    }
+
+    function formatDateInput(value) {
+      if (!value) return '';
+      return String(value).replace(' ', 'T').slice(0, 16);
+    }
+
+    function renderAssignments(assignments) {
+      const container = document.getElementById('assignments-list');
+      if (window.currentRole === 'teacher' || window.currentRole === 'admin') {
+        renderTeacherAssignments(assignments);
+        return;
+      }
+      if (!assignments.length) {
+        container.innerHTML = '<div class="card" style="padding:20px;color:#64748B;">Aucun devoir n’est disponible pour ce compte.</div>';
+        return;
+      }
+
+      container.innerHTML = assignments.map((assignment, index) => {
+        const submitted = Boolean(assignment.submission_id);
+        const status = assignment.submission_status || 'À rendre';
+        const statusLabel = assignment.grade_visibility === 'corrige_non_publie' ? 'Corrigé — note non publiée' : status === 'en_retard' ? 'En retard' : status === 'rendu' ? 'Rendu' : status === 'corrige' ? 'Corrigé' : status === 'non_rendu' ? 'Non rendu' : status;
+        const statusClass = status === 'corrige' ? 'badge-active' : status === 'en_retard' ? 'badge-late' : 'badge-upcoming';
+        const canReplace = submitted && status !== 'corrige';
+        const grade = assignment.grade_value !== null && assignment.grade_value !== undefined
+          ? `<p><strong>Note :</strong> <span style="color:#047857;font-weight:700;">${Number(assignment.grade_value).toFixed(2)} / ${Number(assignment.max_grade).toFixed(2)}</span></p>` : '';
+        const feedback = assignment.teacher_feedback
+          ? `<p style="margin-top:4px;color:#64748B;"><strong>Retour enseignant :</strong> ${escapeHtml(assignment.teacher_feedback)}</p>` : '';
+        const attachment = assignment.attachment_name
+          ? `<p style="margin:8px 0;"><a href="../api/assignments/download.php?kind=assignment&id=${Number(assignment.id)}">Télécharger le fichier joint : ${escapeHtml(assignment.attachment_name)}</a></p>` : '';
+        const submissionFile = assignment.submission_id
+          ? `<p style="font-size:12px;color:#64748B;">Soumis le ${escapeHtml(formatDeadline(assignment.submitted_at))}${assignment.original_file_name ? ` · ${escapeHtml(assignment.original_file_name)}` : ''}</p>` : '';
+        return `
+          <article class="card assignment-card" style="padding:20px;">
+            <img class="assignment-topic-image" src="${assignmentImages[index % assignmentImages.length]}" alt="Devoir ${escapeHtml(assignment.title)}" loading="lazy">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px;">
+              <div><span class="badge badge-active" style="margin-bottom:6px;">${escapeHtml(assignment.course_title || 'Cours')}</span><h3 style="font-size:14.5px;font-weight:600;color:#0F172A;">${escapeHtml(assignment.title)}</h3><p style="font-size:12px;color:#64748B;margin-top:3px;">Publié : ${escapeHtml(formatDeadline(assignment.publication_date))} · Échéance : ${escapeHtml(formatDeadline(assignment.due_date))} · Barème : ${Number(assignment.max_grade).toFixed(2)} points</p></div>
+              <span class="badge ${statusClass}" style="font-size:12px;white-space:nowrap;">${escapeHtml(statusLabel)}</span>
+            </div>
+            ${assignment.description ? `<p style="font-size:12.5px;color:#475569;margin-bottom:8px;">${escapeHtml(assignment.description)}</p>` : ''}
+            ${assignment.instructions ? `<p style="font-size:12.5px;color:#475569;margin-bottom:12px;"><strong>Consignes :</strong><br>${escapeHtml(assignment.instructions).replace(/\n/g, '<br>')}</p>` : ''}
+            ${attachment}
+            ${submissionFile}
+            ${grade || feedback ? `<div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:12px;font-size:12.5px;color:#334155;">${grade}${feedback}</div>` : ''}
+            ${status !== 'corrige' ? `<form class="submission-form" data-id="${Number(assignment.id)}" style="display:flex;flex-direction:column;gap:8px;margin-top:14px;"><input type="file" name="file" class="form-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip" required><textarea name="student_comment" class="form-textarea" rows="2" maxlength="5000" placeholder="Commentaire pour l’enseignant (facultatif)"></textarea><div style="display:flex;justify-content:flex-end;"><button type="submit" class="btn btn-primary btn-sm">${canReplace ? 'Remplacer ma soumission' : 'Déposer mon travail'}</button></div></form>` : ''}
+          </article>`;
+      }).join('');
+
+      container.querySelectorAll('.submission-form').forEach(form => form.addEventListener('submit', async event => {
+        event.preventDefault();
+        const file = form.querySelector('input[type="file"]').files[0];
+        if (!file) return;
+        try {
+          await API.submitAssignment(Number(form.dataset.id), form.elements.student_comment.value.trim(), file);
+          await loadAssignments();
+        } catch (error) {
+          alert(error.message || 'Le dépôt a échoué.');
+        }
+      }));
+    }
+
+    function renderTeacherAssignments(assignments) {
+      const container = document.getElementById('assignments-list');
+      const submissions = window.assignmentSubmissions || [];
+      if (!assignments.length) {
+        container.innerHTML = '<div class="card" style="padding:20px;color:#64748B;">Aucun devoir n’est associé à vos cours.</div>';
+        return;
+      }
+      container.innerHTML = assignments.map(assignment => {
+        const assignmentSubmissions = submissions.filter(submission => Number(submission.assignment_id) === Number(assignment.id));
+        const rows = assignmentSubmissions.length ? assignmentSubmissions.map(submission => {
+          const isSubmitted = Boolean(submission.id);
+          const pending = isSubmitted && submission.status !== 'corrige';
+          return `<div style="padding:12px;border:1px solid #E2E8F0;border-radius:9px;background:#F8FAFC;"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;"><div><strong style="font-size:13px;">${escapeHtml(submission.firstname)} ${escapeHtml(submission.lastname)}</strong><p style="font-size:11px;color:#64748B;">${isSubmitted ? `<a href="../api/assignments/download.php?kind=submission&id=${Number(submission.id)}">Télécharger ${escapeHtml(submission.original_file_name || 'le fichier')}</a> · ${escapeHtml(submission.submitted_at || '')}` : 'Aucun rendu reçu'}</p></div><span class="badge ${submission.status === 'corrige' ? 'badge-active' : submission.status === 'en_retard' ? 'badge-late' : 'badge-upcoming'}">${isSubmitted ? escapeHtml(submission.status === 'en_retard' ? 'En retard' : submission.status) : 'Non rendu'}</span></div>${submission.student_comment ? `<p style="margin-top:8px;font-size:12px;color:#475569;">${escapeHtml(submission.student_comment)}</p>` : ''}${isSubmitted ? `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;"><input type="number" min="0" max="${Number(assignment.max_grade)}" step="0.01" value="${submission.grade_value === null ? '' : Number(submission.grade_value)}" class="form-input grade-value" placeholder="Note / ${Number(assignment.max_grade)}" style="max-width:140px;"><input type="text" maxlength="5000" value="${escapeHtml(submission.teacher_feedback || '')}" class="form-input grade-feedback" placeholder="Retour à l’étudiant" style="flex:1;min-width:180px;"><button type="button" class="btn btn-primary btn-sm grade-submission" data-id="${Number(submission.id)}">${pending ? 'Enregistrer la note' : 'Modifier la correction'}</button>${submission.status === 'corrige' ? `<button type="button" class="btn btn-secondary btn-sm toggle-grade-publication" data-id="${Number(submission.id)}" data-published="${Number(submission.grade_published)}">${Number(submission.grade_published) ? 'Dépublier la note' : 'Publier la note'}</button>` : ''}</div>` : ''}</div>`;
+        }).join('') : '<p style="font-size:12px;color:#64748B;">Aucun étudiant inscrit à ce cours.</p>';
+        const attachment = assignment.attachment_name ? `<p style="font-size:12px;margin-top:8px;"><a href="../api/assignments/download.php?kind=assignment&id=${Number(assignment.id)}">Fichier joint : ${escapeHtml(assignment.attachment_name)}</a></p>` : '';
+        const visibility = Number(assignment.is_published) === 1 ? 'Publié' : assignment.archived_at ? 'Archivé' : 'Brouillon';
+        return `<article class="card assignment-card" style="padding:20px;"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;"><div><span class="badge badge-active">${escapeHtml(assignment.course_title)}</span><h3 style="margin-top:8px;font-size:15px;">${escapeHtml(assignment.title)}</h3><p style="margin-top:4px;font-size:12px;color:#64748B;">Échéance : ${escapeHtml(formatDeadline(assignment.due_date))} · ${Number(assignment.pending_count || 0)} rendu(s) à corriger · ${visibility}</p></div><span class="badge badge-upcoming">${Number(assignment.max_grade).toFixed(2)} points</span></div>${attachment}<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;"><button class="btn btn-secondary btn-sm edit-assignment" data-id="${Number(assignment.id)}">Modifier</button><button class="btn btn-secondary btn-sm toggle-assignment" data-id="${Number(assignment.id)}" data-published="${Number(assignment.is_published)}">${Number(assignment.is_published) ? 'Dépublier' : 'Publier'}</button><button class="btn btn-secondary btn-sm archive-assignment" data-id="${Number(assignment.id)}">Archiver</button><button class="btn btn-secondary btn-sm delete-assignment" data-id="${Number(assignment.id)}">Supprimer</button></div><div style="display:flex;flex-direction:column;gap:10px;margin-top:16px;">${rows}</div></article>`;
+      }).join('');
+
+      container.querySelectorAll('.grade-submission').forEach(button => button.addEventListener('click', async () => {
+        const row = button.closest('div[style*="border:1px solid"]');
+        const grade = Number(row.querySelector('.grade-value').value);
+        const feedback = row.querySelector('.grade-feedback').value.trim();
+        const max = Number(row.querySelector('.grade-value').max);
+        if (!Number.isFinite(grade) || grade < 0 || grade > max) { alert(`La note doit être comprise entre 0 et ${max}.`); return; }
+        try { await API.gradeAssignment(Number(button.dataset.id), grade, feedback); await loadAssignments(); }
+        catch (error) { alert(error.message || 'Impossible d’enregistrer la note.'); }
+      }));
+
+      container.querySelectorAll('.toggle-grade-publication').forEach(button => button.addEventListener('click', async () => {
+        const action = button.dataset.published === '1' ? 'unpublish' : 'publish';
+        try { await API.setGradePublication('assignment', Number(button.dataset.id), action); await loadAssignments(); }
+        catch (error) { alert(error.message || 'Impossible de modifier la publication de la note.'); }
+      }));
+
+      container.querySelectorAll('.edit-assignment').forEach(button => button.addEventListener('click', () => {
+        const assignment = assignments.find(item => Number(item.id) === Number(button.dataset.id));
+        if (!assignment) return;
+        const form = document.getElementById('assignment-editor');
+        form.elements.id.value = assignment.id;
+        form.elements.course_id.value = assignment.course_id;
+        form.elements.title.value = assignment.title;
+        form.elements.description.value = assignment.description || '';
+        form.elements.instructions.value = assignment.instructions || '';
+        form.elements.publication_date.value = formatDateInput(assignment.publication_date);
+        form.elements.due_date.value = formatDateInput(assignment.due_date);
+        form.elements.max_grade.value = assignment.max_grade;
+        form.querySelector('h2').textContent = 'Modifier le devoir';
+        form.querySelector('[type="submit"]').textContent = 'Enregistrer les modifications';
+        document.getElementById('cancel-assignment-edit').style.display = '';
+        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }));
+
+      container.querySelectorAll('.toggle-assignment, .archive-assignment, .delete-assignment').forEach(button => button.addEventListener('click', async () => {
+        const action = button.classList.contains('toggle-assignment') ? (button.dataset.published === '1' ? 'unpublish' : 'publish') : button.classList.contains('archive-assignment') ? 'archive' : 'delete';
+        if (action === 'delete' && !confirm('Supprimer ce devoir ? Un devoir ayant déjà des rendus sera archivé pour préserver leur historique.')) return;
+        const data = new FormData();
+        data.set('action', action);
+        data.set('id', button.dataset.id);
+        try { await API.manageAssignment(data); await loadAssignments(); }
+        catch (error) { alert(error.message || 'La mise à jour a échoué.'); }
+      }));
+    }
+
+    async function loadAssignments() {
+      const container = document.getElementById('assignments-list');
+      container.innerHTML = '<div class="card" style="padding:20px;color:#64748B;">Chargement des devoirs…</div>';
+      try {
+        const response = await API.getAssignments();
+        window.currentRole = response.role || 'student';
+        window.assignmentSubmissions = response.submissions || [];
+        const editor = document.getElementById('assignment-editor');
+        if (window.currentRole === 'teacher' || window.currentRole === 'admin') {
+          editor.style.display = '';
+          const courses = response.courses || [];
+          editor.elements.course_id.innerHTML = courses.map(course => `<option value="${Number(course.id)}">${escapeHtml(course.title)}</option>`).join('');
+          if (!courses.length) editor.elements.course_id.innerHTML = '<option value="">Aucun cours disponible</option>';
+        } else {
+          editor.style.display = 'none';
+        }
+        renderAssignments(response.assignments || []);
+      } catch (error) {
+        container.innerHTML = `<div class="card" style="padding:20px;color:#B91C1C;">Impossible de charger les devoirs : ${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    const assignmentEditor = document.getElementById('assignment-editor');
+    const resetAssignmentEditor = () => {
+      assignmentEditor.reset();
+      assignmentEditor.elements.id.value = '';
+      assignmentEditor.elements.max_grade.value = '20';
+      assignmentEditor.querySelector('h2').textContent = 'Créer un devoir';
+      assignmentEditor.querySelector('[type="submit"]').textContent = 'Enregistrer le brouillon';
+      document.getElementById('cancel-assignment-edit').style.display = 'none';
+    };
+    assignmentEditor.addEventListener('submit', async event => {
+      event.preventDefault();
+      const data = new FormData(assignmentEditor);
+      data.set('action', data.get('id') ? 'update' : 'create');
+      try {
+        await API.manageAssignment(data);
+        resetAssignmentEditor();
+        await loadAssignments();
+      } catch (error) {
+        alert(error.message || 'Impossible d’enregistrer le devoir.');
+      }
+    });
+    document.getElementById('cancel-assignment-edit').addEventListener('click', resetAssignmentEditor);
+
+    loadAssignments();
+  </script>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relevé de notes ECTS - LMS Web</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="lms-layout">
+    <aside class="lms-sidebar">
+      <div class="lms-brand">
+        <div class="lms-logo-icon">LMS</div>
+        <div class="lms-brand-text">
+          <span class="lms-brand-title">LMS Web</span>
+          <span class="lms-brand-subtitle">E-LEARNING</span>
+        </div>
+      </div>
+
+      <div class="lms-nav-container">
+        <div class="lms-nav-group">
+          <div class="lms-nav-heading">Navigation</div>
+          <a href="dashboard-student.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+            Tableau de bord
+          </a>
+          <a href="courses.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+            Mes cours
+          </a>
+          <a href="quiz.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+            Évaluations / Quiz
+          </a>
+          <a href="forum.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Forum
+          </a>
+          <a href="resources.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+            Ressources
+          </a>
+          <a href="calendar.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+            Calendrier
+          </a>
+        </div>
+      </div>
+
+      <div class="lms-sidebar-user">
+        <div class="lms-avatar-circle">AR</div>
+        <div class="lms-user-info">
+          <span class="lms-user-name">Andry Rakoto</span>
+          <span class="lms-user-role">Étudiant</span>
+        </div>
+      </div>
+    </aside>
+
+    <div class="lms-main">
+      <header class="lms-header">
+        <div class="lms-search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" placeholder="Rechercher...">
+        </div>
+      </header>
+
+      <div class="lms-content-wrapper">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <h1 id="grades-heading" style="font-size: 20px; font-weight: 700; color: #0F172A;">Relevé de notes officiel (ECTS)</h1>
+            <p style="font-size: 12.5px; color: #64748B; margin-top: 2px;">Licence 3 Informatique • Semestre 1</p>
+          </div>
+
+          <div style="background: white; border: 1px solid #E2E8F0; border-radius: 12px; padding: 12px 20px; display: flex; gap: 20px;">
+            <div>
+              <span style="font-size: 11px; color: #64748B; display: block;">Moyenne Générale</span>
+              <span id="grades-average" style="font-size: 18px; font-weight: 700; color: #047857;">— / 20</span>
+            </div>
+            <div style="border-left: 1px solid #E2E8F0; padding-left: 20px;">
+              <span style="font-size: 11px; color: #64748B; display: block;">ECTS validés</span>
+              <span id="grades-credits" style="font-size: 18px; font-weight: 700; color: #0F172A;">— / —</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="teacher-grade-controls" hidden style="display:none;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
+          <label for="grade-course-filter" style="font-size:12px;color:#64748B;">Cours</label>
+          <select id="grade-course-filter" class="form-input" style="max-width:320px;"></select>
+          <label for="grade-student-filter" style="font-size:12px;color:#64748B;">Étudiant</label>
+          <select id="grade-student-filter" class="form-input" style="max-width:260px;"><option value="all">Tous</option></select>
+        </div>
+
+        <div class="card" style="padding: 0; overflow: hidden;">
+          <table class="lms-table">
+            <thead>
+              <tr>
+                <th>Code & Matière</th>
+                <th style="text-align: center;">CC (40%)</th>
+                <th style="text-align: center;">Examen (60%)</th>
+                <th style="text-align: center;">Note Finale /20</th>
+                <th style="text-align: center;">Coef</th>
+                <th style="text-align: center;">ECTS</th>
+                <th style="text-align: center;">Statut</th>
+              </tr>
+            </thead>
+            <tbody id="grades-table-body"><tr><td colspan="7" style="padding:20px;text-align:center;color:#64748B;">Chargement des notes…</td></tr></tbody>
+          </table>
+        </div>
+        <div id="assessment-results" hidden style="display:none;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:18px;">
+          <section class="card" style="padding:18px;"><h2 style="font-size:14px;font-weight:700;color:#0F172A;margin-bottom:10px;">Notes des devoirs</h2><div id="assignment-results-body"><p style="font-size:12px;color:#64748B;">Chargement…</p></div></section>
+          <section class="card" style="padding:18px;"><h2 style="font-size:14px;font-weight:700;color:#0F172A;margin-bottom:10px;">Résultats des quiz et examens</h2><div id="quiz-results-body"><p style="font-size:12px;color:#64748B;">Chargement…</p></div></section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script>
+    const tableBody = document.getElementById('grades-table-body');
+    let activeRole = '';
+    let teacherCourses = [];
+    let teacherGradebook = null;
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+    }
+
+    function showEmptyRows(message) {
+      tableBody.innerHTML = `<tr><td colspan="7" style="padding:20px;text-align:center;color:#64748B;">${escapeHtml(message)}</td></tr>`;
+    }
+
+    function renderStudentGrades(response) {
+      const average = response.average;
+      document.getElementById('grades-average').textContent = average === null || average === undefined ? '— / 20' : `${Number(average).toFixed(2)} / 20`;
+      document.getElementById('grades-credits').textContent = `${response.total_credits_earned || 0} / ${response.total_possible_credits || 0}`;
+      if (response.student?.name) document.querySelector('.lms-content-wrapper > div p').textContent = `${response.student.name} • Semestre 1`;
+      if (!response.grades?.length) showEmptyRows('Aucune note de cours disponible pour ce compte.');
+      else tableBody.innerHTML = response.grades.map(grade => {
+        const published = Number(grade.is_published) === 1;
+        const status = grade.status || 'En attente';
+        const badge = status === 'Validé' ? 'badge-active' : status === 'Rattrapage' ? 'badge-late' : 'badge-upcoming';
+        const number = value => value === null || value === undefined ? '—' : Number(value).toFixed(2);
+        const comment = published && grade.teacher_comment ? `<small style="display:block;color:#64748B;margin-top:3px;">${escapeHtml(grade.teacher_comment)}</small>` : '';
+        return `<tr><td><strong>${escapeHtml(grade.course_code || '')}</strong> - ${escapeHtml(grade.course_title || 'Cours')}<small style="display:block;color:#64748B;">${escapeHtml(grade.teacher_firstname || '')} ${escapeHtml(grade.teacher_lastname || '')}</small>${comment}</td><td style="text-align:center;">${published ? number(grade.cc_grade) : '—'}</td><td style="text-align:center;">${published ? number(grade.exam_grade) : '—'}</td><td style="text-align:center;font-weight:700;color:#047857;">${published ? number(grade.calculated_final) : '—'}</td><td style="text-align:center;">${Number(grade.coefficient).toFixed(1)}</td><td style="text-align:center;">${published ? Number(grade.credits_ects) : '—'}</td><td style="text-align:center;"><span class="badge ${badge}">${escapeHtml(status)}</span></td></tr>`;
+      }).join('');
+
+      const assignmentBody = document.getElementById('assignment-results-body');
+      const assignments = response.assignment_results || [];
+      assignmentBody.innerHTML = assignments.length ? assignments.map(item => {
+        const status = item.result_status === 'publie' ? 'Note publiée' : item.result_status === 'corrige_non_publie' ? 'Corrigé — note non publiée' : item.result_status === 'en_attente_correction' ? 'En attente de correction' : 'Non rendu';
+        const grade = item.grade_value === null || item.grade_value === undefined ? '' : `<strong style="color:#047857;">${Number(item.grade_value).toFixed(2)} / ${Number(item.max_grade).toFixed(2)}</strong>`;
+        const feedback = item.teacher_feedback ? `<p style="font-size:11px;color:#64748B;margin-top:4px;">${escapeHtml(item.teacher_feedback)}</p>` : '';
+        return `<article style="padding:9px 0;border-bottom:1px solid #E2E8F0;"><strong style="font-size:12px;color:#0F172A;">${escapeHtml(item.assignment_title)}</strong><p style="font-size:11px;color:#64748B;">${escapeHtml(item.course_title)} · ${status}</p>${grade}${feedback}</article>`;
+      }).join('') : '<p style="font-size:12px;color:#64748B;">Aucun résultat de devoir disponible.</p>';
+
+      const quizBody = document.getElementById('quiz-results-body');
+      const assessments = response.quiz_results || [];
+      quizBody.innerHTML = assessments.length ? assessments.map(item => {
+        const status = item.result_status === 'publie' ? 'Résultat publié' : item.result_status === 'corrige_non_publie' ? 'Corrigé — résultat non publié' : 'En attente de correction';
+        const score = item.visible_score === null || item.visible_score === undefined ? '' : `<strong style="color:#047857;">${Number(item.visible_score)} / ${Number(item.max_score)} (${Number(item.visible_percentage).toFixed(2)}%)</strong>`;
+        const comments = (item.teacher_feedback || []).map(feedback => `<p style="font-size:11px;color:#64748B;margin-top:4px;">${escapeHtml(feedback.teacher_comment)}</p>`).join('');
+        return `<article style="padding:9px 0;border-bottom:1px solid #E2E8F0;"><strong style="font-size:12px;color:#0F172A;">${item.assessment_type === 'exam' ? 'Examen' : 'Quiz'} — ${escapeHtml(item.assessment_title)}</strong><p style="font-size:11px;color:#64748B;">${escapeHtml(item.course_title)} · ${status}</p>${score}${comments}</article>`;
+      }).join('') : '<p style="font-size:12px;color:#64748B;">Aucun résultat de quiz ou d’examen disponible.</p>';
+    }
+
+    function renderTeacherGradebook(data) {
+      teacherGradebook = data;
+      const selectedStudent = document.getElementById('grade-student-filter').value;
+      const grades = (data.course_grades || []).filter(grade => selectedStudent === 'all' || String(grade.user_id) === selectedStudent);
+      const studentFilter = document.getElementById('grade-student-filter');
+      const currentStudent = studentFilter.value;
+      studentFilter.innerHTML = '<option value="all">Tous</option>' + (data.course_grades || []).map(grade => `<option value="${Number(grade.user_id)}">${escapeHtml(grade.lastname)} ${escapeHtml(grade.firstname)}</option>`).join('');
+      studentFilter.value = [...studentFilter.options].some(option => option.value === currentStudent) ? currentStudent : 'all';
+      const published = grades.filter(grade => grade.grade_id && Number(grade.is_published) === 1);
+      const weightedTotal = published.reduce((total, grade) => total + (Number(grade.final_grade) * Number(grade.coefficient)), 0);
+      const coefficientTotal = published.reduce((total, grade) => total + Number(grade.coefficient), 0);
+      document.getElementById('grades-average').textContent = coefficientTotal > 0 ? `${(weightedTotal / coefficientTotal).toFixed(2)} / 20` : '— / 20';
+      const courseCredits = Number(data.courses[0]?.credits_ects || 0);
+      const creditsEarned = published.reduce((sum, grade) => sum + (Number(grade.final_grade) >= 10 ? courseCredits : 0), 0);
+      document.getElementById('grades-credits').textContent = `${creditsEarned} / ${courseCredits * published.length}`;
+      document.querySelectorAll('.lms-content-wrapper > div:first-child span').forEach(label => {
+        if (label.textContent === 'Moyenne Générale') label.textContent = 'Moyenne pondérée du cours';
+        if (label.textContent === 'ECTS validés') label.textContent = 'ECTS validés';
+      });
+      if (!grades.length) { showEmptyRows('Aucun étudiant inscrit à ce cours.'); return; }
+      tableBody.innerHTML = grades.map(grade => {
+        const gradeId = Number(grade.grade_id || 0);
+        const status = gradeId ? (Number(grade.is_published) ? (Number(grade.final_grade) >= 10 ? 'Validé' : 'Rattrapage') : 'Non publiée') : 'En attente';
+        const badge = status === 'Validé' ? 'badge-active' : status === 'Rattrapage' ? 'badge-late' : 'badge-upcoming';
+        const value = field => grade[field] === null || grade[field] === undefined ? '' : Number(grade[field]).toFixed(2);
+        return `<tr data-grade-student="${Number(grade.user_id)}"><td><strong>${escapeHtml(grade.lastname)} ${escapeHtml(grade.firstname)}</strong><small style="display:block;color:#64748B;">${escapeHtml(grade.email)}</small></td><td style="text-align:center;"><input class="form-input course-grade-value" data-field="cc_grade" type="number" min="0" max="20" step="0.01" value="${value('cc_grade')}" style="width:84px;"></td><td style="text-align:center;"><input class="form-input course-grade-value" data-field="exam_grade" type="number" min="0" max="20" step="0.01" value="${value('exam_grade')}" style="width:84px;"></td><td style="text-align:center;font-weight:700;color:#047857;">${gradeId ? Number(grade.final_grade).toFixed(2) : '—'}</td><td style="text-align:center;"><input class="form-input course-grade-value" data-field="coefficient" type="number" min="0" max="99.9" step="0.1" value="${value('coefficient') || '2.0'}" style="width:70px;"></td><td style="text-align:center;">${Number(data.courses[0]?.credits_ects || 0)}</td><td style="text-align:center;"><span class="badge ${badge}">${status}</span><textarea class="form-input course-grade-comment" maxlength="5000" rows="2" placeholder="Appréciation" style="width:120px;display:block;margin:6px auto;">${escapeHtml(grade.teacher_comment || '')}</textarea><button type="button" class="btn btn-primary btn-sm save-course-grade" data-user-id="${Number(grade.user_id)}" style="margin-bottom:4px;">Enregistrer</button>${gradeId ? `<button type="button" class="btn btn-secondary btn-sm toggle-course-grade" data-grade-id="${gradeId}" data-published="${Number(grade.is_published)}">${Number(grade.is_published) ? 'Dépublier' : 'Publier'}</button>` : ''}</td></tr>`;
+      }).join('');
+      tableBody.querySelectorAll('.save-course-grade').forEach(button => button.addEventListener('click', async () => {
+        const row = button.closest('tr');
+        const values = Object.fromEntries([...row.querySelectorAll('.course-grade-value')].map(input => [input.dataset.field, input.value]));
+        if ([values.cc_grade, values.exam_grade, values.coefficient].some(value => value === '')) { alert('Saisissez les deux notes et le coefficient.'); return; }
+        try {
+          await API.saveCourseGrade({ course_id: Number(document.getElementById('grade-course-filter').value), user_id: Number(button.dataset.userId), ...values, teacher_comment: row.querySelector('.course-grade-comment').value });
+          await loadTeacherCourse(Number(document.getElementById('grade-course-filter').value));
+        } catch (error) { alert(error.message || 'Impossible d’enregistrer la note.'); }
+      }));
+      tableBody.querySelectorAll('.toggle-course-grade').forEach(button => button.addEventListener('click', async () => {
+        const action = button.dataset.published === '1' ? 'unpublish' : 'publish';
+        try { await API.setGradePublication('course_grade', Number(button.dataset.gradeId), action); await loadTeacherCourse(Number(document.getElementById('grade-course-filter').value)); }
+        catch (error) { alert(error.message || 'Impossible de modifier la publication.'); }
+      }));
+
+      const assignmentBody = document.getElementById('assignment-results-body');
+      const assignments = (data.assignment_results || []).filter(item => selectedStudent === 'all' || String(item.user_id) === selectedStudent);
+      assignmentBody.innerHTML = assignments.length ? assignments.map(item => `<article style="padding:9px 0;border-bottom:1px solid #E2E8F0;"><strong style="font-size:12px;">${escapeHtml(item.assignment_title)}</strong><p style="font-size:11px;color:#64748B;">${escapeHtml(item.lastname || '')} ${escapeHtml(item.firstname || '')} · ${item.submission_id ? (item.correction_status === 'corrige' ? (Number(item.grade_published) ? 'Note publiée' : 'Corrigé — note non publiée') : 'En attente de correction') : 'Non rendu'}</p>${item.grade_value === null ? '' : `<strong style="color:#047857;">${Number(item.grade_value).toFixed(2)} / ${Number(item.max_grade).toFixed(2)}</strong>`}${item.teacher_feedback ? `<p style="font-size:11px;color:#64748B;">${escapeHtml(item.teacher_feedback)}</p>` : ''}${item.submission_id && item.correction_status === 'corrige' ? `<button type="button" class="btn btn-secondary btn-sm toggle-assignment-grade" data-id="${Number(item.submission_id)}" data-published="${Number(item.grade_published)}">${Number(item.grade_published) ? 'Dépublier' : 'Publier la note'}</button>` : ''}</article>`).join('') : '<p style="font-size:12px;color:#64748B;">Aucun devoir pour ce filtre.</p>';
+      assignmentBody.querySelectorAll('.toggle-assignment-grade').forEach(button => button.addEventListener('click', async () => {
+        try { await API.setGradePublication('assignment', Number(button.dataset.id), button.dataset.published === '1' ? 'unpublish' : 'publish'); await loadTeacherCourse(Number(document.getElementById('grade-course-filter').value)); }
+        catch (error) { alert(error.message || 'Impossible de modifier la publication.'); }
+      }));
+      const quizBody = document.getElementById('quiz-results-body');
+      const quizResults = (data.quiz_results || []).filter(item => selectedStudent === 'all' || String(item.user_id) === selectedStudent);
+      quizBody.innerHTML = quizResults.length ? quizResults.map(item => `<article style="padding:9px 0;border-bottom:1px solid #E2E8F0;"><strong style="font-size:12px;">${item.assessment_type === 'exam' ? 'Examen' : 'Quiz'} — ${escapeHtml(item.quiz_title)}</strong><p style="font-size:11px;color:#64748B;">${escapeHtml(item.lastname)} ${escapeHtml(item.firstname)} · ${Number(item.manual_review) ? 'En attente de correction' : Number(item.result_published) ? 'Résultat publié' : 'Corrigé — résultat non publié'}</p>${Number(item.manual_review) ? '' : `<strong style="color:#047857;">${Number(item.score)} / ${Number(item.max_score)} (${Number(item.percentage).toFixed(2)}%)</strong><button type="button" class="btn btn-secondary btn-sm toggle-quiz-result" data-id="${Number(item.attempt_id)}" data-published="${Number(item.result_published)}">${Number(item.result_published) ? 'Dépublier' : 'Publier le résultat'}</button>`}</article>`).join('') : '<p style="font-size:12px;color:#64748B;">Aucun résultat pour ce filtre.</p>';
+      quizBody.querySelectorAll('.toggle-quiz-result').forEach(button => button.addEventListener('click', async () => {
+        try { await API.setGradePublication('quiz', Number(button.dataset.id), button.dataset.published === '1' ? 'unpublish' : 'publish'); await loadTeacherCourse(Number(document.getElementById('grade-course-filter').value)); }
+        catch (error) { alert(error.message || 'Impossible de modifier la publication.'); }
+      }));
+    }
+
+    async function loadTeacherCourse(courseId) {
+      try {
+        const data = await API.getCourseGradebook(courseId);
+        renderTeacherGradebook(data);
+      } catch (error) {
+        showEmptyRows(`Impossible de charger le cours : ${error.message}`);
+      }
+    }
+
+    async function loadGrades() {
+      try {
+        const me = await API.getMe();
+        activeRole = me.user?.role || '';
+        document.querySelector('.lms-user-info .lms-user-name').textContent = `${me.user?.firstname || ''} ${me.user?.lastname || ''}`.trim() || 'Utilisateur';
+        document.querySelector('.lms-user-info .lms-user-role').textContent = activeRole === 'teacher' ? 'Enseignant' : activeRole === 'admin' ? 'Administrateur' : 'Étudiant';
+        document.querySelector('.lms-avatar-circle').textContent = me.user?.avatar_initials || `${me.user?.firstname?.[0] || ''}${me.user?.lastname?.[0] || ''}`.toUpperCase();
+        if (activeRole === 'teacher' || activeRole === 'admin') {
+          const controls = document.getElementById('teacher-grade-controls');
+          controls.hidden = false;
+          controls.style.display = 'flex';
+          const assessmentResults = document.getElementById('assessment-results');
+          assessmentResults.hidden = false;
+          assessmentResults.style.display = 'grid';
+          const data = await API.getCourseGradebook();
+          teacherCourses = data.courses || [];
+          const courseFilter = document.getElementById('grade-course-filter');
+          courseFilter.innerHTML = teacherCourses.map(course => `<option value="${Number(course.id)}">${escapeHtml(course.code)} · ${escapeHtml(course.title)}</option>`).join('');
+          if (!teacherCourses.length) { showEmptyRows('Aucun cours attribué à ce compte.'); return; }
+          courseFilter.addEventListener('change', () => loadTeacherCourse(Number(courseFilter.value)));
+          document.getElementById('grade-student-filter').addEventListener('change', () => teacherGradebook && renderTeacherGradebook(teacherGradebook));
+          await loadTeacherCourse(Number(courseFilter.value));
+          return;
+        }
+
+        const response = await API.getMyGrades();
+        renderStudentGrades(response);
+        document.getElementById('assessment-results').hidden = false;
+        document.getElementById('assessment-results').style.display = 'grid';
+      } catch (error) {
+        showEmptyRows(`Échec du chargement : ${error.message}`);
+      }
+    }
+
+    loadGrades();
+  </script>
+</body>
+</html>

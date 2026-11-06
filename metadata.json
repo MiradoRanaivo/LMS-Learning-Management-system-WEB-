@@ -1,0 +1,6 @@
+{
+  "name": "LMS Web",
+  "description": "Plateforme universitaire d'apprentissage en ligne conforme aux 18 maquettes officielles : tableaux de bord étudiant, enseignant, admin, cours, quiz, devoirs, notes, calendrier, forum et ressources.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

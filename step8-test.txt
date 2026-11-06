@@ -1,0 +1,1 @@
+This is a deliberately invalid file type for the assignment upload test.

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Détail d'un cours - LMS Web</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="lms-layout">
+    <aside class="lms-sidebar">
+      <div class="lms-brand">
+        <div class="lms-logo-icon">LMS</div>
+        <div class="lms-brand-text">
+          <span class="lms-brand-title">LMS Web</span>
+          <span class="lms-brand-subtitle">E-LEARNING</span>
+        </div>
+      </div>
+
+      <div class="lms-nav-container">
+        <div class="lms-nav-group">
+          <div class="lms-nav-heading">Navigation</div>
+          <a href="dashboard-student.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+            Tableau de bord
+          </a>
+          <a href="courses.html" class="lms-nav-link active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+            Mes cours
+          </a>
+          <a href="quiz.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+            Évaluations / Quiz
+          </a>
+          <a href="forum.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Forum
+          </a>
+          <a href="resources.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+            Ressources
+          </a>
+          <a href="calendar.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+            Calendrier
+          </a>
+        </div>
+      </div>
+
+      <div class="lms-sidebar-user">
+        <div class="lms-avatar-circle">AR</div>
+        <div class="lms-user-info">
+          <span class="lms-user-name">Andry Rakoto</span>
+          <span class="lms-user-role">Étudiant</span>
+        </div>
+      </div>
+    </aside>
+
+    <div class="lms-main">
+      <header class="lms-header">
+        <div class="lms-search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" placeholder="Rechercher...">
+        </div>
+      </header>
+
+      <div class="lms-content-wrapper">
+        <!-- Course Banner matching Screen 5 -->
+        <div class="card" id="course-banner" style="margin-bottom: 24px; display: flex; align-items: center; gap: 24px; padding: 24px;">
+          <img src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=240&h=240&q=85" alt="Cours de développement web" loading="lazy" style="width: 88px; height: 88px; border-radius: 12px; object-fit: cover; flex-shrink: 0;">
+          <div style="flex: 1;">
+            <h1 id="course-title" style="font-size: 20px; font-weight: 700; color: #0F172A;">Chargement du cours…</h1>
+            <p id="course-description" style="font-size: 13px; color: #64748B; margin-top: 4px;"></p>
+            <div style="display: flex; align-items: center; gap: 16px; margin-top: 14px;">
+              <div style="width: 220px;" class="progress-bar-container"><div id="course-progress-fill" class="progress-bar-fill" style="width: 0%;"></div></div>
+              <span id="course-progress-label" style="font-size: 13px; font-weight: 700; color: #0F172A;">0%</span>
+              <span id="course-chapters-count" style="font-size: 12px; color: #64748B;"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tabs-nav">
+          <button class="tab-btn active">Contenu</button>
+          <button class="tab-btn" onclick="location.href='resources.html'">Ressources</button>
+          <button class="tab-btn" onclick="location.href='forum.html'">Forum</button>
+          <button class="tab-btn" onclick="location.href='grades.html'">Notes</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+          <!-- Chapters List -->
+          <div>
+            <div id="teacher-content-actions" hidden style="display:flex;justify-content:flex-end;margin-bottom:10px;"><button type="button" class="btn btn-primary btn-sm" id="add-chapter">+ Ajouter une section</button></div>
+            <div id="course-chapters" style="display: flex; flex-direction: column; gap: 10px;"><div class="card" style="padding:16px;color:#64748B;">Chargement du contenu…</div></div>
+          </div>
+
+          <!-- Right info card -->
+          <div class="card" style="display: flex; flex-direction: column; gap: 20px;">
+            <div>
+              <h3 style="font-size: 13px; font-weight: 600; color: #0F172A; margin-bottom: 12px;">Informations</h3>
+              <div id="course-meta" style="display: flex; flex-direction: column; gap: 8px; font-size: 12px; color: #64748B;"></div>
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%;">Reprendre</button>
+
+            <div style="border-top: 1px solid #F1F5F9; padding-top: 16px; text-align: center;">
+              <span style="font-size: 12px; color: #64748B; display: block; margin-bottom: 10px;">Progression globale</span>
+              <div style="width: 64px; height: 64px; border-radius: 50%; border: 4px solid #047857; border-top-color: transparent; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; color: #0F172A;">
+                <span id="course-progress-circle">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <dialog id="content-editor" class="card" style="width:min(640px,calc(100% - 32px));max-height:90vh;overflow:auto;border:0;border-radius:12px;padding:24px;color:#0F172A;">
+    <form id="content-form">
+      <h2 id="content-form-title" style="font-size:18px;margin:0 0 16px;">Modifier le contenu</h2>
+      <label style="display:block;font-size:12px;margin:10px 0 5px;">Titre<input id="content-title" required maxlength="200" class="form-input" style="display:block;width:100%;margin-top:5px;"></label>
+      <label id="content-summary-label" style="display:block;font-size:12px;margin:10px 0 5px;">Résumé<input id="content-summary" maxlength="255" class="form-input" style="display:block;width:100%;margin-top:5px;"></label>
+      <label id="content-text-label" style="display:block;font-size:12px;margin:10px 0 5px;">Contenu<textarea id="content-text" rows="9" class="form-input" style="display:block;width:100%;margin-top:5px;resize:vertical;"></textarea></label>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <label id="content-duration-label" style="font-size:12px;margin:10px 0;">Durée (minutes)<input id="content-duration" type="number" min="1" max="1440" value="20" class="form-input" style="display:block;width:120px;margin-top:5px;"></label>
+        <label id="content-order-label" style="font-size:12px;margin:10px 0;">Ordre<input id="content-order" type="number" min="1" value="1" class="form-input" style="display:block;width:100px;margin-top:5px;"></label>
+      </div>
+      <label id="content-published-label" style="display:flex;align-items:center;gap:8px;font-size:12px;margin:8px 0 16px;"><input id="content-published" type="checkbox"> Publiée (visible par les étudiants)</label>
+      <div style="display:flex;justify-content:flex-end;gap:8px;"><button type="button" class="btn btn-secondary btn-sm" data-close-content>Annuler</button><button type="submit" class="btn btn-primary btn-sm">Enregistrer</button></div>
+    </form>
+  </dialog>
+  <dialog id="lesson-preview" class="card" style="width:min(760px,calc(100% - 32px));max-height:90vh;overflow:auto;border:0;border-radius:12px;padding:24px;color:#0F172A;">
+    <h2 id="preview-title" style="font-size:18px;margin:0 0 8px;"></h2><p id="preview-summary" style="font-size:13px;color:#64748B;margin-bottom:14px;"></p>
+    <div id="preview-content" style="white-space:pre-wrap;line-height:1.6;font-size:14px;"></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:18px;"><button type="button" class="btn btn-secondary btn-sm" data-close-preview>Fermer</button></div>
+  </dialog>
+
+  <script src="../js/api.js"></script>
+  <script>
+    const courseId = Number(new URLSearchParams(location.search).get('id') || 1);
+    const chaptersContainer = document.getElementById('course-chapters');
+    const contentDialog = document.getElementById('content-editor');
+    const previewDialog = document.getElementById('lesson-preview');
+    let currentRole = 'student';
+
+    function escapeHTML(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+    }
+
+    function openContentEditor(mode, values = {}) {
+      const chapterMode = mode === 'chapter';
+      document.getElementById('content-form').dataset.mode = mode;
+      document.getElementById('content-form').dataset.id = values.id || '';
+      document.getElementById('content-form').dataset.chapterId = values.chapter_id || '';
+      document.getElementById('content-form-title').textContent = `${values.id ? 'Modifier' : 'Créer'} ${chapterMode ? 'une section' : 'une leçon'}`;
+      document.getElementById('content-title').value = values.title || '';
+      document.getElementById('content-summary').value = chapterMode ? (values.description || '') : (values.summary || '');
+      document.getElementById('content-text').value = values.content || '';
+      document.getElementById('content-order').value = values.order_num || 1;
+      document.getElementById('content-duration').value = values.duration_minutes || 20;
+      document.getElementById('content-published').checked = Number(values.is_published) === 1;
+      document.getElementById('content-summary-label').firstChild.textContent = chapterMode ? 'Description' : 'Résumé';
+      document.getElementById('content-text-label').hidden = chapterMode;
+      document.getElementById('content-duration-label').hidden = chapterMode;
+      document.getElementById('content-published-label').hidden = chapterMode;
+      document.getElementById('content-text-label').style.display = chapterMode ? 'none' : 'block';
+      document.getElementById('content-duration-label').style.display = chapterMode ? 'none' : 'block';
+      document.getElementById('content-published-label').style.display = chapterMode ? 'none' : 'flex';
+      contentDialog.showModal();
+    }
+
+    async function renderCourse() {
+      const data = await API.getCourseDetail(courseId);
+      const course = data.course;
+      document.title = `${course.title} - LMS Web`;
+      document.getElementById('course-title').textContent = course.title;
+      document.getElementById('course-description').textContent = course.description || '';
+      const chapters = data.chapters || [];
+      const lessons = chapters.flatMap((chapter) => chapter.lessons || []);
+      const done = lessons.filter((lesson) => Number(lesson.is_completed) === 1).length;
+      const progress = lessons.length ? Math.round(done / lessons.length * 100) : 0;
+      document.getElementById('course-progress-label').textContent = `${progress}%`;
+      document.getElementById('course-progress-fill').style.width = `${progress}%`;
+      document.getElementById('course-progress-circle').textContent = `${progress}%`;
+      document.getElementById('course-chapters-count').textContent = `${done} / ${lessons.length} leçons terminées`;
+      document.getElementById('course-meta').innerHTML = `<div>${chapters.length} sections</div><div>${escapeHTML(course.hours_total)}h de contenu</div><div>Niveau : ${escapeHTML(course.level)}</div><div>Enseignant : ${escapeHTML(course.teacher_firstname)} ${escapeHTML(course.teacher_lastname)}</div>`;
+      if (!chapters.length) {
+        chaptersContainer.innerHTML = '<div class="card" style="padding:16px;color:#64748B;">Aucune section disponible pour ce cours.</div>';
+        return;
+      }
+      chaptersContainer.innerHTML = chapters.map((chapter) => `<section class="card" data-chapter-id="${Number(chapter.id)}" style="padding:16px 18px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;"><div><h3 style="font-size:14px;font-weight:650;color:#0F172A;">${escapeHTML(chapter.title)}</h3>${chapter.description ? `<p style="margin-top:3px;font-size:12px;color:#64748B;">${escapeHTML(chapter.description)}</p>` : ''}</div>
+        ${currentRole !== 'student' ? `<div style="display:flex;gap:6px;flex-wrap:wrap;"><button type="button" class="btn btn-secondary btn-sm" data-action="edit-chapter">Modifier</button><button type="button" class="btn btn-secondary btn-sm" data-action="add-lesson">+ Leçon</button><button type="button" class="btn btn-secondary btn-sm" data-action="delete-chapter">Supprimer section</button></div>` : ''}</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px;">${(chapter.lessons || []).map((lesson, index) => `<div style="display:flex;align-items:flex-start;gap:9px;padding:8px;border-radius:7px;background:#F8FAFC;">
+          ${currentRole === 'student' ? `<input class="lesson-completion" type="checkbox" data-lesson-id="${Number(lesson.id)}" ${Number(lesson.is_completed) === 1 ? 'checked' : ''} style="margin-top:3px;accent-color:#047857;">` : ''}
+          <button type="button" data-action="preview-lesson" data-lesson-id="${Number(lesson.id)}" style="border:0;background:transparent;text-align:left;padding:0;cursor:pointer;flex:1;min-width:0;"><strong style="font-size:12.5px;color:#334155;">${escapeHTML(lesson.title)}</strong>${lesson.summary ? `<small style="display:block;margin-top:2px;color:#64748B;">${escapeHTML(lesson.summary)}</small>` : ''}</button>
+          ${Number(lesson.is_published) === 1 ? '' : '<span style="font-size:10px;color:#B45309;">Brouillon</span>'}<span style="white-space:nowrap;font-size:11px;color:#64748B;">${Number(lesson.duration_minutes)} min</span>
+          ${currentRole !== 'student' ? `<button type="button" class="btn btn-secondary btn-sm" data-action="move-lesson" data-index="${index}" data-direction="-1" aria-label="Monter la leçon" ${index === 0 ? 'disabled' : ''}>↑</button><button type="button" class="btn btn-secondary btn-sm" data-action="move-lesson" data-index="${index}" data-direction="1" aria-label="Descendre la leçon" ${index === chapter.lessons.length - 1 ? 'disabled' : ''}>↓</button><button type="button" class="btn btn-secondary btn-sm" data-action="edit-lesson" data-lesson-id="${Number(lesson.id)}">Modifier</button><button type="button" class="btn btn-secondary btn-sm" data-action="toggle-publish" data-lesson-id="${Number(lesson.id)}" data-published="${Number(lesson.is_published)}">${Number(lesson.is_published) === 1 ? 'Dépublier' : 'Publier'}</button><button type="button" class="btn btn-secondary btn-sm" data-action="delete-lesson" data-lesson-id="${Number(lesson.id)}">Supprimer</button>` : ''}
+          </div>`).join('') || '<p style="font-size:12px;color:#64748B;">Aucune leçon disponible.</p>'}</div></section>`).join('');
+      chaptersContainer.querySelectorAll('.lesson-completion').forEach((box) => box.addEventListener('change', async () => {
+        try { await API.updateLessonProgress(Number(box.dataset.lessonId), box.checked); await renderCourse(); }
+        catch (error) { box.checked = !box.checked; alert(error.message || 'Impossible d’enregistrer la progression.'); }
+      }));
+    }
+
+    async function loadCourseDetail() {
+      try {
+        const me = await API.getMe();
+        currentRole = me?.user?.role || 'student';
+        const contentActions = document.getElementById('teacher-content-actions');
+        contentActions.hidden = !['teacher', 'admin'].includes(currentRole);
+        contentActions.style.display = contentActions.hidden ? 'none' : 'flex';
+        await renderCourse();
+      } catch (error) {
+        chaptersContainer.innerHTML = `<div class="card" style="padding:16px;color:#B91C1C;">Impossible de charger le cours : ${escapeHTML(error.message)}</div>`;
+      }
+    }
+
+    document.getElementById('add-chapter').addEventListener('click', () => openContentEditor('chapter'));
+    document.getElementById('content-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const mode = form.dataset.mode;
+      const chapterMode = mode === 'chapter';
+      const payload = {
+        action: form.dataset.id ? 'update' : 'create', id: Number(form.dataset.id || 0), course_id: courseId,
+        chapter_id: Number(form.dataset.chapterId || 0), title: document.getElementById('content-title').value.trim(),
+        order_num: Number(document.getElementById('content-order').value || 1)
+      };
+      if (chapterMode) payload.description = document.getElementById('content-summary').value.trim();
+      else Object.assign(payload, { summary: document.getElementById('content-summary').value.trim(), content: document.getElementById('content-text').value, duration_minutes: Number(document.getElementById('content-duration').value), is_published: document.getElementById('content-published').checked ? 1 : 0 });
+      try { await (chapterMode ? API.manageChapter(payload) : API.manageLesson(payload)); contentDialog.close(); await renderCourse(); }
+      catch (error) { alert(error.message || 'Enregistrement impossible.'); }
+    });
+    document.querySelectorAll('[data-close-content]').forEach((button) => button.addEventListener('click', () => contentDialog.close()));
+    document.querySelectorAll('[data-close-preview]').forEach((button) => button.addEventListener('click', () => previewDialog.close()));
+    chaptersContainer.addEventListener('click', async (event) => {
+      const button = event.target.closest('[data-action]');
+      if (!button) return;
+      const section = button.closest('[data-chapter-id]');
+      const chapterId = Number(section?.dataset.chapterId || 0);
+      const action = button.dataset.action;
+      try {
+        if (action === 'add-lesson') openContentEditor('lesson', { chapter_id: chapterId });
+        if (action === 'edit-chapter') {
+          const chapter = (await API.getChapters(courseId)).chapters.find((item) => Number(item.id) === chapterId);
+          if (chapter) openContentEditor('chapter', chapter);
+        }
+        if (action === 'delete-chapter' && confirm('Supprimer cette section vide ?')) { await API.manageChapter({ action: 'delete', course_id: courseId, id: chapterId }); await renderCourse(); }
+        if (action === 'preview-lesson') {
+          const lesson = (await API.getLesson(Number(button.dataset.lessonId))).lesson;
+          document.getElementById('preview-title').textContent = lesson.title;
+          document.getElementById('preview-summary').textContent = lesson.summary || '';
+          document.getElementById('preview-content').textContent = lesson.content || '';
+          previewDialog.showModal();
+        }
+        if (action === 'edit-lesson') {
+          const lesson = (await API.getLesson(Number(button.dataset.lessonId))).lesson;
+          openContentEditor('lesson', lesson);
+        }
+        if (action === 'toggle-publish') await API.manageLesson({ action: 'publish', id: Number(button.dataset.lessonId), is_published: button.dataset.published === '1' ? 0 : 1 });
+        if (action === 'delete-lesson' && confirm('Supprimer cette leçon ?')) await API.manageLesson({ action: 'delete', id: Number(button.dataset.lessonId) });
+        if (action === 'move-lesson') {
+          const ids = [...section.querySelectorAll('[data-action="preview-lesson"]')].map((item) => Number(item.dataset.lessonId));
+          const from = Number(button.dataset.index); const to = from + Number(button.dataset.direction);
+          if (to >= 0 && to < ids.length) { [ids[from], ids[to]] = [ids[to], ids[from]]; await API.reorderLessons(chapterId, ids); }
+        }
+        if (action !== 'add-lesson' && action !== 'edit-chapter' && action !== 'preview-lesson' && action !== 'edit-lesson' && action !== 'delete-chapter') await renderCourse();
+      } catch (error) { alert(error.message || 'Opération impossible.'); }
+    });
+
+    loadCourseDetail();
+  </script>
+</body>
+</html>

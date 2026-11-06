@@ -1,0 +1,428 @@
+/* =====================================================================
+   LMS Web - Responsive & Adaptations Mobiles Universitaires
+   Conforme aux 18 maquettes officielles
+   ===================================================================== */
+
+/* Variables CSS responsives */
+:root {
+  --sidebar-width: 256px;
+  --header-height: 64px;
+}
+
+/* Base touch improvements */
+button, a, input, select, textarea {
+  touch-action: manipulation;
+}
+
+/* Tableaux avec défilement horizontal fluide sur mobile */
+.lms-table-container,
+.overflow-x-auto {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Grilles adaptatives */
+@media (max-width: 1280px) {
+  .dashboard-grid-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  #dashboard-courses > .card {
+    flex-wrap: wrap !important;
+    gap: 12px;
+  }
+
+  #dashboard-courses > .card > div:last-child {
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  #dashboard-courses > .card > div:last-child > div {
+    flex: 1;
+    min-width: 110px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .lms-sidebar-drawer {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 50;
+    width: 280px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    transform: translateX(-100%);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .lms-sidebar-drawer.open {
+    transform: translateX(0);
+  }
+
+  .lms-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(2px);
+    z-index: 40;
+    transition: opacity 0.25s ease;
+  }
+
+  .course-detail-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .calendar-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .lms-sidebar {
+    width: 224px;
+  }
+
+  .lms-main {
+    margin-left: 224px;
+  }
+}
+
+@media (max-width: 768px) {
+  .kpi-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .lms-main {
+    margin-left: 0 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .lms-layout {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .lms-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 51;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: min(84vw, 320px);
+    height: 100dvh;
+    min-height: 0;
+    border-right: 1px solid var(--slate-200);
+    border-bottom: 0;
+    box-shadow: 0 18px 48px rgba(15, 23, 42, .18);
+    transform: translateX(-105%);
+    visibility: hidden;
+    transition: transform .24s ease, visibility .24s ease;
+  }
+
+  .lms-sidebar.mobile-drawer-open {
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  .mobile-nav-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    border: 0;
+    background: rgba(15, 23, 42, .42);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .24s ease, visibility .24s ease;
+  }
+
+  .mobile-nav-backdrop.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .mobile-nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--slate-200);
+    border-radius: 12px;
+    color: var(--slate-700);
+    background: var(--white);
+    cursor: pointer;
+  }
+
+  .mobile-nav-toggle svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  .lms-sidebar .lms-brand {
+    height: var(--header-height);
+    padding: 0 18px;
+    gap: 10px;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--slate-100);
+  }
+
+  .lms-sidebar .lms-brand-title {
+    font-size: 15px;
+  }
+
+  .lms-sidebar .lms-brand-subtitle {
+    font-size: 10px;
+  }
+
+  .lms-sidebar .lms-nav-container {
+    flex: 1;
+    min-width: 0;
+    padding: 16px 12px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .lms-sidebar .lms-nav-group {
+    flex-direction: column;
+    flex: 0 0 auto;
+    gap: 4px;
+  }
+
+  .lms-sidebar .lms-nav-heading {
+    display: block;
+  }
+
+  .lms-sidebar .lms-nav-link {
+    min-height: 44px;
+    padding: 9px 12px;
+    gap: 12px;
+    white-space: normal;
+    font-size: 13.5px;
+  }
+
+  .lms-sidebar .lms-nav-link svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .lms-sidebar .lms-sidebar-user {
+    display: flex;
+  }
+
+  body.mobile-nav-locked {
+    overflow: hidden;
+  }
+
+  .lms-header {
+    height: auto;
+    min-height: var(--header-height);
+    padding: 10px 14px;
+    gap: 10px;
+  }
+
+  .lms-search-box {
+    width: auto;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .lms-header-actions {
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .mobile-nav-toggle {
+    order: -1;
+  }
+
+  .lms-header-actions > div:first-child {
+    display: none !important;
+  }
+
+  .account-menu-card {
+    position: fixed;
+    top: 68px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+    max-height: calc(100dvh - 84px);
+    margin: 0 auto;
+    border-radius: 22px;
+  }
+
+  .account-list {
+    max-height: min(220px, 27dvh);
+  }
+
+  .account-menu-footer {
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+
+  .lms-layout,
+  .lms-main,
+  .lms-content-wrapper {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  .lms-content-wrapper > div[style*="grid-template-columns: 2fr 1fr"],
+  .lms-content-wrapper > div[style*="grid-template-columns: 1fr 1fr"],
+  .lms-content-wrapper > div[style*="grid-template-columns: 200px 1fr"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .lms-content-wrapper > div[style*="display: grid"] > *,
+  .lms-content-wrapper .card,
+  .lms-content-wrapper .card > * {
+    min-width: 0;
+  }
+
+  .lms-content-wrapper table {
+    min-width: 680px;
+  }
+
+  .assignment-topic-image {
+    display: block;
+    width: 100%;
+    height: 112px;
+    margin-bottom: 14px;
+    border-radius: 9px;
+    object-fit: cover;
+  }
+
+  .lms-footer {
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 14px;
+  }
+
+  .lms-header-search {
+    width: 160px !important;
+  }
+
+  .lms-content-wrapper {
+    padding: 14px !important;
+  }
+
+  .lms-header .lms-search-box {
+    display: none;
+  }
+
+  .lms-header-actions {
+    margin-left: auto;
+  }
+
+  .account-menu-card {
+    top: 60px;
+    right: 8px;
+    left: 8px;
+  }
+
+  .card[style*="display: flex"] {
+    flex-wrap: wrap;
+  }
+
+  .lms-content-wrapper .card > div[style*="display: flex"] {
+    flex-wrap: wrap;
+  }
+
+  /* Ajustement de la typographie mobile */
+  h1 {
+    font-size: 1.25rem !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Cartes de cours en colonne sur petit écran */
+  .course-card-flex {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  .course-card-progress {
+    width: 100% !important;
+    margin-top: 8px;
+  }
+
+  /* Calendrier mobile compact */
+  .calendar-day-cell {
+    height: 38px !important;
+    font-size: 11px !important;
+    padding: 2px !important;
+  }
+
+  /* Modal responsive */
+  .lms-modal-card {
+    max-width: 95vw !important;
+    margin: 10px !important;
+    padding: 16px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-sm-mobile {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+  }
+
+  .lms-content-wrapper {
+    padding: 12px !important;
+  }
+
+  .lms-header {
+    padding-inline: 12px;
+  }
+
+  .mobile-nav-toggle {
+    flex-basis: 42px;
+    width: 42px;
+    height: 42px;
+  }
+
+  .lms-avatar-circle {
+    flex-shrink: 0;
+  }
+
+  .assignment-card > div:first-of-type {
+    gap: 10px;
+  }
+
+  .lms-content-wrapper .progress-bar-container {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-container { max-width: 460px; padding: 26px 20px; }
+  .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .lms-table-container { overflow-x: auto; }
+  .lms-content-wrapper table { min-width: 620px; }
+  .account-menu-card { border-radius: 12px; }
+}
+
+@media (max-width: 420px) {
+  .kpi-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .login-container { padding: 22px 16px; }
+  .lms-content-wrapper { padding-inline: 12px !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

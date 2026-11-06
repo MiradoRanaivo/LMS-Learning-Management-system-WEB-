@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tableau de bord Élève - LMS Web</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <link rel="stylesheet" href="../css/dashboard-refinement.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="lms-dashboard dashboard-student">
+
+  <div class="lms-layout">
+    <!-- Sidebar Commune Élève -->
+    <aside class="lms-sidebar">
+      <div class="lms-brand">
+        <div class="lms-logo-icon">LMS</div>
+        <div class="lms-brand-text">
+          <span class="lms-brand-title">LMS Web</span>
+          <span class="lms-brand-subtitle">E-LEARNING</span>
+        </div>
+      </div>
+
+      <div class="lms-nav-container">
+        <div class="lms-nav-group">
+          <div class="lms-nav-heading">Navigation</div>
+          <a href="dashboard-student.html" class="lms-nav-link active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+            Tableau de bord
+          </a>
+          <a href="courses.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+            Mes cours
+          </a>
+          <a href="quiz.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+            Évaluations / Quiz
+          </a>
+          <a href="forum.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Forum
+          </a>
+          <a href="resources.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+            Ressources
+          </a>
+          <a href="calendar.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+            Calendrier
+          </a>
+        </div>
+
+        <div class="lms-nav-group">
+          <div class="lms-nav-heading">Compte</div>
+          <a href="profile.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Profil
+          </a>
+          <a href="settings.html" class="lms-nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            Paramètres
+          </a>
+        </div>
+      </div>
+
+      <div class="lms-sidebar-user">
+        <div class="lms-avatar-circle" id="user-initials">AR</div>
+        <div class="lms-user-info">
+          <span class="lms-user-name" id="user-fullname">Andry Rakoto</span>
+          <span class="lms-user-role" id="user-role-label">Étudiant</span>
+        </div>
+        <a href="login.html" title="Déconnexion" style="margin-left: auto; color: #94A3B8; text-decoration: none;">
+          <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="lms-main">
+      <header class="lms-header">
+        <div class="lms-search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" placeholder="Rechercher un cours, une ressource...">
+        </div>
+
+        <div class="lms-header-actions">
+          <div style="display: flex; gap: 8px; margin-right: 12px; font-size: 12px;">
+            <a href="assignments.html" style="color: #475569; text-decoration: none; padding: 4px 8px; border-radius: 4px;">Devoirs</a>
+            <a href="grades.html" style="color: #475569; text-decoration: none; padding: 4px 8px; border-radius: 4px;">Notes ECTS</a>
+          </div>
+          <button class="lms-icon-btn">
+            <svg style="width: 18px; height: 18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            <span class="lms-icon-badge"></span>
+          </button>
+          <div style="position: relative;">
+            <button type="button" id="account-menu-toggle" class="lms-avatar-circle" style="width: 40px; height: 40px; padding: 0; font-size: 11px; border: 0; cursor: pointer; overflow: hidden;" aria-label="Ouvrir le menu du compte" aria-expanded="false">
+              <img id="header-user-avatar" src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=96&h=96&q=80" alt="Photo de profil d'Andry Rakoto" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.hidden=true; document.getElementById('header-user-initials').hidden=false;">
+              <span id="header-user-initials" hidden>AR</span>
+            </button>
+            <div id="account-menu" class="account-menu-card" hidden>
+              <div class="account-menu-profile">
+                <div class="account-menu-topline">
+                  <span id="menu-user-email">andry.rakoto@exemple.com</span>
+                  <button type="button" id="account-menu-close" class="account-menu-close" aria-label="Fermer le menu">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 6 12 12M18 6 6 18"/></svg>
+                  </button>
+                </div>
+                <div class="account-menu-portrait-wrap">
+                  <img id="menu-user-avatar" src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=160&h=160&q=85" alt="Photo de profil" class="account-menu-portrait">
+                  <span id="menu-user-status" class="account-menu-status"></span>
+                </div>
+                <h2 id="menu-user-greeting">Bonjour, Andry !</h2>
+                <p id="menu-user-name">Andry Rakoto</p>
+                <span id="menu-user-role" class="account-menu-role">Étudiant (Licence 3)</span>
+                <a href="profile.html" class="account-manage-button">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg>
+                  Gérer votre compte
+                </a>
+              </div>
+
+              <section class="account-list-section" aria-label="Comptes enregistrés">
+                <div class="account-list-heading">
+                  <span>Comptes enregistrés</span>
+                  <span id="account-count" class="account-count">5</span>
+                </div>
+                <div class="account-list">
+                  <button type="button" class="account-switch-option" data-account-email="andry.rakoto@exemple.com" data-account-name="Andry Rakoto (Jean Martin)" data-account-role="Élève" data-account-avatar="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=96&h=96&q=80">
+                    <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=96&h=96&q=80" alt="" loading="lazy" onerror="this.hidden=true; this.nextElementSibling.hidden=false;"><span class="account-avatar-fallback" hidden>AR</span>
+                    <span class="account-option-copy"><strong>Andry Rakoto (Jean Martin)</strong><small>andry.rakoto@exemple.com</small></span><span class="account-role-tag">Élève</span>
+                  </button>
+                  <button type="button" class="account-switch-option" data-account-email="tahina.ramanantsoa@exemple.com" data-account-name="Dr. Tahina Ramanantsoa" data-account-role="Prof" data-account-avatar="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=96&h=96&q=80">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=96&h=96&q=80" alt="" loading="lazy" onerror="this.hidden=true; this.nextElementSibling.hidden=false;"><span class="account-avatar-fallback" hidden>TR</span>
+                    <span class="account-option-copy"><strong>Dr. Tahina Ramanantsoa</strong><small>tahina.ramanantsoa@exemple.com</small></span><span class="account-role-tag">Prof</span>
+                  </button>
+                  <button type="button" class="account-switch-option" data-account-email="tiana.rasoanaivo@exemple.com" data-account-name="Tiana Rasoanaivo (Admin)" data-account-role="Admin" data-account-avatar="https://images.unsplash.com/photo-1580894732444-8ecded7900cd?auto=format&fit=crop&w=96&h=96&q=80">
+                    <img src="https://images.unsplash.com/photo-1580894732444-8ecded7900cd?auto=format&fit=crop&w=96&h=96&q=80" alt="" loading="lazy" onerror="this.hidden=true; this.nextElementSibling.hidden=false;"><span class="account-avatar-fallback" hidden>TA</span>
+                    <span class="account-option-copy"><strong>Tiana Rasoanaivo (Admin)</strong><small>tiana.rasoanaivo@exemple.com</small></span><span class="account-role-tag">Admin</span>
+                  </button>
+                  <button type="button" class="account-switch-option" data-account-email="fara.randria@exemple.com" data-account-name="Fara Randria" data-account-role="Élève" data-account-avatar="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=96&h=96&q=80">
+                    <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=96&h=96&q=80" alt="" loading="lazy" onerror="this.hidden=true; this.nextElementSibling.hidden=false;"><span class="account-avatar-fallback" hidden>FR</span>
+                    <span class="account-option-copy"><strong>Fara Randria</strong><small>fara.randria@exemple.com</small></span><span class="account-role-tag">Élève</span>
+                  </button>
+                  <button type="button" class="account-switch-option" data-account-email="lova.razaf@exemple.com" data-account-name="Prof. Lova Razafindrazaka" data-account-role="Prof" data-account-avatar="https://images.unsplash.com/photo-1507003211169-0a1dd7226f2d?auto=format&fit=crop&w=96&h=96&q=80">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7226f2d?auto=format&fit=crop&w=96&h=96&q=80" alt="" loading="lazy" onerror="this.hidden=true; this.nextElementSibling.hidden=false;"><span class="account-avatar-fallback" hidden>LR</span>
+                    <span class="account-option-copy"><strong>Prof. Lova Razafindrazaka</strong><small>lova.razaf@exemple.com</small></span><span class="account-role-tag">Prof</span>
+                  </button>
+                </div>
+                <button type="button" id="add-account-button" class="account-add-button">
+                  <span class="account-add-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0 1 12 0v2M19 8v6M16 11h6"/></svg></span>
+                  <span>Ajouter un autre compte</span>
+                </button>
+              </section>
+
+              <div class="account-menu-footer">
+                <a href="settings.html" class="account-footer-action">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1a2 2 0 0 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.8 1.2v.2a2 2 0 0 1-4 0V19a1.7 1.7 0 0 0-2.8-1.2l-.1.1a2 2 0 0 1-2.8-2.8l.1-.1A1.7 1.7 0 0 0 3 12.2H2.8a2 2 0 0 1 0-4H3a1.7 1.7 0 0 0 1.2-2.8l-.1-.1a2 2 0 0 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 9.8 1.4v-.2a2 2 0 0 1 4 0v.2a1.7 1.7 0 0 0 2.8 1.2l.1-.1a2 2 0 0 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0 1.2 2.8h.2a2 2 0 0 1 0 4h-.2a1.7 1.7 0 0 0-1.2 2.8Z"/></svg>
+                  Paramètres
+                </a>
+                <button type="button" id="account-logout" class="account-footer-action">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 17l5-5-5-5M15 12H3"/><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg>
+                  Déconnexion
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="lms-content-wrapper">
+        <!-- Greeting Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h1 id="welcome-name" style="font-size: 20px; font-weight: 700; color: #0F172A;">Bonjour, Andry Rakoto 👋</h1>
+            <p id="welcome-subtitle" style="font-size: 12.5px; color: #64748B; margin-top: 2px;">Continuez votre apprentissage, vous êtes sur la bonne voie.</p>
+          </div>
+
+          <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 10px 16px; display: flex; align-items: center; gap: 12px;">
+            <div>
+              <div style="font-size: 11px; color: #64748B;">Votre progression globale</div>
+              <div style="font-size: 14px; font-weight: 700; color: #0F172A;" id="stat-progress">68%</div>
+            </div>
+            <div style="width: 70px; height: 6px; background: #F1F5F9; border-radius: 999px; overflow: hidden;">
+              <div id="progress-bar-fill" style="width: 68%; height: 100%; background: #059669; border-radius: 999px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top 3 Cards Row -->
+        <div id="dashboard-courses" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; margin-bottom: 24px;">
+          <!-- Dernier cours suivi -->
+          <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <span style="font-size: 11px; font-weight: 500; color: #64748B;">Dernier cours suivi</span>
+              <div style="display: flex; align-items: center; gap: 12px; margin-top: 12px;">
+                <img src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=160&h=160&q=85" alt="Code informatique" loading="lazy" style="width: 44px; height: 44px; border-radius: 9px; object-fit: cover;">
+                <div>
+                  <h3 style="font-size: 13.5px; font-weight: 600; color: #0F172A;">Développement Web</h3>
+                  <p style="font-size: 12px; color: #64748B;">Chapitre 3 : JavaScript</p>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top: 20px;">
+              <a href="course-detail.html?id=1" class="btn btn-primary btn-sm">Reprendre</a>
+            </div>
+          </div>
+
+          <!-- Prochaine leçon -->
+          <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <span style="font-size: 11px; font-weight: 500; color: #64748B;">Prochaine leçon</span>
+              <div style="margin-top: 12px;">
+                <h3 style="font-size: 13.5px; font-weight: 600; color: #0F172A;">PHP Avancé</h3>
+                <p style="font-size: 12px; color: #64748B;">Chapitre 4 : Les sessions</p>
+              </div>
+            </div>
+            <div style="margin-top: 20px;">
+              <a href="course-detail.html?id=4" class="btn btn-sm" style="background-color: #10B981; color: white;">Voir la leçon</a>
+            </div>
+          </div>
+
+          <!-- Calendrier mini card -->
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <span style="font-size: 12.5px; font-weight: 600; color: #0F172A;">Calendrier</span>
+              <span id="dashboard-calendar-month" style="font-size: 11.5px; font-weight: 500; color: #64748B;"></span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; font-size: 10px; color: #64748B; margin-bottom: 6px;">
+              <span>Lu</span><span>Ma</span><span>Me</span><span>Je</span><span>Ve</span><span>Sa</span><span>Di</span>
+            </div>
+            <div id="dashboard-calendar-days" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;font-size:11.5px;"></div>
+          </div>
+        </div>
+
+        <!-- Middle Row : Temps d'apprentissage & À faire -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 18px; margin-bottom: 24px;">
+          <!-- Temps d'apprentissage -->
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <div>
+                <h3 style="font-size: 14px; font-weight: 600; color: #0F172A;">Temps d'apprentissage</h3>
+                <p style="font-size: 11px; color: #64748B;">Cette semaine</p>
+              </div>
+              <span class="badge badge-active" id="learning-hours-value" style="padding: 4px 8px; font-weight: 600;">—</span>
+            </div>
+
+            <!-- Bar Chart -->
+            <div style="height: 140px; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding: 10px 10px 0 10px;">
+              <div class="learning-day-bar" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                <div style="width: 24px; height: 100px; background: #ECFDF5; border-radius: 4px 4px 0 0; display: flex; align-items: flex-end;">
+                  <div data-learning-fill style="width: 100%; height: 0%; background: #059669; border-radius: 4px 4px 0 0;"></div>
+                </div>
+                <span style="font-size: 11px; color: #64748B;">Lun</span>
+              </div>
+              <div class="learning-day-bar" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                <div style="width: 24px; height: 100px; background: #ECFDF5; border-radius: 4px 4px 0 0; display: flex; align-items: flex-end;">
+                  <div data-learning-fill style="width: 100%; height: 0%; background: #059669; border-radius: 4px 4px 0 0;"></div>
+                </div>
+                <span style="font-size: 11px; color: #64748B;">Mar</span>
+              </div>
+              <div class="learning-day-bar" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                <div style="width: 24px; height: 100px; background: #ECFDF5; border-radius: 4px 4px 0 0; display: flex; align-items: flex-end;">
+                  <div data-learning-fill style="width: 100%; height: 0%; background: #059669; border-radius: 4px 4px 0 0;"></div>
+                </div>
+                <span style="font-size: 11px; color: #64748B;">Mer</span>
+              </div>
+              <div class="learning-day-bar" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                <div style="width: 24px; height: 100px; background: #ECFDF5; border-radius: 4px 4px 0 0; display: flex; align-items: flex-end;">
+                  <div data-learning-fill style="width: 100%; height: 0%; background: #059669; border-radius: 4px 4px 0 0;"></div>
+                </div>
+                <span style="font-size: 11px; color: #64748B;">Jeu</span>
+              </div>
+              <div class="learning-day-bar" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                <div style="width: 24px; height: 100px; background: #ECFDF5; border-radius: 4px 4px 0 0; display: flex; align-items: flex-end;">
+                  <div data-learning-fill style="width: 100%; height: 0%; background: #059669; border-radius: 4px 4px 0 0;"></div>
+                </div>
+                <span style="font-size: 11px; color: #64748B;">Ven</span>
+              </div>
+              <div class="learning-day-bar" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                <div style="width: 24px; height: 100px; background: #ECFDF5; border-radius: 4px 4px 0 0; display: flex; align-items: flex-end;">
+                  <div data-learning-fill style="width: 100%; height: 0%; background: #059669; border-radius: 4px 4px 0 0;"></div>
+                </div>
+                <span style="font-size: 11px; color: #64748B;">Sam</span>
+              </div>
+              <div class="learning-day-bar" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                <div style="width: 24px; height: 100px; background: #ECFDF5; border-radius: 4px 4px 0 0; display: flex; align-items: flex-end;">
+                  <div data-learning-fill style="width: 100%; height: 0%; background: #059669; border-radius: 4px 4px 0 0;"></div>
+                </div>
+                <span style="font-size: 11px; color: #64748B;">Dim</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- À faire -->
+          <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="font-size: 14px; font-weight: 600; color: #0F172A;">À faire</h3>
+                <a href="assignments.html" class="card-link">Voir tout</a>
+              </div>
+
+              <div id="student-todo-list" style="display: flex; flex-direction: column; gap: 10px;"><p style="font-size:12px;color:#64748B;">Chargement…</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Row : Mes cours & Prochaine leçon -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 18px;">
+          <!-- Mes cours -->
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <h3 style="font-size: 14px; font-weight: 600; color: #0F172A;">Mes cours</h3>
+              <a href="courses.html" class="card-link">Voir tout</a>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 16px;" id="courses-list-container"><p style="font-size:12px;color:#64748B;">Chargement des cours…</p></div>
+          </div>
+
+          <!-- Prochaine leçon card -->
+          <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <span style="font-size: 11px; font-weight: 500; color: #64748B;">Prochaine leçon</span>
+              <div style="margin-top: 10px;">
+                <h4 style="font-size: 14px; font-weight: 600; color: #0F172A;">PHP Avancé</h4>
+                <p style="font-size: 12px; color: #64748B; margin-top: 4px;">Chapitre 4 : Les sessions</p>
+              </div>
+            </div>
+            <div style="margin-top: 16px;">
+              <a href="course-detail.html?id=4" class="btn btn-primary" style="width: 100%;">Accéder</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="lms-footer">
+        <div><strong>LMS Web</strong> | Apprendre aujourd'hui, réussir demain.</div>
+        <div>Design moderne • Simple • Efficace</div>
+      </footer>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script>
+    async function loadStudentDashboard() {
+      try {
+        const me = await API.getMe();
+        if (!me || !me.authenticated || !me.user) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        if (me.user.role === 'teacher') {
+          window.location.href = 'dashboard-teacher.html';
+          return;
+        }
+        if (me.user.role === 'admin') {
+          window.location.href = 'dashboard-admin.html';
+          return;
+        }
+
+        const user = me.user;
+        const roleLabel = user.role === 'teacher' ? 'Enseignant' : user.role === 'admin' ? 'Administrateur' : 'Étudiant';
+        const initials = (user.firstname?.[0] || '') + (user.lastname?.[0] || '');
+
+        const userFullname = document.getElementById('user-fullname');
+        const userInitials = document.getElementById('user-initials');
+        const userRoleLabel = document.getElementById('user-role-label');
+        const headerUserInitials = document.getElementById('header-user-initials');
+        const headerUserAvatar = document.getElementById('header-user-avatar');
+        const menuUserName = document.getElementById('menu-user-name');
+        const menuUserEmail = document.getElementById('menu-user-email');
+        const menuUserGreeting = document.getElementById('menu-user-greeting');
+        const menuUserAvatar = document.getElementById('menu-user-avatar');
+        const menuUserRole = document.getElementById('menu-user-role');
+        const welcomeName = document.getElementById('welcome-name');
+        const welcomeSubtitle = document.getElementById('welcome-subtitle');
+        const statProgress = document.getElementById('stat-progress');
+        const progressBarFill = document.getElementById('progress-bar-fill');
+        const dashboardCourses = document.getElementById('dashboard-courses');
+        const todoList = document.getElementById('student-todo-list');
+
+        if (userFullname) userFullname.textContent = `${user.firstname || ''} ${user.lastname || ''}`.trim();
+        if (userInitials) userInitials.textContent = initials.toUpperCase();
+        if (userRoleLabel) userRoleLabel.textContent = roleLabel;
+        if (headerUserInitials) headerUserInitials.textContent = initials.toUpperCase();
+        if (headerUserAvatar) {
+          if (user.avatar_url) {
+            headerUserAvatar.src = user.avatar_url;
+            headerUserAvatar.alt = `Photo de profil de ${user.firstname || ''} ${user.lastname || ''}`.trim();
+            headerUserAvatar.hidden = false;
+            if (headerUserInitials) headerUserInitials.hidden = true;
+          } else {
+            headerUserAvatar.hidden = true;
+            if (headerUserInitials) headerUserInitials.hidden = false;
+          }
+        }
+        if (menuUserName) menuUserName.textContent = `${user.firstname || ''} ${user.lastname || ''}`.trim();
+        if (menuUserEmail) menuUserEmail.textContent = user.email || '';
+        if (menuUserGreeting) menuUserGreeting.textContent = `Bonjour, ${user.firstname || '!' }!`;
+        if (menuUserAvatar && user.avatar_url) {
+          menuUserAvatar.src = user.avatar_url;
+          menuUserAvatar.alt = `Photo de profil de ${user.firstname || ''} ${user.lastname || ''}`.trim();
+        }
+        if (menuUserRole) {
+          menuUserRole.textContent = user.role === 'admin' ? 'Administrateur Système' : user.role === 'teacher' ? 'Enseignante Chercheuse' : 'Étudiant (Licence 3)';
+        }
+        document.querySelectorAll('.account-switch-option').forEach((option) => {
+          const isCurrent = option.dataset.accountEmail === user.email;
+          option.classList.toggle('is-active', isCurrent);
+          option.setAttribute('aria-current', isCurrent ? 'true' : 'false');
+          const roleTag = option.querySelector('.account-role-tag');
+          if (roleTag) roleTag.textContent = isCurrent ? '✓ Actif' : (option.dataset.accountRole || 'Compte');
+        });
+        if (welcomeName) welcomeName.textContent = `Bonjour, ${user.firstname || user.email} 👋`;
+        if (welcomeSubtitle) welcomeSubtitle.textContent = 'Continuez votre apprentissage, vous êtes sur la bonne voie.';
+
+        const stats = await API.getDashboardStats();
+        const progress = Number(stats?.stats?.global_progress ?? 0);
+        if (statProgress) statProgress.textContent = `${progress}%`;
+        if (progressBarFill) progressBarFill.style.width = `${progress}%`;
+        const learningHours = document.getElementById('learning-hours-value');
+        if (learningHours) learningHours.textContent = stats?.stats?.learning_hours || '—';
+
+        const courses = await API.getCourses('en_cours');
+        const courseList = Array.isArray(courses?.courses) ? courses.courses : [];
+        const topCourses = courseList.slice(0, 3);
+
+        if (dashboardCourses) {
+          dashboardCourses.innerHTML = topCourses.map((course) => {
+            const percent = course.progress_percent || 0;
+            const code = (course.code || 'COUR').slice(0, 3).toUpperCase();
+            const title = course.title || 'Cours';
+            const lessonLabel = course.total_chapters ? `Chapitre ${Math.min(3, Number(course.total_chapters))}` : 'Format du cours';
+            const subjectImage = /base|donn|sql/i.test(title)
+              ? 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?auto=format&fit=crop&w=160&h=120&q=85'
+              : /réseau|reseau|système|systeme/i.test(title)
+              ? 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=160&h=120&q=85'
+              : 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=160&h=120&q=85';
+            return `
+              <div class="card" style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px;">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                  <img src="${subjectImage}" alt="Illustration du cours ${title}" loading="lazy" onerror="this.hidden=true; this.nextElementSibling.hidden=false;" style="width: 58px; height: 48px; border-radius: 9px; object-fit: cover; flex-shrink: 0;">
+                  <div hidden style="width: 58px; height: 48px; border-radius: 9px; background: ${course.color_accent || '#059669'}; color: white; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">${code}</div>
+                  <div>
+                    <h3 style="font-size: 14px; font-weight: 600; color: #0F172A;">${title}</h3>
+                    <p style="font-size: 12px; color: #64748B;">${lessonLabel}</p>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 24px;">
+                  <div style="width: 180px; display: flex; align-items: center; gap: 12px;">
+                    <div class="progress-bar-container"><div class="progress-bar-fill" style="width: ${percent}%;"></div></div>
+                    <span style="font-size: 12px; font-weight: 600; width: 35px; text-align: right;">${percent}%</span>
+                  </div>
+                  <span style="font-size: 12px; color: #64748B;">${course.hours_total || 3}h</span>
+                  <a href="course-detail.html?id=${course.id}" class="btn btn-primary btn-sm">Continuer</a>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+
+        const coursesListContainer = document.getElementById('courses-list-container');
+        if (coursesListContainer) {
+          coursesListContainer.innerHTML = courseList.length ? courseList.slice(0, 4).map(course => {
+            const percent = Number(course.progress_percent || 0);
+            return `<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;"><div style="display:flex;align-items:center;gap:12px;min-width:0;"><img src="${subjectImageForCourse(course.title)}" alt="${course.title}" loading="lazy" style="width:36px;height:36px;border-radius:8px;object-fit:cover;"><div style="min-width:0;"><div style="font-size:12.5px;font-weight:600;color:#0F172A;">${course.title}</div><div style="font-size:11px;color:#64748B;">${Number(course.completed_lessons || 0)} / ${Number(course.total_lessons || 0)} leçons terminées</div></div></div><div style="display:flex;align-items:center;gap:12px;width:min(180px,40%);flex-shrink:0;"><div class="progress-bar-container"><div class="progress-bar-fill" style="width:${percent}%;"></div></div><span style="font-size:12px;font-weight:600;width:35px;text-align:right;">${percent}%</span></div></div>`;
+          }).join('') : '<p style="font-size:12px;color:#64748B;">Aucun cours n’est associé à votre compte.</p>';
+        }
+
+        const [assignments, quizzes, calendar] = await Promise.all([API.getAssignments(), API.getQuizzes(), API.getCalendarEvents(new Date().toISOString().slice(0, 7))]);
+        const todoItems = [];
+        (assignments.assignments || []).filter(item => !item.submission_id).forEach(item => todoItems.push({ title: item.title, subtitle: `${item.course_title} · échéance ${new Date(String(item.due_date).replace(' ', 'T')).toLocaleDateString('fr-FR')}`, href: 'assignments.html', color: '#D97706', date: item.due_date }));
+        (quizzes.quizzes || []).slice(0, 3).forEach(item => todoItems.push({ title: item.title, subtitle: `${item.course_title} · ${item.duration_minutes} min`, href: `quiz.html?id=${item.id}`, color: '#059669', date: '' }));
+        todoItems.sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999'));
+        if (todoList) todoList.innerHTML = todoItems.length ? todoItems.slice(0, 4).map(item => `<a href="${item.href}" style="text-decoration:none;color:inherit;padding:10px;border-radius:8px;border:1px solid #E2E8F0;display:flex;align-items:flex-start;gap:10px;"><span style="width:8px;height:8px;border-radius:50%;background:${item.color};margin-top:4px;flex-shrink:0;"></span><span><strong style="font-size:12px;color:#0F172A;">${item.title}</strong><small style="display:block;font-size:11px;color:#64748B;">${item.subtitle}</small></span></a>`).join('') : '<p style="font-size:12px;color:#64748B;">Aucune tâche en attente.</p>';
+
+        const now = new Date();
+        const monthTitle = document.getElementById('dashboard-calendar-month');
+        if (monthTitle) monthTitle.textContent = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(now);
+        const eventDays = new Set((calendar.events || []).map(event => event.event_date));
+        const first = new Date(now.getFullYear(), now.getMonth(), 1);
+        const offset = (first.getDay() + 6) % 7;
+        const start = new Date(now.getFullYear(), now.getMonth(), 1 - offset);
+        const calendarDays = document.getElementById('dashboard-calendar-days');
+        if (calendarDays) calendarDays.innerHTML = Array.from({ length: 35 }, (_, index) => {
+          const date = new Date(start); date.setDate(start.getDate() + index);
+          const key = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+          const currentMonth = date.getMonth() === now.getMonth();
+          const isToday = date.toDateString() === now.toDateString();
+          return `<span style="width:24px;height:24px;margin:0 auto;display:flex;align-items:center;justify-content:center;position:relative;color:${currentMonth ? '#475569' : '#CBD5E1'};${isToday ? 'background:#047857;color:white;border-radius:50%;font-weight:700;' : ''}">${date.getDate()}${eventDays.has(key) ? '<i style="position:absolute;bottom:1px;width:4px;height:4px;border-radius:50%;background:#F59E0B;"></i>' : ''}</span>`;
+        }).join('');
+
+        const dailyMinutes = stats?.stats?.learning_minutes_by_day || [];
+        const chartBars = document.querySelectorAll('.learning-day-bar');
+        const maxMinutes = Math.max(60, ...dailyMinutes);
+        chartBars.forEach((bar, index) => { const fill = bar.querySelector('[data-learning-fill]'); if (fill) fill.style.height = `${Math.round(((dailyMinutes[index] || 0) / maxMinutes) * 100)}%`; });
+      } catch (error) {
+        console.error('Impossible de charger toutes les données étudiant:', error);
+        const todoList = document.getElementById('student-todo-list');
+        if (todoList) todoList.innerHTML = `<p style="font-size:12px;color:#B91C1C;">Échec du chargement : ${error.message}</p>`;
+      }
+    }
+
+    function subjectImageForCourse(title = '') {
+      if (/base|donn|sql/i.test(title)) return 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?auto=format&fit=crop&w=120&h=120&q=80';
+      if (/réseau|reseau|système|systeme/i.test(title)) return 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=120&h=120&q=80';
+      return 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=120&h=120&q=80';
+    }
+
+    const accountMenuToggle = document.getElementById('account-menu-toggle');
+    const accountMenu = document.getElementById('account-menu');
+    const accountLogout = document.getElementById('account-logout');
+    const closeAccountMenu = () => {
+      if (!accountMenu) return;
+      accountMenu.hidden = true;
+      accountMenuToggle?.setAttribute('aria-expanded', 'false');
+    };
+
+    accountMenuToggle?.addEventListener('click', () => {
+      accountMenu.hidden = !accountMenu.hidden;
+      accountMenuToggle.setAttribute('aria-expanded', String(!accountMenu.hidden));
+    });
+
+    document.getElementById('account-menu-close')?.addEventListener('click', closeAccountMenu);
+
+    document.getElementById('add-account-button')?.addEventListener('click', () => {
+      window.location.href = 'login.html?add_account=1';
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!accountMenu?.hidden && !accountMenu?.parentElement.contains(event.target)) {
+        closeAccountMenu();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && accountMenu && !accountMenu.hidden) {
+        closeAccountMenu();
+      }
+    });
+
+    document.querySelectorAll('.account-switch-option').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const email = button.dataset.accountEmail;
+        try {
+          const response = await API.login(email, 'password123');
+          if (!response?.success || !response.user) throw new Error('Connexion au compte sélectionné impossible.');
+          const role = response.user.role;
+          window.location.href = role === 'admin' ? 'dashboard-admin.html' : role === 'teacher' ? 'dashboard-teacher.html' : 'dashboard-student.html';
+        } catch (error) {
+          alert(error.message || 'Impossible de changer de compte.');
+        } finally {
+          closeAccountMenu();
+        }
+      });
+    });
+
+    accountLogout?.addEventListener('click', async () => {
+      try {
+        await API.logout();
+      } finally {
+        window.location.href = 'login.html';
+      }
+    });
+
+    loadStudentDashboard();
+  </script>
+</body>
+</html>
