@@ -1308,7 +1308,7 @@ export default function App() {
                       }`}
                     >
                       <BookOpen className="w-4 h-4" />
-                      Mes cours
+                      Cours disponibles
                     </button>
                     <button
                       onClick={() => { setActiveScreen('assignments'); setIsMobileMenuOpen(false); }}
@@ -2124,40 +2124,11 @@ export default function App() {
               {activeScreen === 'courses-student' && (
                 <div className="space-y-7 w-full">
                   <div>
-                    <h1 className="text-xl font-bold text-[#0F172A]">Mes cours</h1>
+                    <h1 className="text-xl font-bold text-[#0F172A]">Cours disponibles et mes inscriptions</h1>
                     <p className="text-xs text-[#64748B] mt-1">Retrouvez vos cours inscrits ou découvrez le catalogue pour commencer une formation.</p>
                   </div>
                   {coursesError && <div role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{coursesError}</div>}
                   {coursesLoading && <p className="text-sm text-[#64748B]">Chargement des cours depuis la base de données…</p>}
-                  <section className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-base font-semibold text-[#0F172A]">Mes inscriptions <span className="text-xs font-normal text-[#64748B]">({myCourses.length})</span></h2>
-                    </div>
-                    {myCourses.length === 0 && !coursesLoading ? (
-                      <div className="rounded-xl border border-dashed border-[#CBD5E1] bg-white p-5 text-sm text-[#64748B]">Vous n’êtes inscrit à aucun cours pour le moment. Choisissez un cours dans le catalogue ci-dessous.</div>
-                    ) : (
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                        {myCourses.map((course) => (
-                          <article key={course.id} className="rounded-xl border border-[#E2E8F0] bg-white p-4">
-                            <div className="flex items-start justify-between gap-3">
-                              <div>
-                                <span className="text-[10px] font-mono font-semibold text-[#047857]">{course.code}</span>
-                                <h3 className="mt-1 text-sm font-semibold text-[#0F172A]">{course.title}</h3>
-                                <p className="mt-1 text-xs text-[#64748B]">{course.category_name || 'Sans catégorie'} · {course.level || 'Niveau non précisé'}</p>
-                                <p className="mt-1 text-xs text-[#64748B]">Enseignant : {course.teacher_firstname || ''} {course.teacher_lastname || ''}</p>
-                              </div>
-                              <span className="rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700">{course.enrollment_status === 'termine' ? 'Terminé' : 'En cours'}</span>
-                            </div>
-                            <div className="mt-3 flex items-center gap-2">
-                              <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-emerald-600" style={{ width: `${Number(course.progress_percent) || 0}%` }} /></div>
-                              <span className="text-xs font-semibold text-slate-700">{Number(course.progress_percent) || 0}%</span>
-                            </div>
-                            <button type="button" onClick={() => { setSelectedCourseId(Number(course.id)); setActiveScreen('course-detail'); }} className="mt-3 rounded-lg bg-[#047857] px-4 py-2 text-xs font-semibold text-white hover:bg-[#065F46]">Ouvrir le cours</button>
-                          </article>
-                        ))}
-                      </div>
-                    )}
-                  </section>
                   <section className="space-y-3">
                     <div>
                       <h2 className="text-base font-semibold text-[#0F172A]">Catalogue des cours</h2>
@@ -2193,6 +2164,35 @@ export default function App() {
                 </div>
               )}
 
+                  <section className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-base font-semibold text-[#0F172A]">Mes inscriptions <span className="text-xs font-normal text-[#64748B]">({myCourses.length})</span></h2>
+                    </div>
+                    {myCourses.length === 0 && !coursesLoading ? (
+                      <div className="rounded-xl border border-dashed border-[#CBD5E1] bg-white p-5 text-sm text-[#64748B]">Vous n’êtes inscrit à aucun cours pour le moment. Choisissez un cours dans le catalogue ci-dessous.</div>
+                    ) : (
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                        {myCourses.map((course) => (
+                          <article key={course.id} className="rounded-xl border border-[#E2E8F0] bg-white p-4">
+                            <div className="flex items-start justify-between gap-3">
+                              <div>
+                                <span className="text-[10px] font-mono font-semibold text-[#047857]">{course.code}</span>
+                                <h3 className="mt-1 text-sm font-semibold text-[#0F172A]">{course.title}</h3>
+                                <p className="mt-1 text-xs text-[#64748B]">{course.category_name || 'Sans catégorie'} · {course.level || 'Niveau non précisé'}</p>
+                                <p className="mt-1 text-xs text-[#64748B]">Enseignant : {course.teacher_firstname || ''} {course.teacher_lastname || ''}</p>
+                              </div>
+                              <span className="rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700">{course.enrollment_status === 'termine' ? 'Terminé' : 'En cours'}</span>
+                            </div>
+                            <div className="mt-3 flex items-center gap-2">
+                              <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-emerald-600" style={{ width: `${Number(course.progress_percent) || 0}%` }} /></div>
+                              <span className="text-xs font-semibold text-slate-700">{Number(course.progress_percent) || 0}%</span>
+                            </div>
+                            <button type="button" onClick={() => { setSelectedCourseId(Number(course.id)); setActiveScreen('course-detail'); }} className="mt-3 rounded-lg bg-[#047857] px-4 py-2 text-xs font-semibold text-white hover:bg-[#065F46]">Ouvrir le cours</button>
+                          </article>
+                        ))}
+                      </div>
+                    )}
+                  </section>
               {/* SCREEN 5: Détail d'un cours */}
               {activeScreen === 'course-detail' && (
                 <div className="space-y-6 w-full">
