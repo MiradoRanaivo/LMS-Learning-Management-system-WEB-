@@ -184,6 +184,8 @@ export default function App() {
   const [showXamppModal, setShowXamppModal] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState<number>(1);
   const [catalogCourses, setCatalogCourses] = useState<any[]>([]);
+  const [teachers, setTeachers] = useState<any[]>([]);
+  const [teacherFollowLoading, setTeacherFollowLoading] = useState<number | null>(null);
   const [courseContent, setCourseContent] = useState<any | null>(null);
   const [quizCatalog, setQuizCatalog] = useState<any[]>([]);
   const [activeQuiz, setActiveQuiz] = useState<any | null>(null);
@@ -832,6 +834,50 @@ export default function App() {
       });
     return () => { cancelled = true; };
   }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated || currentUser.role !== 'student') return;
+    let cancelled = false;
+    fetch('/lms/api/teachers/follow.php', { credentials: 'include', headers: { Accept: 'application/json' } })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.error || 'Impossible de charger les enseignants.');
+        if (!cancelled) setTeachers(Array.isArray(data.teachers) ? data.teachers : []);
+      })
+      .catch((error) => {
+        if (!cancelled) setCoursesError(error instanceof Error ? error.message : 'Chargement des enseignants impossible.');
+      });
+    return () => { cancelled = true; };
+  }, [isAuthenticated, currentUser.id, currentUser.role, activeScreen]);
+
+  const handleTeacherFollow = async (teacherId: number, isFollowing: boolean) => {
+    setTeacherFollowLoading(teacherId);
+    setCoursesError('');
+    try {
+      let token = csrfToken;
+      if (!token) {
+        const sessionResponse = await fetch('/lms/api/auth/me.php', { credentials: 'include' });
+        const sessionData = await sessionResponse.json();
+        token = sessionData.csrf_token || '';
+        setCsrfToken(token);
+      }
+      const response = await fetch('/lms/api/teachers/follow.php', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-Token': token },
+        body: JSON.stringify({ teacher_id: teacherId, action: isFollowing ? 'unfollow' : 'follow' }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) throw new Error(data.error || 'Impossible de modifier le suivi.');
+      setTeachers((previous) => previous.map((teacher) => Number(teacher.id) === teacherId
+        ? { ...teacher, is_following: data.is_following ? 1 : 0 }
+        : teacher));
+    } catch (error) {
+      setCoursesError(error instanceof Error ? error.message : 'Impossible de modifier le suivi.');
+    } finally {
+      setTeacherFollowLoading(null);
+    }
+  };
 
   useEffect(() => {
     if (!isAuthenticated || currentUser.role !== 'student') return;
@@ -2127,6 +2173,62 @@ export default function App() {
                     <h1 className="text-xl font-bold text-[#0F172A]">Cours disponibles et mes inscriptions</h1>
                     <p className="text-xs text-[#64748B] mt-1">Retrouvez vos cours inscrits ou découvrez le catalogue pour commencer une formation.</p>
                   </div>
+                  <section className="space-y-3">
+                    <div>
+                      <h2 className="text-base font-semibold text-[#0F172A]">Suivre un professeur</h2>
+                      <p className="mt-1 text-xs text-[#64748B]">Suivez vos enseignants préférés pour retrouver facilement tous leurs cours publiés.</p>
+                    </div>
+                    {teachers.length === 0 ? (
+                      <div className="rounded-xl border border-dashed border-[#CBD5E1] bg-white p-5 text-sm text-[#64748B]">Aucun professeur disponible pour le moment.</div>
+                    ) : (
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+                        {teachers.map((teacher) => (
+                          <article key={teacher.id} className="flex items-center gap-3 rounded-xl border border-[#E2E8F0] bg-white p-4">
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-emerald-50 text-sm font-bold text-[#047857]">
+                              {teacher.avatar_url ? <img src={teacher.avatar_url} alt="" className="h-full w-full object-cover" /> : (teacher.avatar_initials || `${teacher.firstname?.[0] || ''}${teacher.lastname?.[0] || ''}`)}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <h3 className="truncate text-sm font-semibold text-[#0F172A]">{teacher.firstname} {teacher.lastname}</h3>
+                              <p className="text-[11px] text-[#64748B]">{Number(teacher.published_courses_count) || 0} cours publiés · {Number(teacher.followers_count) || 0} abonnés</p>
+                            </div>
+                            <button type="button" disabled={teacherFollowLoading === Number(teacher.id)} onClick={() => handleTeacherFollow(Number(teacher.id), Number(teacher.is_following) === 1)} className={`shrink-0 rounded-lg px-3 py-2 text-xs font-semibold transition disabled:opacity-60 ${Number(teacher.is_following) === 1 ? 'border border-[#CBD5E1] bg-white text-[#475569] hover:bg-slate-50' : 'bg-[#047857] text-white hover:bg-[#065F46]'}`}>
+                              {teacherFollowLoading === Number(teacher.id) ? '...' : Number(teacher.is_following) === 1 ? 'Suivi' : 'Suivre'}
+                            </button>
+                          </article>
+                        ))}
+                      </div>
+                    )}
+                  </section>
+                  {teachers.some((teacher) => Number(teacher.is_following) === 1) && (
+                    <section className="space-y-3">
+                      <div>
+                        <h2 className="text-base font-semibold text-[#0F172A]">Cours des professeurs suivis</h2>
+                        <p className="mt-1 text-xs text-[#64748B]">Tous les cours publiés par les enseignants que vous suivez.</p>
+                      </div>
+                      {catalogCourses.filter((course) => teachers.some((teacher) => Number(teacher.id) === Number(course.teacher_id) && Number(teacher.is_following) === 1)).length === 0 ? (
+                        <div className="rounded-xl border border-dashed border-[#CBD5E1] bg-white p-5 text-sm text-[#64748B]">Les professeurs suivis n’ont pas encore publié de cours.</div>
+                      ) : (
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                          {catalogCourses.filter((course) => teachers.some((teacher) => Number(teacher.id) === Number(course.teacher_id) && Number(teacher.is_following) === 1)).map((course) => {
+                            const enrolled = myCourses.some((item) => Number(item.id) === Number(course.id));
+                            return (
+                              <article key={course.id} className="flex flex-col rounded-xl border border-emerald-200 bg-white p-4 shadow-xs">
+                                <div className="flex-1">
+                                  <span className="rounded bg-[#ECFDF5] px-2 py-1 text-[10px] font-mono font-semibold text-[#047857]">{course.code}</span>
+                                  <h3 className="mt-3 text-sm font-semibold text-[#0F172A]">{course.title}</h3>
+                                  <p className="mt-2 line-clamp-3 text-xs leading-5 text-[#64748B]">{course.description || 'Aucune description disponible.'}</p>
+                                  <p className="mt-3 text-[11px] text-[#64748B]">{course.teacher_firstname} {course.teacher_lastname} · {course.category_name || 'Sans catégorie'} · {course.level || 'Niveau non précisé'}</p>
+                                </div>
+                                <button type="button" disabled={enrolled || enrollingCourseId === Number(course.id)} onClick={() => handleEnrollCourse(Number(course.id))} className="mt-4 w-full rounded-lg bg-[#047857] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#065F46] disabled:cursor-not-allowed disabled:bg-slate-300">
+                                  {enrolled ? 'Déjà inscrit' : enrollingCourseId === Number(course.id) ? 'Inscription…' : 'S’inscrire au cours'}
+                                </button>
+                              </article>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </section>
+                  )}
                   {coursesError && <div role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{coursesError}</div>}
                   {coursesLoading && <p className="text-sm text-[#64748B]">Chargement des cours depuis la base de données…</p>}
                   <section className="space-y-3">
