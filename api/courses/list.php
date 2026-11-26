@@ -228,6 +228,12 @@ $sql = "
 
 if ($role === 'teacher') {
     $sql = str_replace('WHERE c.is_published = 1', 'WHERE c.is_published = 1 AND c.teacher_id = :teacher_id', $sql);
+} elseif ($role === 'student' && $scope === 'followed') {
+    $sql = str_replace(
+        'WHERE c.is_published = 1',
+        'WHERE c.is_published = 1 AND EXISTS (SELECT 1 FROM teacher_follows tf_follow WHERE tf_follow.teacher_id = c.teacher_id AND tf_follow.student_id = :follow_student_id)',
+        $sql
+    );
 } elseif ($role === 'student' && $scope !== 'catalog') {
     $sql = str_replace('WHERE c.is_published = 1', 'WHERE c.is_published = 1 AND e.user_id IS NOT NULL', $sql);
 }
@@ -236,6 +242,8 @@ $stmt = $pdo->prepare($sql);
 $params = ['uid' => $userId, 'uid2' => $userId];
 if ($role === 'teacher') {
     $params['teacher_id'] = $userId;
+} elseif ($role === 'student' && $scope === 'followed') {
+    $params['follow_student_id'] = $userId;
 }
 $stmt->execute($params);
 $courses = $stmt->fetchAll();
