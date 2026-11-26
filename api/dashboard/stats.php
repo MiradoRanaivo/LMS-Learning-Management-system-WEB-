@@ -111,6 +111,60 @@ if ($role === 'admin') {
 
     $globalProgress = $totalLessons > 0 ? (int)round(($completedLessons / $totalLessons) * 100) : 0;
 
+    // Cours réellement suivis et progression individuelle.
+    $coursesStmt = $pdo->prepare("SELECT c.id, c.code, c.title, c.color_accent, u.firstname AS teacher_firstname, u.lastname AS teacher_lastname,
+        COUNT(DISTINCT l.id) AS total_lessons,
+        COUNT(DISTINCT CASE WHEN lp.is_completed = 1 THEN l.id END) AS completed_lessons
+        FROM enrollments e
+        JOIN courses c ON c.id = e.course_id
+        JOIN users u ON u.id = c.teacher_id
+        LEFT JOIN chapters ch ON ch.course_id = c.id
+        LEFT JOIN lessons l ON l.chapter_id = ch.id AND l.is_published = 1
+        LEFT JOIN lesson_progress lp ON lp.lesson_id = l.id AND lp.user_id = :progress_user
+        WHERE e.user_id = :enrolled_user AND e.status = 'en_cours'
+        GROUP BY c.id, c.code, c.title, c.color_accent, u.firstname, u.lastname
+        ORDER BY e.enrolled_at DESC LIMIT 6");
+    $coursesStmt->execute(['progress_user' => $userId, 'enrolled_user' => $userId]);
+    $myCourses = $coursesStmt->fetchAll();
+    foreach ($myCourses as &$course) {
+        $course['progress'] = (int)$course['total_lessons'] > 0
+            ? (int)round(((int)$course['completed_lessons'] / (int)$course['total_lessons']) * 100) : 0;
+    }
+    unset($course);
+
+    // Prochains devoirs auxquels l'étudiant n'a pas encore remis de travail.
+    $assignmentsStmt = $pdo->prepare("SELECT a.id, a.title, a.due_date, c.title AS course_title,
+        CASE WHEN s.id IS NULL THEN 0 ELSE 1 END AS submitted
+        FROM assignments a
+        JOIN courses c ON c.id = a.course_id
+        JOIN enrollments e ON e.course_id = c.id AND e.user_id = :assignment_user AND e.status = 'en_cours'
+        LEFT JOIN assignment_submissions s ON s.assignment_id = a.id AND s.user_id = :submission_user
+        WHERE a.is_published = 1 AND a.archived_at IS NULL AND a.due_date >= CURRENT_TIMESTAMP
+        AND (a.publication_date IS NULL OR a.publication_date <= CURRENT_TIMESTAMP)
+        ORDER BY a.due_date ASC LIMIT 5");
+    $assignmentsStmt->execute(['assignment_user' => $userId, 'submission_user' => $userId]);
+    $upcomingAssignments = $assignmentsStmt->fetchAll();
+
+    // Événements du calendrier personnels, globaux ou liés aux cours suivis.
+    $eventsStmt = $pdo->prepare("SELECT ce.id, ce.title, ce.event_type AS type, ce.event_date AS date, ce.event_time AS time, ce.description
+        FROM calendar_events ce
+        WHERE (ce.user_id IS NULL OR ce.user_id = :calendar_user)
+          AND (ce.course_id IS NULL OR EXISTS (SELECT 1 FROM enrollments e WHERE e.course_id = ce.course_id AND e.user_id = :calendar_course_user AND e.status = 'en_cours'))
+          AND ce.event_date BETWEEN CURRENT_DATE AND DATE_ADD(CURRENT_DATE, INTERVAL 45 DAY)
+        UNION ALL
+        SELECT a.id, a.title, 'devoir' AS type, DATE(a.due_date) AS date, TIME_FORMAT(a.due_date, '%H:%i') AS time, c.title AS description
+        FROM assignments a JOIN courses c ON c.id = a.course_id
+        JOIN enrollments e ON e.course_id = c.id AND e.user_id = :event_enrolled_user AND e.status = 'en_cours'
+        WHERE a.is_published = 1 AND a.archived_at IS NULL AND a.due_date BETWEEN CURRENT_DATE AND DATE_ADD(CURRENT_DATE, INTERVAL 45 DAY)
+          AND (a.publication_date IS NULL OR a.publication_date <= CURRENT_TIMESTAMP)
+        ORDER BY date ASC, time ASC LIMIT 30");
+    $eventsStmt->execute(['calendar_user' => $userId, 'calendar_course_user' => $userId, 'event_enrolled_user' => $userId]);
+    $calendarEvents = $eventsStmt->fetchAll();
+
+    $quizCountStmt = $pdo->prepare("SELECT COUNT(*) FROM quiz_attempts WHERE user_id = :quiz_user");
+    $quizCountStmt->execute(['quiz_user' => $userId]);
+    $quizAttempts = (int)$quizCountStmt->fetchColumn();
+
     $learningStmt = $pdo->prepare("SELECT lp.completed_at, l.duration_minutes FROM lesson_progress lp JOIN lessons l ON l.id = lp.lesson_id WHERE lp.user_id = :uid AND lp.is_completed = 1 AND lp.completed_at >= :week_start");
     $weekStart = (new DateTimeImmutable('monday this week'))->setTime(0, 0)->format('Y-m-d H:i:s');
     $learningStmt->execute(['uid' => $userId, 'week_start' => $weekStart]);
@@ -132,7 +186,13 @@ if ($role === 'admin') {
             'learning_minutes_by_day' => array_values($minutesByDay),
             'average_grade' => $avg,
             'completed_courses' => $completedCourses,
-            'active_courses' => $activeCourses
+            'active_courses' => $activeCourses,
+            'completed_lessons' => $completedLessons,
+            'total_lessons' => $totalLessons,
+            'quiz_attempts' => $quizAttempts,
+            'upcoming_assignments' => $upcomingAssignments,
+            'calendar_events' => $calendarEvents,
+            'courses' => $myCourses
         ]
     ]);
 }
