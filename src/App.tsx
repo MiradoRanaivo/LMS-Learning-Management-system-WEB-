@@ -905,7 +905,7 @@ export default function App() {
     let cancelled = false;
     setDashboardLoading(true);
     setDashboardError('');
-    fetch('/lms/api/dashboard_stats.php', { credentials: 'include', headers: { Accept: 'application/json' } })
+    fetch('/lms/api/dashboard/stats.php', { credentials: 'include', headers: { Accept: 'application/json' } })
       .then((response) => readApiJson(response, 'Tableau de bord'))
       .then((data) => {
         if (!cancelled) setDashboardStats(data.stats || {});
@@ -1964,61 +1964,325 @@ export default function App() {
 
             {/* Dynamic Screen Contents (18 screens faithful to mockup) */}
             <div className="p-4 sm:p-6 lg:p-8 flex-1 overflow-y-auto w-full">
-              {/* DASHBOARDS — données réelles chargées depuis MySQL */}
+              {/* SCREEN 1: Dashboard – Élève */}
               {activeScreen === 'dashboard-student' && (
                 <div className="space-y-6 w-full">
-                  <div className="flex flex-wrap items-end justify-between gap-3">
-                    <div><p className="text-sm font-medium text-[#047857]">Espace étudiant</p><h1 className="mt-1 text-2xl font-bold text-[#0F172A]">Bonjour, {currentUser.firstname || currentUser.name}</h1><p className="mt-1 text-sm text-[#64748B]">Voici votre progression et les prochaines échéances.</p></div>
-                    <button onClick={() => setActiveScreen('courses-student')} className="rounded-lg bg-[#047857] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#065F46]">Explorer mes cours</button>
+                  {/* Greeting & Progress Banner */}
+                  <div className="flex items-start justify-between flex-wrap gap-4">
+                    <div>
+                      <h1 className="text-xl font-bold text-[#0F172A]">Bonjour, {currentUser.firstname || currentUser.name}</h1>
+                      <p className="text-xs text-[#64748B] mt-0.5">Continuez votre apprentissage, vous êtes sur la bonne voie.</p>
+                    </div>
+
+                    <div className="bg-white border border-[#E2E8F0] rounded-lg px-4 py-3 flex items-center gap-3 shadow-xs" aria-label="Progression globale">
+                      <div>
+                        <div className="text-xs text-[#64748B]">Progression globale</div>
+                        <div className="text-sm font-bold text-[#0F172A]">—</div>
+                      </div>
+                    </div>
                   </div>
-                  {dashboardError && <div role="alert" className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{dashboardError}</div>}
-                  <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-                    {[['Cours en cours', dashboardStats?.active_courses ?? '—'],['Cours terminés',dashboardStats?.completed_courses ?? '—'],['Quiz réalisés',dashboardStats?.quiz_attempts ?? '—'],['Moyenne publiée',dashboardStats?.average_grade == null ? '—' : dashboardStats.average_grade + '/20']].map(([label,value]) => <div key={String(label)} className="rounded-xl border border-[#E2E8F0] bg-white p-5 shadow-sm"><p className="text-sm text-[#64748B]">{label}</p><p className="mt-2 text-2xl font-bold text-[#0F172A]">{dashboardLoading ? '…' : value}</p></div>)}
+
+
+                  {/* Cours récents et accès au calendrier */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <div className="md:col-span-2 rounded-xl border border-dashed border-[#CBD5E1] bg-white p-6">
+                      <h2 className="text-base font-semibold text-[#0F172A]">Vos cours apparaîtront ici</h2>
+                      <p className="mt-2 max-w-2xl text-sm leading-6 text-[#64748B]">Aucun cours n’est chargé depuis le compte connecté dans cette interface.</p>
+                    </div>
+
+                    {/* Accès calendrier */}
+                    <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-xs">
+                      <div className="flex h-full flex-col items-start justify-between gap-5">
+                        <div><h3 className="text-sm font-semibold text-[#0F172A]">Calendrier universitaire</h3><p className="mt-2 text-sm leading-6 text-[#64748B]">Consultez les dates et événements associés à votre compte.</p></div>
+                        <button type="button" onClick={() => setActiveScreen('calendar')} className="min-h-10 rounded-lg border border-[#CBD5E1] px-4 text-sm font-semibold text-[#064E3B] hover:bg-[#ECFDF5]">Ouvrir le calendrier</button>
+                      </div>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
-                    <section className="xl:col-span-2 rounded-xl border border-[#E2E8F0] bg-white p-5">
-                      <div className="mb-4 flex items-center justify-between"><div><h2 className="font-semibold text-[#0F172A]">Reprendre mes cours</h2><p className="mt-1 text-xs text-[#64748B]">Vos inscriptions actives</p></div><button onClick={() => setActiveScreen('courses-student')} className="text-sm font-medium text-[#047857]">Tout voir →</button></div>
-                      {myCourses.length ? <div className="space-y-3">{myCourses.slice(0,5).map((course:any) => <button key={course.id} onClick={() => {setSelectedCourseId(Number(course.id));setActiveScreen('course-detail');}} className="flex w-full items-center justify-between gap-3 rounded-lg border border-[#E2E8F0] p-3 text-left hover:border-[#047857]"><div className="min-w-0"><p className="truncate text-sm font-semibold text-[#0F172A]">{course.title}</p><p className="mt-1 text-xs text-[#64748B]">{course.code} · {course.teacher_firstname || ''} {course.teacher_lastname || ''}</p></div><ChevronRight className="h-4 w-4 shrink-0 text-[#64748B]"/></button>)}</div> : <p className="rounded-lg bg-slate-50 p-4 text-sm text-[#64748B]">{coursesLoading ? 'Chargement de vos cours…' : 'Vous n’êtes inscrit à aucun cours pour le moment.'}</p>}
-                    </section>
-                    <section className="rounded-xl border border-[#E2E8F0] bg-white p-5"><div className="mb-4 flex items-center justify-between"><h2 className="font-semibold text-[#0F172A]">À venir</h2><button onClick={() => setActiveScreen('assignments')} className="text-sm font-medium text-[#047857]">Devoirs →</button></div>
-                      {dashboardStats?.upcoming_assignments?.length ? <div className="space-y-3">{dashboardStats.upcoming_assignments.map((item:any)=><div key={item.id} className="border-b border-[#E2E8F0] pb-3 last:border-0"><p className="text-sm font-medium text-[#0F172A]">{item.title}</p><p className="mt-1 text-xs text-[#64748B]">{item.course_title} · {new Date(item.due_date).toLocaleDateString('fr-FR')}</p></div>)}</div> : <p className="text-sm text-[#64748B]">{dashboardLoading ? 'Chargement…' : 'Aucune échéance à venir.'}</p>}
-                    </section>
+
+                  {/* Middle Row : Temps d'apprentissage & À faire */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    {/* Temps d'apprentissage */}
+                    <div className="lg:col-span-2 bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-xs">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h3 className="text-sm font-semibold text-[#0F172A]">Temps d’apprentissage</h3>
+                          <p className="text-[11px] text-[#64748B]">Cette semaine</p>
+                        </div>
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#ECFDF5] text-[#047857] rounded text-xs font-semibold">
+                          <Clock className="w-3.5 h-3.5" />
+                          —
+                        </div>
+                      </div>
+
+                      {/* Bar chart mockup faithful to screenshot */}
+                      <div className="flex min-h-36 items-center justify-center rounded-lg border border-dashed border-[#E2E8F0] px-4 py-6 text-center">
+                        <p className="max-w-md text-sm leading-6 text-[#64748B]">Aucune durée d’apprentissage n’est disponible pour le compte connecté.</p>
+                      </div>
+                    </div>
+
+                    {/* À faire */}
+                    <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-xs flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="text-sm font-semibold text-[#0F172A]">À faire</h3>
+                          <button onClick={() => setActiveScreen('assignments')} className="text-xs text-[#047857] hover:underline font-medium">
+                            Voir tout
+                          </button>
+                        </div>
+
+                        <div className="rounded-lg border border-dashed border-[#E2E8F0] p-4">
+                          <p className="text-sm leading-6 text-[#64748B]">Aucune échéance n’est disponible pour ce compte dans l’interface actuelle.</p>
+                          <button type="button" onClick={() => setActiveScreen('assignments')} className="mt-3 min-h-10 text-sm font-semibold text-[#047857] hover:underline">Consulter les devoirs</button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <button onClick={() => setActiveScreen('grades')} className="rounded-xl border border-[#E2E8F0] bg-white p-4 text-left hover:border-[#047857]"><Award className="mb-2 h-5 w-5 text-[#047857]"/><p className="font-semibold text-[#0F172A]">Mes notes</p><p className="mt-1 text-xs text-[#64748B]">Consulter les résultats publiés</p></button>
-                    <button onClick={() => setActiveScreen('calendar')} className="rounded-xl border border-[#E2E8F0] bg-white p-4 text-left hover:border-[#047857]"><CalendarIcon className="mb-2 h-5 w-5 text-[#047857]"/><p className="font-semibold text-[#0F172A]">Calendrier</p><p className="mt-1 text-xs text-[#64748B]">Voir les événements à venir</p></button>
-                    <button onClick={() => setActiveScreen('notifications')} className="rounded-xl border border-[#E2E8F0] bg-white p-4 text-left hover:border-[#047857]"><Bell className="mb-2 h-5 w-5 text-[#047857]"/><p className="font-semibold text-[#0F172A]">Notifications</p><p className="mt-1 text-xs text-[#64748B]">{dashboardStats?.unread_notifications ?? 0} non lues</p></button>
+
+                  {/* Progression et accès aux ressources */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    <div className="lg:col-span-2 bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-xs">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-sm font-semibold text-[#0F172A]">Mes cours</h3>
+                        <button onClick={() => setActiveScreen('courses-student')} className="text-xs text-[#047857] hover:underline font-medium">
+                          Voir tout
+                        </button>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="flex flex-col items-start gap-4 rounded-lg border border-dashed border-[#E2E8F0] p-5 sm:flex-row sm:items-center sm:justify-between">
+                          <p className="text-sm leading-6 text-[#64748B]">Les cours et leur progression s’afficheront lorsqu’ils seront chargés pour votre compte.</p>
+                          <button type="button" onClick={() => setActiveScreen('courses-student')} className="min-h-10 shrink-0 rounded-lg bg-[#047857] px-4 text-sm font-semibold text-white hover:bg-[#065F46]">Consulter mes cours</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
+                      <h3 className="text-sm font-semibold text-[#0F172A]">Ressources</h3>
+                      <p className="mt-2 text-sm leading-6 text-[#64748B]">Consultez les documents accessibles à votre profil.</p>
+                      <button type="button" onClick={() => setActiveScreen('resources')} className="mt-4 min-h-10 rounded-lg border border-[#CBD5E1] px-4 text-sm font-semibold text-[#064E3B] hover:bg-[#ECFDF5]">Ouvrir les ressources</button>
+                    </div>
                   </div>
                 </div>
               )}
 
+              {/* SCREEN 2: Dashboard – Enseignant */}
               {activeScreen === 'dashboard-teacher' && (
                 <div className="space-y-6 w-full">
-                  <div><p className="text-sm font-medium text-[#047857]">Espace enseignant</p><h1 className="mt-1 text-2xl font-bold text-[#0F172A]">Bonjour, {currentUser.firstname || currentUser.name}</h1><p className="mt-1 text-sm text-[#64748B]">Suivez vos cours, vos étudiants et les corrections à effectuer.</p></div>
-                  {dashboardError && <div role="alert" className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{dashboardError}</div>}
-                  <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">{[['Cours publiés','courses_count'],['Étudiants','students_count'],['Quiz','quizzes_count'],['À corriger','pending_submissions']].map(([label,key])=><div key={key} className="rounded-xl border border-[#E2E8F0] bg-white p-5"><p className="text-sm text-[#64748B]">{label}</p><p className="mt-2 text-2xl font-bold text-[#0F172A]">{dashboardLoading?'…':dashboardStats?.[key] ?? '—'}</p></div>)}</div>
-                  <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
-                    <section className="xl:col-span-2 rounded-xl border border-[#E2E8F0] bg-white p-5"><div className="mb-4 flex items-center justify-between"><div><h2 className="font-semibold text-[#0F172A]">Mes cours</h2><p className="mt-1 text-xs text-[#64748B]">Cours associés à votre compte</p></div><button onClick={()=>setActiveScreen('courses-management')} className="text-sm font-medium text-[#047857]">Gérer →</button></div>
-                      {dashboardStats?.recent_courses?.length ? <div className="space-y-3">{dashboardStats.recent_courses.map((course:any)=><div key={course.id} className="flex items-center justify-between gap-3 rounded-lg border border-[#E2E8F0] p-3"><div><p className="text-sm font-semibold text-[#0F172A]">{course.title}</p><p className="mt-1 text-xs text-[#64748B]">{course.code}</p></div><span className="text-sm text-[#64748B]">{course.students_count} étudiant(s)</span></div>)}</div> : <p className="text-sm text-[#64748B]">{dashboardLoading?'Chargement…':'Aucun cours associé à votre compte.'}</p>}
-                    </section>
-                    <section className="rounded-xl border border-[#E2E8F0] bg-white p-5"><h2 className="mb-4 font-semibold text-[#0F172A]">Actions rapides</h2><div className="space-y-2"><button onClick={()=>setActiveScreen('courses-management')} className="w-full rounded-lg bg-[#047857] px-3 py-3 text-left text-sm font-semibold text-white">Gérer mes cours</button><button onClick={()=>setActiveScreen('assignments')} className="w-full rounded-lg border border-[#E2E8F0] px-3 py-3 text-left text-sm font-semibold text-[#0F172A]">Ouvrir les évaluations</button><button onClick={()=>setActiveScreen('calendar')} className="w-full rounded-lg border border-[#E2E8F0] px-3 py-3 text-left text-sm font-semibold text-[#0F172A]">Voir le calendrier</button></div></section>
+                  {/* Greeting */}
+                  <div>
+                    <h1 className="text-xl font-bold text-[#0F172A]">Bonjour, {currentUser.firstname || currentUser.name}</h1>
+                    <p className="text-xs text-[#64748B] mt-0.5">Voici un aperçu de votre activité d'enseignement.</p>
                   </div>
-                  <section className="rounded-xl border border-[#E2E8F0] bg-white p-5"><div className="mb-4 flex items-center justify-between"><h2 className="font-semibold text-[#0F172A]">Derniers devoirs remis</h2><button onClick={()=>setActiveScreen('assignments')} className="text-sm font-medium text-[#047857]">Tout voir →</button></div>
-                    {dashboardStats?.pending_items?.length ? <div className="divide-y divide-[#E2E8F0]">{dashboardStats.pending_items.map((item:any)=><div key={item.id} className="flex flex-wrap justify-between gap-2 py-3"><div><p className="text-sm font-medium text-[#0F172A]">{item.assignment_title}</p><p className="text-xs text-[#64748B]">{item.firstname} {item.lastname}</p></div><span className="text-xs text-[#64748B]">{new Date(item.submitted_at).toLocaleDateString('fr-FR')}</span></div>)}</div> : <p className="text-sm text-[#64748B]">{dashboardLoading?'Chargement…':'Aucun devoir en attente de correction.'}</p>}
-                  </section>
+
+
+                  {/* 4 Stat KPI Cards */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs">
+                      <p className="text-xs text-[#64748B]">Mes cours</p>
+                      <p className="text-2xl font-bold text-[#0F172A] mt-1">—</p>
+                    </div>
+                    <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs">
+                      <p className="text-xs text-[#64748B]">Étudiants</p>
+                      <p className="text-2xl font-bold text-[#0F172A] mt-1">—</p>
+                    </div>
+                    <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs">
+                      <p className="text-xs text-[#64748B]">Quiz</p>
+                      <p className="text-2xl font-bold text-[#0F172A] mt-1">—</p>
+                    </div>
+                    <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs">
+                      <p className="text-xs text-[#64748B]">À corriger</p>
+                      <p className="text-2xl font-bold text-[#0F172A] mt-1">—</p>
+                    </div>
+                  </div>
+
+                  {/* Middle Row : Mes cours & Actions rapides */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    {/* Mes cours table */}
+                    <div className="lg:col-span-2 bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-xs">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-sm font-semibold text-[#0F172A]">Mes cours</h3>
+                        <button onClick={() => setActiveScreen('courses-management')} className="text-xs text-[#047857] hover:underline font-medium">
+                          Voir tout
+                        </button>
+                      </div>
+
+                      <p className="rounded-lg border border-dashed border-[#E2E8F0] p-4 text-sm leading-6 text-[#64748B]">Les cours attribués à votre compte s’afficheront ici.</p>
+                    </div>
+
+                    {/* Actions rapides */}
+                    <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-xs">
+                      <h3 className="text-sm font-semibold text-[#0F172A] mb-3">Actions rapides</h3>
+                      <p className="mb-3 text-xs text-[#64748B]">Les créations persistantes sont disponibles dans l’application PHP.</p>
+                      <div className="space-y-2">
+                        <button
+                          onClick={() => setActiveScreen('courses-management')}
+                          className="w-full flex items-center gap-2.5 p-2.5 rounded-lg border border-[#E2E8F0] hover:border-[#047857] hover:bg-[#ECFDF5]/40 text-xs font-medium text-[#0F172A] transition text-left"
+                        >
+                          <Plus className="w-4 h-4 text-[#047857]" />
+                          Gérer les cours
+                        </button>
+                        <button
+                          onClick={() => setActiveScreen('quiz')}
+                          className="w-full flex items-center gap-2.5 p-2.5 rounded-lg border border-[#E2E8F0] hover:border-[#047857] hover:bg-[#ECFDF5]/40 text-xs font-medium text-[#0F172A] transition text-left"
+                        >
+                          <Plus className="w-4 h-4 text-[#047857]" />
+                          Ouvrir les quiz
+                        </button>
+                        <button
+                          onClick={() => setActiveScreen('assignments')}
+                          className="w-full flex items-center gap-2.5 p-2.5 rounded-lg border border-[#E2E8F0] hover:border-[#047857] hover:bg-[#ECFDF5]/40 text-xs font-medium text-[#0F172A] transition text-left"
+                        >
+                          <FileCheck className="w-4 h-4 text-[#047857]" />
+                          Voir les devoirs
+                        </button>
+                        <button
+                          onClick={() => setActiveScreen('users-management')}
+                          className="w-full flex items-center gap-2.5 p-2.5 rounded-lg border border-[#E2E8F0] hover:border-[#047857] hover:bg-[#ECFDF5]/40 text-xs font-medium text-[#0F172A] transition text-left"
+                        >
+                          <Users className="w-4 h-4 text-[#047857]" />
+                          Mes étudiants (aucune donnée connectée)
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bottom Row : Activité récente & Évaluations */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-xs">
+                      <h3 className="text-sm font-semibold text-[#0F172A]">Évaluations</h3>
+                      <p className="mt-3 text-sm leading-6 text-[#64748B]">Consultez et corrigez les devoirs disponibles dans votre espace.</p>
+                      <button type="button" onClick={() => setActiveScreen('assignments')} className="mt-4 min-h-10 rounded-lg bg-[#047857] px-4 text-sm font-semibold text-white hover:bg-[#065F46]">Ouvrir les devoirs</button>
+                    </div>
+
+                    <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-xs">
+                      <h3 className="text-sm font-semibold text-[#0F172A] mb-4">Devoirs à corriger</h3>
+                      <p className="text-sm leading-6 text-[#64748B]">Le nombre de devoirs à corriger apparaîtra avec les soumissions de votre compte.</p>
+                      <button type="button" onClick={() => setActiveScreen('assignments')} className="mt-4 min-h-10 rounded-lg border border-[#CBD5E1] px-4 text-sm font-semibold text-[#064E3B] hover:bg-[#ECFDF5]">Consulter les devoirs</button>
+                    </div>
+                  </div>
                 </div>
               )}
 
+              {/* SCREEN 3: Dashboard – Administrateur */}
               {activeScreen === 'dashboard-admin' && (
                 <div className="space-y-6 w-full">
-                  <div><p className="text-sm font-medium text-[#047857]">Administration</p><h1 className="mt-1 text-2xl font-bold text-[#0F172A]">Bonjour, {currentUser.firstname || currentUser.name}</h1><p className="mt-1 text-sm text-[#64748B]">Vue d’ensemble de la plateforme LMS.</p></div>
-                  {dashboardError && <div role="alert" className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{dashboardError}</div>}
-                  <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">{[['Utilisateurs','users_count'],['Étudiants','students_count'],['Enseignants','teachers_count'],['Cours publiés','published_courses'],['Inscriptions','enrollments_count'],['Quiz','quizzes_count'],['Cours total','courses_count'],['Administrateurs','admins_count']].map(([label,key])=><div key={key} className="rounded-xl border border-[#E2E8F0] bg-white p-5"><p className="text-sm text-[#64748B]">{label}</p><p className="mt-2 text-2xl font-bold text-[#0F172A]">{dashboardLoading?'…':dashboardStats?.[key] ?? '—'}</p></div>)}</div>
-                  <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
-                    <section className="xl:col-span-2 rounded-xl border border-[#E2E8F0] bg-white p-5"><div className="mb-4 flex items-center justify-between"><div><h2 className="font-semibold text-[#0F172A]">Activité récente</h2><p className="mt-1 text-xs text-[#64748B]">Dernières opérations enregistrées dans le journal système</p></div><Activity className="h-5 w-5 text-[#047857]"/></div>
-                      {dashboardStats?.recent_logs?.length ? <div className="divide-y divide-[#E2E8F0]">{dashboardStats.recent_logs.map((log:any)=><div key={log.id} className="py-3"><div className="flex flex-wrap justify-between gap-2"><p className="text-sm font-medium text-[#0F172A]">{log.action}</p><span className="text-xs text-[#64748B]">{new Date(log.created_at).toLocaleString('fr-FR')}</span></div><p className="mt-1 text-xs text-[#64748B]">{[log.firstname,log.lastname].filter(Boolean).join(' ') || 'Système'}{log.details ? ' · '+log.details : ''}</p></div>)}</div> : <p className="text-sm text-[#64748B]">{dashboardLoading?'Chargement…':'Aucune activité enregistrée.'}</p>}
-                    </section>
-                    <section className="rounded-xl border border-[#E2E8F0] bg-white p-5"><h2 className="mb-4 font-semibold text-[#0F172A]">Administration rapide</h2><div className="space-y-2"><button onClick={()=>setActiveScreen('users-management')} className="w-full rounded-lg bg-[#047857] px-3 py-3 text-left text-sm font-semibold text-white">Gérer les utilisateurs</button><button onClick={()=>setActiveScreen('courses-management')} className="w-full rounded-lg border border-[#E2E8F0] px-3 py-3 text-left text-sm font-semibold text-[#0F172A]">Gérer les cours</button><button onClick={()=>setShowXamppModal(true)} className="w-full rounded-lg border border-[#E2E8F0] px-3 py-3 text-left text-sm font-semibold text-[#0F172A]">Journal système</button></div></section>
+                  {/* Greeting */}
+                  <div>
+                    <h1 className="text-xl font-bold text-[#0F172A]">Bonjour, {currentUser.firstname || currentUser.name}</h1>
+                    <p className="text-xs text-[#64748B] mt-0.5">Vue des comptes locaux de cette session.</p>
+                  </div>
+
+
+                  {/* 4 KPIs Cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs">
+                      <p className="text-xs text-[#64748B]">Comptes locaux</p>
+                      <p className="text-2xl font-bold text-[#0F172A] mt-1">{registeredAccounts.length}</p>
+                    </div>
+                    <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs">
+                      <p className="text-xs text-[#64748B]">Enseignants</p>
+                      <p className="text-2xl font-bold text-[#0F172A] mt-1">{adminTeacherCount}</p>
+                    </div>
+                    <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs">
+                      <p className="text-xs text-[#64748B]">Cours</p>
+                      <p className="text-2xl font-bold text-[#0F172A] mt-1">{coursesList.length}</p>
+                    </div>
+                    <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs">
+                      <p className="text-xs text-[#64748B]">Quiz</p>
+                      <p className="text-2xl font-bold text-[#0F172A] mt-1">—</p>
+                    </div>
+                  </div>
+
+                  {/* Middle Row : Activité de la plateforme & Actions rapides */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    {/* Répartition des rôles disponibles dans les comptes locaux */}
+                    <div className="lg:col-span-2 bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-xs">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-sm font-semibold text-[#0F172A]">Répartition des rôles</h3>
+                        <span className="text-xs text-[#64748B]">Cette session</span>
+                      </div>
+                      <p className="mb-4 text-xs leading-5 text-[#64748B]">Ces nombres comptent uniquement les comptes chargés dans cette session.</p>
+                      <div className="divide-y divide-[#E2E8F0]">
+                        {([
+                          ['Étudiants', adminStudentCount],
+                          ['Enseignants', adminTeacherCount],
+                          ['Administrateurs', adminCount],
+                        ] as const).map(([label, count]) => (
+                          <div key={label} className="flex items-center justify-between py-3 text-sm">
+                            <span className="text-[#475569]">{label}</span>
+                            <span className="font-semibold tabular-nums text-[#0F172A]">{count}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Actions rapides */}
+                    <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-xs">
+                      <h3 className="text-sm font-semibold text-[#0F172A] mb-3">Actions rapides</h3>
+                      <div className="space-y-2">
+                        <button
+                          onClick={() => { openAdminUserModal(); }}
+                          className="w-full flex items-center gap-2.5 p-2.5 rounded-lg border border-[#E2E8F0] hover:border-[#047857] hover:bg-[#ECFDF5]/40 text-xs font-medium text-[#0F172A] transition text-left"
+                        >
+                          <Plus className="w-4 h-4 text-[#047857]" />
+                          Ajouter un utilisateur
+                        </button>
+                        <button
+                          onClick={() => setActiveScreen('courses-management')}
+                          className="w-full flex items-center gap-2.5 p-2.5 rounded-lg border border-[#E2E8F0] hover:border-[#047857] hover:bg-[#ECFDF5]/40 text-xs font-medium text-[#0F172A] transition text-left"
+                        >
+                          <Plus className="w-4 h-4 text-[#047857]" />
+                          Consulter le catalogue des cours
+                        </button>
+                        <button
+                          onClick={() => setActiveScreen('users-management')}
+                          className="w-full flex items-center gap-2.5 p-2.5 rounded-lg border border-[#E2E8F0] hover:border-[#047857] hover:bg-[#ECFDF5]/40 text-xs font-medium text-[#0F172A] transition text-left"
+                        >
+                          <Shield className="w-4 h-4 text-[#047857]" />
+                          Gérer les rôles
+                        </button>
+                        <button
+                          onClick={() => setShowXamppModal(true)}
+                          className="w-full flex items-center gap-2.5 p-2.5 rounded-lg border border-[#E2E8F0] hover:border-[#047857] hover:bg-[#ECFDF5]/40 text-xs font-medium text-[#0F172A] transition text-left"
+                        >
+                          <FileText className="w-4 h-4 text-[#047857]" />
+                          Consulter les informations système
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bottom Row : Utilisateurs récents & Signalements */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {/* Utilisateurs récents */}
+                    <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-xs">
+                      <h3 className="text-sm font-semibold text-[#0F172A] mb-3">Comptes enregistrés dans cette session</h3>
+                      <div className="space-y-3">
+                        {registeredAccounts.slice(0, 5).map((u) => (
+                          <div key={u.id} className="flex items-center justify-between">
+                            <div className="flex items-center gap-2.5">
+                              <img
+                                src={u.avatarUrl}
+                                alt={u.name}
+                                className="w-8 h-8 rounded-full object-cover border border-[#E2E8F0]"
+                              />
+                              <div>
+                                <p className="text-xs font-semibold text-[#0F172A]">{u.name}</p>
+                                <p className="text-[11px] text-[#64748B]">{u.email} · {u.role}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Signalements */}
+                    <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-xs">
+                      <h3 className="text-sm font-semibold text-[#0F172A] mb-3">Signalements</h3>
+                      <div className="space-y-3">
+                        <p className="text-sm text-[#64748B]">Aucun signalement n’est disponible.</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
