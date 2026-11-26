@@ -2289,7 +2289,7 @@ export default function App() {
                         <h2 className="text-base font-semibold text-[#0F172A]">Cours des professeurs suivis</h2>
                         <p className="mt-1 text-xs text-[#64748B]">Tous les cours publiés par les enseignants que vous suivez.</p>
                       </div>
-                      {catalogCourses.filter((course) => followedCourses.length === 0 ? (
+                      {followedCourses.length === 0 ? (
                         <div className="rounded-xl border border-dashed border-[#CBD5E1] bg-white p-5 text-sm text-[#64748B]">Les professeurs suivis n’ont pas encore publié de cours.</div>
                       ) : (
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
