@@ -165,6 +165,10 @@ if ($role === 'admin') {
     $quizCountStmt->execute(['quiz_user' => $userId]);
     $quizAttempts = (int)$quizCountStmt->fetchColumn();
 
+    $unreadStmt = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = :notification_user AND is_read = 0");
+    $unreadStmt->execute(['notification_user' => $userId]);
+    $unreadNotifications = (int)$unreadStmt->fetchColumn();
+
     $learningStmt = $pdo->prepare("SELECT lp.completed_at, l.duration_minutes FROM lesson_progress lp JOIN lessons l ON l.id = lp.lesson_id WHERE lp.user_id = :uid AND lp.is_completed = 1 AND lp.completed_at >= :week_start");
     $weekStart = (new DateTimeImmutable('monday this week'))->setTime(0, 0)->format('Y-m-d H:i:s');
     $learningStmt->execute(['uid' => $userId, 'week_start' => $weekStart]);
@@ -190,6 +194,7 @@ if ($role === 'admin') {
             'completed_lessons' => $completedLessons,
             'total_lessons' => $totalLessons,
             'quiz_attempts' => $quizAttempts,
+            'unread_notifications' => $unreadNotifications,
             'upcoming_assignments' => $upcomingAssignments,
             'calendar_events' => $calendarEvents,
             'courses' => $myCourses
