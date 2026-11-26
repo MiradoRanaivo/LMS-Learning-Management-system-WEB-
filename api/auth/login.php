@@ -33,12 +33,7 @@ if ($user['status'] !== 'active') {
     sendJsonResponse(['success' => false, 'error' => 'Ce compte est inactif ou suspendu.'], 403);
 }
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start([
-        'cookie_httponly' => true,
-        'cookie_samesite' => 'Lax'
-    ]);
-}
+startSession();
 
 session_regenerate_id(true);
 unset($user['password_hash']);

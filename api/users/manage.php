@@ -13,9 +13,7 @@ $roles = ['student', 'teacher', 'admin'];
 $statuses = ['active', 'inactive', 'suspended'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
+    startSession();
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
@@ -81,9 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendJsonResponse(['success' => false, 'error' => 'Méthode non autorisée.'], 405);
 }
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+startSession();
 $csrfToken = (string)($_SERVER['HTTP_X_CSRF_TOKEN'] ?? '');
 if (empty($_SESSION['csrf_token']) || $csrfToken === '' || !hash_equals($_SESSION['csrf_token'], $csrfToken)) {
     sendJsonResponse(['success' => false, 'error' => 'Jeton CSRF invalide ou expiré. Rechargez la page.'], 403);

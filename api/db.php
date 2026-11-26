@@ -42,13 +42,21 @@ function sendJsonResponse(array $data, int $statusCode = 200): void {
     exit;
 }
 
-function checkAuth(array $allowedRoles = []): array {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start([
-            'cookie_httponly' => true,
-            'cookie_samesite' => 'Lax'
-        ]);
+function startSession(): void {
+    if (session_status() !== PHP_SESSION_NONE) {
+        return;
     }
+
+    $isHttps = !empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS']) !== 'off';
+    session_start([
+        'cookie_httponly' => true,
+        'cookie_samesite' => 'Lax',
+        'cookie_secure' => $isHttps,
+    ]);
+}
+
+function checkAuth(array $allowedRoles = []): array {
+    startSession();
 
     if (!isset($_SESSION['user'])) {
         sendJsonResponse([
@@ -70,12 +78,7 @@ function checkAuth(array $allowedRoles = []): array {
 }
 
 function getCsrfToken(): string {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start([
-            'cookie_httponly' => true,
-            'cookie_samesite' => 'Lax'
-        ]);
-    }
+    startSession();
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }

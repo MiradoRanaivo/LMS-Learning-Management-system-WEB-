@@ -129,6 +129,7 @@ CREATE TABLE IF NOT EXISTS `lessons` (
   `duration_minutes` INT UNSIGNED NOT NULL DEFAULT 20,
   `has_video` TINYINT(1) NOT NULL DEFAULT 0,
   `video_url` VARCHAR(255) DEFAULT NULL,
+  `is_published` TINYINT(1) NOT NULL DEFAULT 1,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`chapter_id`) REFERENCES `chapters` (`id`) ON DELETE CASCADE,
   INDEX `idx_lessons_chapter` (`chapter_id`, `order_num`)
@@ -256,11 +257,21 @@ CREATE TABLE IF NOT EXISTS `assignments` (
   `course_id` INT UNSIGNED NOT NULL,
   `title` VARCHAR(200) NOT NULL,
   `description` TEXT NOT NULL,
+  `instructions` TEXT DEFAULT NULL,
   `due_date` DATETIME NOT NULL,
+  `publication_date` DATETIME DEFAULT NULL,
   `max_grade` DECIMAL(4,2) NOT NULL DEFAULT 20.00,
+  `is_published` TINYINT(1) NOT NULL DEFAULT 1,
+  `archived_at` DATETIME DEFAULT NULL,
+  `attachment_key` CHAR(48) DEFAULT NULL,
+  `attachment_name` VARCHAR(255) DEFAULT NULL,
+  `attachment_extension` VARCHAR(10) DEFAULT NULL,
+  `attachment_mime` VARCHAR(100) DEFAULT NULL,
+  `attachment_size` BIGINT UNSIGNED DEFAULT NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE,
-  INDEX `idx_assignments_course` (`course_id`)
+  INDEX `idx_assignments_course` (`course_id`),
+  INDEX `idx_assignments_visibility` (`course_id`, `is_published`, `publication_date`, `archived_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------
@@ -271,6 +282,11 @@ CREATE TABLE IF NOT EXISTS `assignment_submissions` (
   `assignment_id` INT UNSIGNED NOT NULL,
   `user_id` INT UNSIGNED NOT NULL,
   `file_url` VARCHAR(255) DEFAULT NULL,
+  `storage_key` CHAR(48) DEFAULT NULL,
+  `original_file_name` VARCHAR(255) DEFAULT NULL,
+  `file_extension` VARCHAR(10) DEFAULT NULL,
+  `mime_type` VARCHAR(100) DEFAULT NULL,
+  `file_size_bytes` BIGINT UNSIGNED DEFAULT NULL,
   `student_comment` TEXT DEFAULT NULL,
   `grade_value` DECIMAL(4,2) DEFAULT NULL,
   `teacher_feedback` TEXT DEFAULT NULL,
@@ -311,14 +327,20 @@ CREATE TABLE IF NOT EXISTS `resources` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `course_id` INT UNSIGNED DEFAULT NULL,
   `title` VARCHAR(200) NOT NULL,
-  `type` ENUM('document', 'cours', 'video', 'lien') NOT NULL DEFAULT 'document',
+  `description` TEXT DEFAULT NULL,
+  `type` ENUM('document', 'cours', 'video', 'lien', 'image') NOT NULL DEFAULT 'document',
   `file_format` VARCHAR(20) NOT NULL DEFAULT 'PDF',
   `file_size` VARCHAR(30) NOT NULL DEFAULT '1.5 Mo',
   `file_url` VARCHAR(255) NOT NULL,
+  `storage_key` VARCHAR(64) DEFAULT NULL,
+  `mime_type` VARCHAR(100) DEFAULT NULL,
+  `file_size_bytes` BIGINT UNSIGNED DEFAULT NULL,
+  `external_url` VARCHAR(2048) DEFAULT NULL,
   `uploader_id` INT UNSIGNED NOT NULL,
   `published_date` DATE NOT NULL,
   FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE SET NULL,
-  FOREIGN KEY (`uploader_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+  FOREIGN KEY (`uploader_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  INDEX `idx_resources_course_date` (`course_id`, `published_date`, `id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------

@@ -1,6 +1,5 @@
 import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
-import net from 'node:net';
 import path from 'node:path';
 
 const root = process.cwd();
@@ -25,13 +24,7 @@ if (!phpBin) {
   process.exit(1);
 }
 
-const phpArgs = ['-S', `127.0.0.1:${phpPort}`, '-t', root];
-const php = spawn(phpBin, phpArgs, {
-  cwd: root,
-  stdio: 'inherit',
-  shell: isWindows && phpBin === 'php',
-});
-
+let php;
 let vite;
 let shuttingDown = false;
 
@@ -43,23 +36,44 @@ function stop(code = 0) {
   process.exitCode = code;
 }
 
-function waitForPort(host, port, timeoutMs = 10000) {
+for (const signal of ['SIGINT', 'SIGTERM']) {
+  process.on(signal, () => stop(0));
+}
+
+const phpArgs = ['-S', `127.0.0.1:${phpPort}`, '-t', root];
+php = spawn(phpBin, phpArgs, {
+  cwd: root,
+  stdio: 'inherit',
+});
+
+function waitForPhp(host, port, timeoutMs = 10000) {
   return new Promise((resolve, reject) => {
     const startedAt = Date.now();
-    const attempt = () => {
-      const socket = net.createConnection({ host, port });
-      socket.once('connect', () => {
-        socket.destroy();
+    const attempt = async () => {
+      if (shuttingDown) {
+        reject(new Error('Démarrage interrompu.'));
+        return;
+      }
+      try {
+        const response = await fetch(`http://${host}:${port}/api/auth/me.php`, {
+          signal: AbortSignal.timeout(1000),
+        });
+        const data = await response.json();
+        if (!response.ok || typeof data.authenticated !== 'boolean') {
+          throw new Error('Endpoint PHP indisponible.');
+        }
         resolve();
-      });
-      socket.once('error', () => {
-        socket.destroy();
+      } catch {
+        if (shuttingDown) {
+          reject(new Error('Démarrage interrompu.'));
+          return;
+        }
         if (Date.now() - startedAt >= timeoutMs) {
-          reject(new Error(`PHP ne répond pas sur ${host}:${port}`));
+          reject(new Error(`Le backend PHP ne répond pas correctement sur ${host}:${port}`));
         } else {
           setTimeout(attempt, 250);
         }
-      });
+      }
     };
     attempt();
   });
@@ -79,7 +93,7 @@ php.once('exit', (code) => {
 
 try {
   console.log(`Démarrage du backend PHP sur http://127.0.0.1:${phpPort}`);
-  await waitForPort('127.0.0.1', phpPort);
+  await waitForPhp('127.0.0.1', phpPort);
   if (shuttingDown) process.exit(1);
   console.log('Backend PHP prêt. Démarrage de Vite…');
 
@@ -99,10 +113,8 @@ try {
   });
   vite.once('exit', (code) => stop(code || 0));
 } catch (error) {
-  console.error(error instanceof Error ? error.message : error);
-  stop(1);
-}
-
-for (const signal of ['SIGINT', 'SIGTERM']) {
-  process.on(signal, () => stop(0));
+  if (!shuttingDown) {
+    console.error(error instanceof Error ? error.message : error);
+    stop(1);
+  }
 }

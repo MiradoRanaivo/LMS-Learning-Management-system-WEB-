@@ -12,14 +12,21 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendJsonResponse(['success' => false, 'error' => 'Méthode POST requise.'], 405);
 }
 
+verifyCsrfToken();
 $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
 $firstname = trim((string)($input['firstname'] ?? $user['firstname']));
 $lastname = trim((string)($input['lastname'] ?? $user['lastname']));
 $phone = trim((string)($input['phone'] ?? $user['phone']));
 $bio = trim((string)($input['bio'] ?? $user['bio'] ?? ''));
 
+if ($firstname === '' || mb_strlen($firstname) > 100
+    || $lastname === '' || mb_strlen($lastname) > 100
+    || strlen($phone) > 30 || mb_strlen($bio) > 65535) {
+    sendJsonResponse(['success' => false, 'error' => 'Les informations du profil sont invalides.'], 400);
+}
+
 $userId = (int)$user['id'];
-$initials = strtoupper(substr($firstname, 0, 1) . substr($lastname, 0, 1));
+$initials = mb_strtoupper(mb_substr($firstname, 0, 1) . mb_substr($lastname, 0, 1));
 
 $pdo = getDB();
 
@@ -41,6 +48,7 @@ $stmt->execute([
 $_SESSION['user']['firstname'] = $firstname;
 $_SESSION['user']['lastname'] = $lastname;
 $_SESSION['user']['phone'] = $phone;
+$_SESSION['user']['bio'] = $bio;
 $_SESSION['user']['avatar_initials'] = $initials;
 
 sendJsonResponse([

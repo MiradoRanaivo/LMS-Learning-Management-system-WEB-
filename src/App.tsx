@@ -787,10 +787,16 @@ export default function App() {
 
   const handleLogout = async () => {
     try {
+      let token = csrfToken;
+      if (!token) {
+        const sessionResponse = await fetch('/lms/api/auth/me.php', { credentials: 'include' });
+        const sessionData = await sessionResponse.json();
+        token = sessionData.csrf_token || '';
+      }
       await fetch('/lms/api/auth/logout.php', {
         method: 'POST',
         credentials: 'include',
-        headers: { Accept: 'application/json' },
+        headers: { Accept: 'application/json', 'X-CSRF-Token': token },
       });
     } finally {
       setIsAuthenticated(false);
@@ -803,9 +809,10 @@ export default function App() {
     }
   };
 
-  const handleRegisterSuccess = (newUser: CurrentUser) => {
+  const handleRegisterSuccess = (newUser: CurrentUser, token?: string) => {
     setRegisteredAccounts((prev) => [...prev, newUser]);
     setCurrentUser(newUser);
+    setCsrfToken(token || '');
     setIsAuthenticated(true);
     if (newUser.role === 'teacher') {
       setActiveScreen('dashboard-teacher');
@@ -989,10 +996,17 @@ export default function App() {
 
   const markLessonComplete = async (lessonId: number, completed: boolean) => {
     try {
+      let token = csrfToken;
+      if (!token) {
+        const sessionResponse = await fetch('/lms/api/auth/me.php', { credentials: 'include' });
+        const sessionData = await sessionResponse.json();
+        token = sessionData.csrf_token || '';
+        setCsrfToken(token);
+      }
       const response = await fetch('/lms/api/courses/progress.php', {
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-Token': token },
         body: JSON.stringify({ lesson_id: lessonId, is_completed: completed ? 1 : 0 }),
       });
       const data = await response.json();
@@ -2263,9 +2277,6 @@ export default function App() {
                       </div>
                     )}
                   </section>
-                </div>
-              )}
-
                   <section className="space-y-3">
                     <div className="flex items-center justify-between">
                       <h2 className="text-base font-semibold text-[#0F172A]">Mes inscriptions <span className="text-xs font-normal text-[#64748B]">({myCourses.length})</span></h2>
@@ -2295,6 +2306,8 @@ export default function App() {
                       </div>
                     )}
                   </section>
+                </div>
+              )}
               {/* SCREEN 5: Détail d'un cours */}
               {activeScreen === 'course-detail' && (
                 <div className="space-y-6 w-full">
@@ -2456,7 +2469,7 @@ export default function App() {
                         <h1 className="text-xl font-bold text-[#0F172A]">{currentLesson.title}</h1>
                         <p className="mt-2 text-xs text-[#64748B]">{currentLesson.duration_minutes ? `Durée estimée : ${currentLesson.duration_minutes} min` : 'Leçon du cours'} · {currentCourse.title}</p>
                       </div>
-                      <div className="whitespace-pre-wrap break-words text-sm leading-7 text-[#334155]">
+                      <div className="whitespace-pre-wrap wrap-break-word text-sm leading-7 text-[#334155]">
                         {currentLesson.content || currentLesson.content_html || currentLesson.description || 'Le contenu de cette leçon n’a pas encore été renseigné par l’enseignant.'}
                       </div>
                       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#F1F5F9] pt-4">

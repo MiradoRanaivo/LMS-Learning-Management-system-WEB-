@@ -12,7 +12,7 @@ import { CurrentUser, UserRole } from '../App';
 interface SignupPageProps {
   embedded?: boolean;
   initialRole?: UserRole;
-  onRegisterSuccess: (newUser: CurrentUser) => void;
+  onRegisterSuccess: (newUser: CurrentUser, csrfToken?: string) => void;
   onNavigateToLogin: () => void;
   onNavigateToLanding: () => void;
 }
@@ -119,7 +119,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({
       };
 
       setSuccess(true);
-      setTimeout(() => onRegisterSuccess(newUser), 500);
+      setTimeout(() => onRegisterSuccess(newUser, data.csrf_token), 500);
     } catch (signupError) {
       setError(signupError instanceof Error ? signupError.message : 'Impossible de créer le compte.');
     } finally {

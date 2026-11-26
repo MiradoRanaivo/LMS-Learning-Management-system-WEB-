@@ -273,7 +273,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             {/* Right Mockup Showcase Column (Protected Preview) */}
             <div className="lg:col-span-6">
               <div className="relative mx-auto max-w-xl lg:max-w-none">
-                <div className="p-2 sm:p-3 bg-gradient-to-br from-slate-200 via-emerald-100 to-slate-200 rounded-2xl shadow-xl border border-slate-200">
+                <div className="p-2 sm:p-3 bg-linear-to-br from-slate-200 via-emerald-100 to-slate-200 rounded-2xl shadow-xl border border-slate-200">
                   <div className="bg-white rounded-[10px] overflow-hidden border border-[#E2E8F0] shadow-sm">
                     {/* Simulated Browser Bar with Lock */}
                     <div className="h-9 bg-[#F1F5F9] border-b border-[#E2E8F0] px-3 flex items-center justify-between">
@@ -292,7 +292,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     {/* Official Dashboard Preview Frame */}
                     <div className="p-4 sm:p-5 space-y-4 bg-[#F8FAFC]">
                       {/* Top banner */}
-                      <div className="bg-gradient-to-r from-[#064E3B] to-[#047857] text-white p-4 rounded-[10px] shadow-xs flex items-center justify-between">
+                      <div className="bg-linear-to-r from-[#064E3B] to-[#047857] text-white p-4 rounded-[10px] shadow-xs flex items-center justify-between">
                         <div>
                           <p className="text-[11px] text-emerald-200 font-medium">Aperçu du tableau de bord étudiant</p>
                           <h3 className="text-base font-bold">Andry Rakoto (Licence 3)</h3>
@@ -349,7 +349,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       </div>
 
                       {/* Gate callout: requires registration */}
-                      <div className="pt-2 border-t border-[#E2E8F0] flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-[10px] border border-emerald-200">
+                      <div className="pt-2 border-t border-emerald-200 flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-[10px] border">
                         <div className="flex items-center gap-2 text-xs text-[#064E3B]">
                           <Lock className="w-4 h-4 text-[#047857] shrink-0" />
                           <span>Créez un compte pour accéder à vos cours</span>
@@ -578,7 +578,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </div>
 
               {/* Right Visual Simulated Screen Frame */}
-              <div className="lg:col-span-7 bg-gradient-to-br from-slate-100 to-emerald-50/40 p-6 sm:p-8 flex flex-col justify-center">
+              <div className="lg:col-span-7 bg-linear-to-br from-slate-100 to-emerald-50/40 p-6 sm:p-8 flex flex-col justify-center">
                 <div className="bg-white rounded-[10px] border border-[#CBD5E1] shadow-md overflow-hidden">
                   {/* Miniature header */}
                   <div className="h-8 bg-[#F1F5F9] border-b border-[#E2E8F0] px-3 flex items-center justify-between text-[11px] text-[#64748B]">
@@ -875,7 +875,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </section>
 
       {/* 7. Section Finale (CTA Inscription) */}
-      <section id="rejoindre" className="py-20 bg-gradient-to-br from-[#064E3B] via-[#047857] to-[#065F46] text-white">
+      <section id="rejoindre" className="py-20 bg-linear-to-br from-[#064E3B] via-[#047857] to-[#065F46] text-white">
         <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
           <span className="inline-block px-3 py-1 bg-white/10 rounded-[10px] text-xs font-semibold text-emerald-200 backdrop-blur-xs">
             Inscriptions ouvertes pour l'année universitaire 2025–2026
@@ -999,7 +999,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </div>
 
             <div className="p-6 overflow-y-auto space-y-6">
-              <div className="bg-gradient-to-br from-slate-100 to-emerald-50 rounded-[10px] border border-[#CBD5E1] p-6 shadow-inner text-center">
+              <div className="bg-linear-to-br from-slate-100 to-emerald-50 rounded-[10px] border border-[#CBD5E1] p-6 shadow-inner text-center">
                 <div className="max-w-md mx-auto space-y-3">
                   <div className="w-14 h-14 rounded-[10px] bg-[#047857] text-white mx-auto flex items-center justify-center shadow-xs">
                     <Laptop className="w-7 h-7" />

@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendJsonResponse(['success' => false, 'error' => 'Méthode POST requise.'], 405);
 }
 
+verifyCsrfToken();
 $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
 $lessonId = (int)($input['lesson_id'] ?? 0);
 $isCompleted = !empty($input['is_completed']) ? 1 : 0;

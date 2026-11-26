@@ -49,6 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendJsonResponse(['success' => false, 'error' => 'Méthode non autorisée.'], 405);
 }
 
+verifyCsrfToken();
 $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
 $action = strtolower((string)($input['action'] ?? 'create'));
 

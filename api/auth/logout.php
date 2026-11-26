@@ -11,9 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendJsonResponse(['success' => false, 'error' => 'Méthode POST requise.'], 405);
 }
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+verifyCsrfToken();
+startSession();
 
 $_SESSION = [];
 if (ini_get("session.use_cookies")) {

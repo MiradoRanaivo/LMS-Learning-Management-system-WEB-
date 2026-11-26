@@ -64,6 +64,7 @@ $statusFilter = $_GET['status'] ?? 'all'; // 'en_cours', 'termine', 'all'
 $scope = strtolower((string)($_GET['scope'] ?? 'enrolled'));
 
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+    verifyCsrfToken();
     $courseId = (int)($_GET['id'] ?? 0);
     if ($courseId <= 0) {
         sendJsonResponse(['success' => false, 'error' => 'Identifiant de cours invalide.'], 400);
@@ -94,6 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrfToken();
     if (!in_array($role, ['teacher', 'admin'], true)) {
         sendJsonResponse(['success' => false, 'error' => 'Seuls les enseignants et administrateurs peuvent créer un cours.'], 403);
     }

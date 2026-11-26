@@ -7,12 +7,7 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../db.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start([
-        'cookie_httponly' => true,
-        'cookie_samesite' => 'Lax'
-    ]);
-}
+startSession();
 
 if (!isset($_SESSION['user'])) {
     sendJsonResponse([

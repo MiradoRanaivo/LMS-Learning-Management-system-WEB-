@@ -96,13 +96,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrfToken();
     $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
-    $courseId = (int)($input['course_id'] ?? 1);
+    $courseId = (int)($input['course_id'] ?? 0);
     $title = trim((string)($input['title'] ?? ''));
     $content = trim((string)($input['content'] ?? ''));
 
-    if (empty($title) || empty($content)) {
-        sendJsonResponse(['success' => false, 'error' => 'Le titre et le message sont requis.'], 400);
+    if ($courseId <= 0 || $title === '' || mb_strlen($title) > 255 || $content === '' || mb_strlen($content) > 65535) {
+        sendJsonResponse(['success' => false, 'error' => 'Cours, titre ou message invalide.'], 400);
     }
 
     if ($user['role'] === 'student') {
@@ -135,3 +136,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'message' => 'Sujet publié avec succès sur le forum !'
     ]);
 }
+
+header('Allow: GET, POST');
+sendJsonResponse(['success' => false, 'error' => 'Méthode non autorisée.'], 405);

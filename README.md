@@ -42,8 +42,9 @@ LMS Web regroupe les outils nécessaires au suivi des activités pédagogiques :
    ```
 
 3. Démarrer MySQL depuis le panneau de contrôle XAMPP.
-4. Créer la base `lms_db` et importer `database/schema.sql`. Pour une base déjà existante, appliquer aussi les migrations qui ne l’ont pas encore été, notamment `database/migrations/006_teacher_follows.sql`.
-5. Vérifier les paramètres de connexion PHP. Par défaut, `api/db.php` utilise `127.0.0.1:3306`, la base `lms_db`, l’utilisateur `root` et un mot de passe vide. Pour une autre configuration, définir les variables d’environnement `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` et `DB_PASS` dans le terminal qui lance PHP. PHP ne lit pas automatiquement le fichier `.env`.
+4. Pour une nouvelle base, créer `lms_db` puis importer `database/schema.sql`. Le fichier contient le schéma courant ; ne lui appliquez pas ensuite les migrations.
+5. Pour une base existante, sauvegardez-la d’abord et **n’importez pas** `schema.sql` comme mise à niveau. Vérifiez les colonnes/tables déjà présentes, puis appliquez uniquement les migrations manquantes dans l’ordre : `001_user_preferences.sql`, `002_lesson_resource_management.sql`, `003_assignment_management.sql`, `004_quiz_exam_management.sql`, `005_quiz_manual_grading.sql`, les deux fichiers `006_*.sql`, `007_explicit_grade_publication.sql`, `008_user_notification_preferences.sql`. Certaines migrations ne sont pas ré-exécutables : ne les relancez pas si leurs changements sont déjà présents. Ces scripts ne réinitialisent pas la base.
+6. Vérifier les paramètres de connexion PHP. Par défaut, `api/db.php` utilise `127.0.0.1:3306`, la base `lms_db`, l’utilisateur `root` et un mot de passe vide. Pour une autre configuration, définir les variables d’environnement `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` et `DB_PASS` dans le terminal qui lance PHP. PHP ne lit pas automatiquement le fichier `.env`.
 
 ## Développement local (Windows / XAMPP)
 
