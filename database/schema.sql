@@ -33,6 +33,8 @@ CREATE TABLE IF NOT EXISTS `users` (
   `firstname` VARCHAR(100) NOT NULL,
   `lastname` VARCHAR(100) NOT NULL,
   `email` VARCHAR(191) NOT NULL UNIQUE,
+  `student_id` VARCHAR(50) DEFAULT NULL UNIQUE,
+  `department` VARCHAR(150) DEFAULT NULL,
   `password_hash` VARCHAR(255) NOT NULL,
   `role` ENUM('student', 'teacher', 'admin') NOT NULL DEFAULT 'student',
   `avatar_initials` VARCHAR(4) NOT NULL,
