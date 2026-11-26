@@ -185,6 +185,14 @@ export default function App() {
   const [selectedCourseId, setSelectedCourseId] = useState<number>(1);
   const [catalogCourses, setCatalogCourses] = useState<any[]>([]);
   const [courseContent, setCourseContent] = useState<any | null>(null);
+  const [quizCatalog, setQuizCatalog] = useState<any[]>([]);
+  const [activeQuiz, setActiveQuiz] = useState<any | null>(null);
+  const [quizQuestions, setQuizQuestions] = useState<any[]>([]);
+  const [quizAnswers, setQuizAnswers] = useState<Record<number, string | string[]>>({});
+  const [quizResult, setQuizResult] = useState<any | null>(null);
+  const [quizLoading, setQuizLoading] = useState(false);
+  const [quizSubmitting, setQuizSubmitting] = useState(false);
+  const [quizError, setQuizError] = useState('');
   const [courseContentLoading, setCourseContentLoading] = useState(false);
   const [myCourses, setMyCourses] = useState<any[]>([]);
   const [coursesLoading, setCoursesLoading] = useState(false);
@@ -869,6 +877,62 @@ export default function App() {
       .finally(() => { if (!cancelled) setCourseContentLoading(false); });
     return () => { cancelled = true; };
   }, [isAuthenticated, activeScreen, selectedCourseId]);
+
+  useEffect(() => {
+    if (!isAuthenticated || currentUser.role !== 'student' || activeScreen !== 'quiz') return;
+    let cancelled = false;
+    setQuizLoading(true);
+    setQuizError('');
+    fetch('/lms/api/quizzes/list.php', { credentials: 'include', headers: { Accept: 'application/json' } })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.error || 'Impossible de charger les quiz.');
+        if (!cancelled) setQuizCatalog(Array.isArray(data.quizzes) ? data.quizzes : []);
+      })
+      .catch((error) => { if (!cancelled) setQuizError(error instanceof Error ? error.message : 'Erreur de chargement des quiz.'); })
+      .finally(() => { if (!cancelled) setQuizLoading(false); });
+    return () => { cancelled = true; };
+  }, [isAuthenticated, currentUser.id, currentUser.role, activeScreen]);
+
+  const startQuiz = async (quizId: number) => {
+    setQuizLoading(true);
+    setQuizError('');
+    setQuizResult(null);
+    try {
+      const response = await fetch(`/lms/api/quizzes/get.php?id=${quizId}`, { credentials: 'include', headers: { Accept: 'application/json' } });
+      const data = await response.json();
+      if (!response.ok || !data.success) throw new Error(data.error || 'Ce quiz n’est pas accessible.');
+      setActiveQuiz(data.quiz);
+      setQuizQuestions(Array.isArray(data.questions) ? data.questions : []);
+      setQuizAnswers({});
+    } catch (error) {
+      setQuizError(error instanceof Error ? error.message : 'Impossible d’ouvrir ce quiz.');
+    } finally {
+      setQuizLoading(false);
+    }
+  };
+
+  const submitQuiz = async () => {
+    if (!activeQuiz) return;
+    setQuizSubmitting(true);
+    setQuizError('');
+    try {
+      const response = await fetch('/lms/api/quizzes/submit.php', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-Token': csrfToken },
+        body: JSON.stringify({ quiz_id: Number(activeQuiz.id), answers: quizAnswers }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) throw new Error(data.error || 'Impossible d’enregistrer vos réponses.');
+      setQuizResult(data);
+      setActiveQuiz(null);
+    } catch (error) {
+      setQuizError(error instanceof Error ? error.message : 'Soumission du quiz impossible.');
+    } finally {
+      setQuizSubmitting(false);
+    }
+  };
 
   const markLessonComplete = async (lessonId: number, completed: boolean) => {
     try {
@@ -2348,99 +2412,99 @@ export default function App() {
                 </div>
               )}
 
-              {/* SCREEN 7: Quiz – Élève */}
+              {/* SCREEN 7: Quiz et évaluations */}
               {activeScreen === 'quiz' && (
-                <div className="space-y-6 w-full max-w-3xl mx-auto">
-                  {/* Quiz Header matching mockup screen 7 */}
-                  <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-xs flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-[#ECFDF5] text-[#047857] flex items-center justify-center font-bold text-xs">
-                        <Award className="w-5 h-5 text-[#047857]" />
-                      </div>
-                      <div>
-                        <h2 className="text-sm font-bold text-[#0F172A]">Quiz – Variables et types</h2>
-                        <p className="text-[11px] text-[#64748B]">Développement Web • 10 questions • 20 min</p>
-                      </div>
-                    </div>
-                    <span className="text-xs font-bold text-[#047857] bg-[#ECFDF5] px-2.5 py-1 rounded">
-                      Question 3 / 10
-                    </span>
+                <div className="mx-auto w-full max-w-4xl space-y-6">
+                  <div>
+                    <h1 className="text-xl font-bold text-[#0F172A]">Quiz et évaluations</h1>
+                    <p className="mt-1 text-xs text-[#64748B]">Les évaluations disponibles pour vos cours sont chargées depuis la base de données.</p>
                   </div>
-
-                  {/* Question Card */}
-                  <div className="bg-white border border-[#E2E8F0] rounded-xl p-6 shadow-xs space-y-5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-[#64748B]">Question 3 / 10</span>
-                      <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded">17:42 restant</span>
+                  {quizError && <div role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{quizError}</div>}
+                  {quizLoading && <p className="text-sm text-[#64748B]">Chargement des évaluations…</p>}
+                  {quizResult && (
+                    <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5">
+                      <h2 className="text-sm font-semibold text-emerald-800">Votre tentative a été enregistrée</h2>
+                      <p className="mt-2 text-sm text-slate-700">Le résultat sera disponible après publication par l’enseignant.</p>
+                      {quizResult.manual_review && <p className="mt-1 text-xs text-slate-600">Certaines réponses nécessitent une correction manuelle.</p>}
+                      <button type="button" onClick={() => setQuizResult(null)} className="mt-3 rounded-lg bg-emerald-700 px-4 py-2 text-xs font-semibold text-white">Retour aux évaluations</button>
                     </div>
-
-                    <h3 className="text-sm font-semibold text-[#0F172A]">
-                      Quelle est la bonne syntaxe pour déclarer une variable modifiable en JavaScript ?
-                    </h3>
-
-                    {/* Radio Options A, B, C, D */}
-                    <div className="space-y-2.5">
-                      {[
-                        { key: 'a', text: 'let nom = "Jean";' },
-                        { key: 'b', text: 'var nom = "Jean";' },
-                        { key: 'c', text: 'const nom = "Jean";' },
-                        { key: 'd', text: 'nom = "Jean";' }
-                      ].map((opt) => (
-                        <div
-                          key={opt.key}
-                          onClick={() => setSelectedQuizOption(opt.key)}
-                          className={`p-3.5 rounded-lg border flex items-center gap-3 cursor-pointer transition ${
-                            selectedQuizOption === opt.key
-                              ? 'border-[#047857] bg-[#ECFDF5]/60 ring-1 ring-[#047857]'
-                              : 'border-[#E2E8F0] hover:border-[#CBD5E1] bg-white'
-                          }`}
-                        >
-                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                            selectedQuizOption === opt.key ? 'border-[#047857]' : 'border-[#CBD5E1]'
-                          }`}>
-                            {selectedQuizOption === opt.key && (
-                              <div className="w-2 h-2 rounded-full bg-[#047857]" />
+                  )}
+                  {activeQuiz ? (
+                    <section className="space-y-4 rounded-xl border border-[#E2E8F0] bg-white p-5">
+                      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div>
+                          <h2 className="text-base font-semibold text-slate-900">{activeQuiz.title}</h2>
+                          <p className="mt-1 text-xs text-slate-500">{activeQuiz.course_title} · {quizQuestions.length} questions · {activeQuiz.duration_minutes} min</p>
+                          {activeQuiz.instructions && <p className="mt-2 text-sm text-slate-600">{activeQuiz.instructions}</p>}
+                        </div>
+                        <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">{activeQuiz.assessment_type === 'exam' ? 'Examen' : 'Quiz'}</span>
+                      </div>
+                      {quizQuestions.map((question: any, index: number) => {
+                        const options = [
+                          ['a', question.option_a], ['b', question.option_b], ['c', question.option_c], ['d', question.option_d],
+                        ].filter((entry) => Boolean(entry[1]));
+                        const multiple = question.question_type === 'multiple';
+                        const selected = quizAnswers[Number(question.id)];
+                        return (
+                          <div key={question.id} className="space-y-3 border-b border-slate-100 pb-4 last:border-0">
+                            <h3 className="text-sm font-semibold text-slate-900">{index + 1}. {question.question_text} <span className="text-[11px] font-normal text-slate-500">({question.points} pt)</span></h3>
+                            {options.length > 0 ? (
+                              <div className="grid gap-2 sm:grid-cols-2">
+                                {options.map(([key, label]) => {
+                                  const checked = multiple ? (Array.isArray(selected) && selected.includes(String(key))) : selected === String(key);
+                                  return (
+                                    <label key={String(key)} className={`flex cursor-pointer items-center gap-2 rounded-lg border p-3 text-xs ${checked ? 'border-emerald-600 bg-emerald-50' : 'border-slate-200'}`}>
+                                      <input
+                                        type={multiple ? 'checkbox' : 'radio'}
+                                        name={`question-${question.id}`}
+                                        checked={checked}
+                                        onChange={(event) => setQuizAnswers((previous) => ({
+                                          ...previous,
+                                          [Number(question.id)]: multiple
+                                            ? event.target.checked
+                                              ? [...(Array.isArray(previous[Number(question.id)]) ? previous[Number(question.id)] as string[] : []), String(key)]
+                                              : (Array.isArray(previous[Number(question.id)]) ? previous[Number(question.id)] as string[] : []).filter((value) => value !== String(key))
+                                            : String(key),
+                                        }))}
+                                      />
+                                      <span>{String(key).toUpperCase()}. {String(label)}</span>
+                                    </label>
+                                  );
+                                })}
+                              </div>
+                            ) : (
+                              <textarea value={typeof selected === 'string' ? selected : ''} onChange={(event) => setQuizAnswers((previous) => ({ ...previous, [Number(question.id)]: event.target.value }))} rows={question.question_type === 'essay' ? 5 : 2} className="w-full rounded-lg border border-slate-200 p-3 text-sm" placeholder="Votre réponse…" />
                             )}
                           </div>
-                          <span className="font-mono text-xs text-[#0F172A]">{opt.text}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Actions : Précédent & Suivant */}
-                    <div className="flex items-center justify-between pt-4 border-t border-[#F1F5F9]">
-                      <button
-                        onClick={() => setSelectedQuizOption('c')}
-                        className="px-4 py-2 border border-[#CBD5E1] text-[#475569] hover:bg-slate-50 text-xs font-semibold rounded-lg transition"
-                      >
-                        Précédent
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          setQuizScore(9); // 9 / 10
-                        }}
-                        className="px-5 py-2 bg-[#047857] hover:bg-[#065F46] text-white text-xs font-semibold rounded-lg transition"
-                      >
-                        Suivant →
-                      </button>
-                    </div>
-
-                    {quizScore !== null && (
-                      <div className="mt-4 p-4 rounded-lg bg-[#ECFDF5] border border-[#047857]/30 flex items-center justify-between">
-                        <div>
-                          <p className="text-xs font-bold text-[#047857]">Résultat calculé côté serveur (PHP) :</p>
-                          <p className="text-sm font-semibold text-[#0F172A]">Score : 9 / 10 (90%) - Réussi !</p>
-                        </div>
-                        <button
-                          onClick={() => setActiveScreen('grades')}
-                          className="px-3 py-1.5 bg-[#047857] text-white text-xs font-semibold rounded-lg"
-                        >
-                          Voir mes notes ECTS
-                        </button>
+                        );
+                      })}
+                      <div className="flex flex-wrap justify-between gap-3 pt-2">
+                        <button type="button" onClick={() => { setActiveQuiz(null); setQuizAnswers({}); }} className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700">Quitter</button>
+                        <button type="button" disabled={quizSubmitting || quizQuestions.length === 0} onClick={submitQuiz} className="rounded-lg bg-[#047857] px-5 py-2 text-xs font-semibold text-white hover:bg-[#065F46] disabled:opacity-50">{quizSubmitting ? 'Envoi…' : 'Soumettre mes réponses'}</button>
                       </div>
-                    )}
-                  </div>
+                    </section>
+                  ) : !quizResult && !quizLoading ? (
+                    quizCatalog.length === 0 ? (
+                      <div className="rounded-xl border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-600">Aucun quiz publié et ouvert n’est disponible pour vos cours inscrits.</div>
+                    ) : (
+                      <div className="grid gap-3 md:grid-cols-2">
+                        {quizCatalog.map((quiz: any) => (
+                          <article key={quiz.id} className="rounded-xl border border-slate-200 bg-white p-4">
+                            <div className="flex items-start justify-between gap-3">
+                              <div>
+                                <h2 className="text-sm font-semibold text-slate-900">{quiz.title}</h2>
+                                <p className="mt-1 text-xs text-slate-500">{quiz.course_code} · {quiz.course_title}</p>
+                              </div>
+                              <Award className="h-5 w-5 shrink-0 text-emerald-700" />
+                            </div>
+                            <p className="mt-3 text-xs text-slate-600">{quiz.total_questions} questions · {quiz.duration_minutes} min · Seuil : {quiz.pass_score_percent}%</p>
+                            {quiz.description && <p className="mt-2 text-xs leading-5 text-slate-500">{quiz.description}</p>}
+                            <button type="button" onClick={() => startQuiz(Number(quiz.id))} className="mt-4 w-full rounded-lg bg-[#047857] px-4 py-2.5 text-xs font-semibold text-white hover:bg-[#065F46]">Commencer</button>
+                          </article>
+                        ))}
+                      </div>
+                    )
+                  ) : null}
                 </div>
               )}
 
