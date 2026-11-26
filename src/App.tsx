@@ -770,7 +770,16 @@ export default function App() {
           password: overrides?.password ?? loginPassword,
         }),
       });
-      const data = await response.json();
+      const responseText = await response.text();
+      let data: any;
+      try {
+        data = responseText ? JSON.parse(responseText) : null;
+      } catch {
+        throw new Error(`Le serveur a renvoyé une réponse non JSON (HTTP ${response.status}). Vérifiez le backend PHP et le proxy Vite.`);
+      }
+      if (!data) {
+        throw new Error(`Le serveur PHP n'a renvoyé aucune donnée (HTTP ${response.status}). Vérifiez le terminal PHP.`);
+      }
       if (!response.ok || !data.success || !data.user) {
         throw new Error(data.error || 'Identifiants incorrects. Vérifiez votre email et votre mot de passe.');
       }
