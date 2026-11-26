@@ -80,6 +80,7 @@ php.once('exit', (code) => {
 try {
   console.log(`Démarrage du backend PHP sur http://127.0.0.1:${phpPort}`);
   await waitForPort('127.0.0.1', phpPort);
+  if (shuttingDown) process.exit(1);
   console.log('Backend PHP prêt. Démarrage de Vite…');
 
   const viteCli = path.join(root, 'node_modules', 'vite', 'bin', 'vite.js');
