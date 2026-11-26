@@ -917,8 +917,7 @@ export default function App() {
         .finally(() => { if (!cancelled) setDashboardLoading(false); });
     };
     loadDashboard();
-    const refreshTimer = currentUser.role === 'student' && activeScreen === 'dashboard-student'
-      ? window.setInterval(loadDashboard, 60000) : null;
+    const refreshTimer = window.setInterval(loadDashboard, 60000);
     return () => { cancelled = true; if (refreshTimer !== null) window.clearInterval(refreshTimer); };
   }, [isAuthenticated, currentUser.id, currentUser.role, activeScreen]);
 
@@ -1969,6 +1968,9 @@ export default function App() {
 
             {/* Dynamic Screen Contents (18 screens faithful to mockup) */}
             <div className="p-4 sm:p-6 lg:p-8 flex-1 overflow-y-auto w-full">
+              {activeScreen.startsWith('dashboard-') && dashboardError && (
+                <div role="alert" className="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{dashboardError}</div>
+              )}
               {/* SCREEN 1: Dashboard – Élève */}
               {activeScreen === 'dashboard-student' && (
                 <div className="space-y-6 w-full">
@@ -2140,11 +2142,11 @@ export default function App() {
                           Voir les devoirs
                         </button>
                         <button
-                          onClick={() => setActiveScreen('users-management')}
+                          onClick={() => setActiveScreen('grades')}
                           className="w-full flex items-center gap-2.5 p-2.5 rounded-lg border border-[#E2E8F0] hover:border-[#047857] hover:bg-[#ECFDF5]/40 text-xs font-medium text-[#0F172A] transition text-left"
                         >
                           <Users className="w-4 h-4 text-[#047857]" />
-                          Mes étudiants (aucune donnée connectée)
+                          Ouvrir le carnet de notes
                         </button>
                       </div>
                     </div>
@@ -2153,14 +2155,34 @@ export default function App() {
                   {/* Bottom Row : Activité récente & Évaluations */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                     <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-xs">
-                      <h3 className="text-sm font-semibold text-[#0F172A]">Évaluations</h3>
-                      <p className="mt-3 text-sm leading-6 text-[#64748B]">Consultez et corrigez les devoirs disponibles dans votre espace.</p>
-                      <button type="button" onClick={() => setActiveScreen('assignments')} className="mt-4 min-h-10 rounded-lg bg-[#047857] px-4 text-sm font-semibold text-white hover:bg-[#065F46]">Ouvrir les devoirs</button>
+                      <h3 className="text-sm font-semibold text-[#0F172A]">Activité récente</h3>
+                      <div className="mt-4 space-y-3">
+                        {dashboardStats?.recent_submissions?.length ? dashboardStats.recent_submissions.slice(0, 4).map((submission: any) => (
+                          <div key={submission.id} className="flex items-start justify-between gap-3 border-b border-[#F1F5F9] pb-3 last:border-0">
+                            <div className="min-w-0">
+                              <p className="truncate text-xs font-semibold text-[#0F172A]">{submission.assignment_title}</p>
+                              <p className="mt-1 truncate text-[11px] text-[#64748B]">{submission.firstname} {submission.lastname} · {submission.course_title}</p>
+                            </div>
+                            <span className="shrink-0 text-[10px] text-[#64748B]">{submission.submitted_at ? new Date(String(submission.submitted_at).replace(' ', 'T')).toLocaleDateString('fr-FR') : ''}</span>
+                          </div>
+                        )) : <p className="text-sm leading-6 text-[#64748B]">{dashboardLoading ? 'Chargement de l’activité…' : 'Aucune remise reçue pour vos cours.'}</p>}
+                      </div>
                     </div>
 
                     <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-xs">
-                      <h3 className="text-sm font-semibold text-[#0F172A] mb-4">Devoirs à corriger</h3>
-                      <p className="text-sm leading-6 text-[#64748B]">Le nombre de devoirs à corriger apparaîtra avec les soumissions de votre compte.</p>
+                      <h3 className="text-sm font-semibold text-[#0F172A] mb-4">Prochaines échéances</h3>
+                      <div className="space-y-3">
+                        {dashboardStats?.upcoming_assignments?.length ? dashboardStats.upcoming_assignments.slice(0, 4).map((assignment: any) => (
+                          <div key={assignment.id} className="flex items-start justify-between gap-3 border-b border-[#F1F5F9] pb-3 last:border-0">
+                            <div className="min-w-0">
+                              <p className="truncate text-xs font-semibold text-[#0F172A]">{assignment.title}</p>
+                              <p className="mt-1 truncate text-[11px] text-[#64748B]">{assignment.course_title}</p>
+                              <p className="mt-1 text-[11px] text-amber-700">À rendre le {new Date(String(assignment.due_date).replace(' ', 'T')).toLocaleDateString('fr-FR')}</p>
+                            </div>
+                            <span className="shrink-0 rounded-full bg-amber-50 px-2 py-1 text-[10px] font-semibold text-amber-700">{assignment.pending_count} à corriger</span>
+                          </div>
+                        )) : <p className="text-sm leading-6 text-[#64748B]">{dashboardLoading ? 'Chargement des échéances…' : 'Aucune échéance publiée à venir.'}</p>}
+                      </div>
                       <button type="button" onClick={() => setActiveScreen('assignments')} className="mt-4 min-h-10 rounded-lg border border-[#CBD5E1] px-4 text-sm font-semibold text-[#064E3B] hover:bg-[#ECFDF5]">Consulter les devoirs</button>
                     </div>
                   </div>
@@ -2173,7 +2195,7 @@ export default function App() {
                   {/* Greeting */}
                   <div>
                     <h1 className="text-xl font-bold text-[#0F172A]">Bonjour, {currentUser.firstname || currentUser.name}</h1>
-                    <p className="text-xs text-[#64748B] mt-0.5">Vue des comptes locaux de cette session.</p>
+                      <p className="text-xs text-[#64748B] mt-0.5">Vue des données enregistrées sur la plateforme.</p>
                   </div>
 
 
@@ -2181,15 +2203,15 @@ export default function App() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs">
                       <p className="text-xs text-[#64748B]">Comptes locaux</p>
-                      <p className="text-2xl font-bold text-[#0F172A] mt-1">{dashboardStats?.total_users ?? registeredAccounts.length}</p>
+                      <p className="text-2xl font-bold text-[#0F172A] mt-1">{dashboardLoading ? '…' : dashboardStats?.total_users ?? 0}</p>
                     </div>
                     <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs">
                       <p className="text-xs text-[#64748B]">Enseignants</p>
-                      <p className="text-2xl font-bold text-[#0F172A] mt-1">{dashboardStats?.total_teachers ?? adminTeacherCount}</p>
+                      <p className="text-2xl font-bold text-[#0F172A] mt-1">{dashboardLoading ? '…' : dashboardStats?.total_teachers ?? 0}</p>
                     </div>
                     <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs">
                       <p className="text-xs text-[#64748B]">Cours</p>
-                      <p className="text-2xl font-bold text-[#0F172A] mt-1">{dashboardStats?.total_courses ?? coursesList.length}</p>
+                      <p className="text-2xl font-bold text-[#0F172A] mt-1">{dashboardLoading ? '…' : dashboardStats?.total_courses ?? 0}</p>
                     </div>
                     <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs">
                       <p className="text-xs text-[#64748B]">Quiz</p>
@@ -2203,21 +2225,21 @@ export default function App() {
                     <div className="lg:col-span-2 bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-xs">
                       <div className="flex items-center justify-between mb-4">
                         <h3 className="text-sm font-semibold text-[#0F172A]">Répartition des rôles</h3>
-                        <span className="text-xs text-[#64748B]">Cette session</span>
+                        <span className="text-xs text-[#64748B]">Tous les comptes</span>
                       </div>
                       <p className="mb-4 text-xs leading-5 text-[#64748B]">Répartition des comptes enregistrés sur la plateforme.</p>
                       <div className="mb-4 flex h-36 items-end gap-2 rounded-lg bg-[#F8FAFC] p-4">
-                        {([['Étudiants',dashboardStats?.total_students ?? adminStudentCount],['Enseignants',dashboardStats?.total_teachers ?? adminTeacherCount],['Admins',Math.max(0,(dashboardStats?.total_users ?? registeredAccounts.length)-(dashboardStats?.total_students ?? adminStudentCount)-(dashboardStats?.total_teachers ?? adminTeacherCount))]] as [string,number][]).map(([label,value])=>{const max=Math.max(1,dashboardStats?.total_users ?? registeredAccounts.length);return <div key={label} className="flex h-full flex-1 flex-col items-center justify-end gap-2"><div className="w-full max-w-16 rounded-t-md bg-[#10B981]" style={{height:`${Math.max(5,value/max*100)}%`}} title={String(value)}></div><span className="text-[10px] text-[#64748B]">{label}</span><span className="text-xs font-semibold text-[#0F172A]">{value}</span></div>})}
+                        {([['Étudiants',dashboardStats?.total_students ?? 0],['Enseignants',dashboardStats?.total_teachers ?? 0],['Admins',dashboardStats?.total_admins ?? 0]] as [string,number][]).map(([label,value])=>{const max=Math.max(1,dashboardStats?.total_users ?? 0);return <div key={label} className="flex h-full flex-1 flex-col items-center justify-end gap-2"><div className="w-full max-w-16 rounded-t-md bg-[#10B981]" style={{height:`${Math.max(5,value/max*100)}%`}} title={String(value)}></div><span className="text-[10px] text-[#64748B]">{label}</span><span className="text-xs font-semibold text-[#0F172A]">{dashboardLoading ? '…' : value}</span></div>})}
                       </div>
                       <div className="divide-y divide-[#E2E8F0]">
                         {([
-                          ['Étudiants', dashboardStats?.total_students ?? adminStudentCount],
-                          ['Enseignants', dashboardStats?.total_teachers ?? adminTeacherCount],
-                          ['Administrateurs', Math.max(0, (dashboardStats?.total_users ?? registeredAccounts.length) - (dashboardStats?.total_students ?? adminStudentCount) - (dashboardStats?.total_teachers ?? adminTeacherCount))],
+                          ['Étudiants', dashboardStats?.total_students ?? 0],
+                          ['Enseignants', dashboardStats?.total_teachers ?? 0],
+                          ['Administrateurs', dashboardStats?.total_admins ?? 0],
                         ] as const).map(([label, count]) => (
                           <div key={label} className="flex items-center justify-between py-3 text-sm">
                             <span className="text-[#475569]">{label}</span>
-                            <span className="font-semibold tabular-nums text-[#0F172A]">{count}</span>
+                            <span className="font-semibold tabular-nums text-[#0F172A]">{dashboardLoading ? '…' : count}</span>
                           </div>
                         ))}
                       </div>
@@ -2263,32 +2285,31 @@ export default function App() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {/* Utilisateurs récents */}
                     <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-xs">
-                      <h3 className="text-sm font-semibold text-[#0F172A] mb-3">Comptes enregistrés dans cette session</h3>
+                      <h3 className="text-sm font-semibold text-[#0F172A] mb-3">Utilisateurs récents</h3>
                       <div className="space-y-3">
-                        {registeredAccounts.slice(0, 5).map((u) => (
+                        {dashboardStats?.recent_users?.length ? dashboardStats.recent_users.map((u: any) => (
                           <div key={u.id} className="flex items-center justify-between">
                             <div className="flex items-center gap-2.5">
-                              <img
-                                src={u.avatarUrl}
-                                alt={u.name}
-                                className="w-8 h-8 rounded-full object-cover border border-[#E2E8F0]"
-                              />
+                              {u.avatar_url ? <img src={u.avatar_url} alt="" className="w-8 h-8 rounded-full object-cover border border-[#E2E8F0]" /> : <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[#E2E8F0] bg-slate-50 text-[10px] font-semibold text-slate-600">{u.avatar_initials || `${u.firstname?.[0] || ''}${u.lastname?.[0] || ''}`}</span>}
                               <div>
-                                <p className="text-xs font-semibold text-[#0F172A]">{u.name}</p>
+                                <p className="text-xs font-semibold text-[#0F172A]">{u.firstname} {u.lastname}</p>
                                 <p className="text-[11px] text-[#64748B]">{u.email} · {u.role}</p>
                               </div>
                             </div>
                           </div>
-                        ))}
+                        )) : <p className="text-sm text-[#64748B]">{dashboardLoading ? 'Chargement des comptes…' : 'Aucun utilisateur récent.'}</p>}
                       </div>
                     </div>
 
-                    {/* Signalements */}
+                    {/* Activité récente */}
                     <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-xs">
-                      <h3 className="text-sm font-semibold text-[#0F172A] mb-3">Signalements</h3>
-                      <div className="space-y-3">
-                        <p className="text-sm text-[#64748B]">Aucun signalement n’est disponible.</p>
-                      </div>
+                      <h3 className="text-sm font-semibold text-[#0F172A] mb-3">Activité récente</h3>
+                      <div className="space-y-3">{dashboardStats?.system_logs?.length ? dashboardStats.system_logs.slice(0, 5).map((log: any) => (
+                        <div key={log.id} className="flex items-start justify-between gap-3 border-b border-[#F1F5F9] pb-3 last:border-0">
+                          <div className="min-w-0"><p className="truncate text-xs font-semibold text-[#0F172A]">{log.action}</p><p className="mt-1 line-clamp-2 text-[11px] text-[#64748B]">{log.details || `${log.firstname || ''} ${log.lastname || ''}`}</p></div>
+                          <span className="shrink-0 text-[10px] text-[#64748B]">{log.created_at ? new Date(String(log.created_at).replace(' ', 'T')).toLocaleDateString('fr-FR') : ''}</span>
+                        </div>
+                      )) : <p className="text-sm text-[#64748B]">{dashboardLoading ? 'Chargement de l’activité…' : 'Aucune activité enregistrée.'}</p>}</div>
                     </div>
                   </div>
                 </div>

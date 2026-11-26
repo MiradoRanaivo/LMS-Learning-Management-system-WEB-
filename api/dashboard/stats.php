@@ -16,6 +16,7 @@ if ($role === 'admin') {
     $totalUsers = (int)$pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
     $totalStudents = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE role = 'student'")->fetchColumn();
     $totalTeachers = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE role = 'teacher'")->fetchColumn();
+    $totalAdmins = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE role = 'admin'")->fetchColumn();
     $totalCourses = (int)$pdo->query("SELECT COUNT(*) FROM courses")->fetchColumn();
     $totalQuizzes = (int)$pdo->query("SELECT COUNT(*) FROM quizzes")->fetchColumn();
 
@@ -47,6 +48,7 @@ if ($role === 'admin') {
             'total_users' => $totalUsers,
             'total_students' => $totalStudents,
             'total_teachers' => $totalTeachers,
+            'total_admins' => $totalAdmins,
             'total_courses' => $totalCourses,
             'total_quizzes' => $totalQuizzes,
             'pending_corrections' => $pendingCorrections,
@@ -68,13 +70,34 @@ if ($role === 'admin') {
     $quizzesStmt->execute(['uid' => $userId]);
     $myQuizzesCount = (int)$quizzesStmt->fetchColumn();
 
-    $pendingStmt = $pdo->prepare("SELECT COUNT(*) FROM assignment_submissions s JOIN assignments a ON a.id = s.assignment_id JOIN courses c ON c.id = a.course_id WHERE c.teacher_id = :uid AND s.status = 'rendu'");
+    $pendingStmt = $pdo->prepare("SELECT COUNT(*) FROM assignment_submissions s JOIN assignments a ON a.id = s.assignment_id JOIN courses c ON c.id = a.course_id WHERE c.teacher_id = :uid AND s.status IN ('rendu', 'en_retard')");
     $pendingStmt->execute(['uid' => $userId]);
     $pendingCorrections = (int)$pendingStmt->fetchColumn();
 
     $myCoursesStmt = $pdo->prepare("SELECT c.id, c.code, c.title, c.color_accent, COUNT(DISTINCT e.user_id) AS students_count FROM courses c LEFT JOIN enrollments e ON e.course_id = c.id AND e.status = 'en_cours' WHERE c.teacher_id = :uid GROUP BY c.id, c.code, c.title, c.color_accent ORDER BY c.id");
     $myCoursesStmt->execute(['uid' => $userId]);
     $myCourses = $myCoursesStmt->fetchAll();
+
+    $upcomingStmt = $pdo->prepare("SELECT a.id, a.title, a.due_date, c.title AS course_title,
+        (SELECT COUNT(*) FROM assignment_submissions s WHERE s.assignment_id = a.id AND s.status IN ('rendu', 'en_retard')) AS pending_count
+        FROM assignments a JOIN courses c ON c.id = a.course_id
+        WHERE c.teacher_id = :uid AND a.is_published = 1 AND a.archived_at IS NULL
+          AND a.due_date >= CURRENT_TIMESTAMP
+          AND (a.publication_date IS NULL OR a.publication_date <= CURRENT_TIMESTAMP)
+        ORDER BY a.due_date ASC LIMIT 5");
+    $upcomingStmt->execute(['uid' => $userId]);
+    $upcomingAssignments = $upcomingStmt->fetchAll();
+
+    $activityStmt = $pdo->prepare("SELECT s.id, a.title AS assignment_title, c.title AS course_title,
+        u.firstname, u.lastname, s.status, s.submitted_at
+        FROM assignment_submissions s
+        JOIN assignments a ON a.id = s.assignment_id
+        JOIN courses c ON c.id = a.course_id
+        JOIN users u ON u.id = s.user_id
+        WHERE c.teacher_id = :uid
+        ORDER BY s.submitted_at DESC LIMIT 5");
+    $activityStmt->execute(['uid' => $userId]);
+    $recentSubmissions = $activityStmt->fetchAll();
 
     sendJsonResponse([
         'success' => true,
@@ -85,14 +108,16 @@ if ($role === 'admin') {
             'my_quizzes' => $myQuizzesCount,
             'to_grade' => $pendingCorrections,
         ],
-        'courses' => $myCourses
+        'courses' => $myCourses,
+        'upcoming_assignments' => $upcomingAssignments,
+        'recent_submissions' => $recentSubmissions,
     ]);
 } else {
     $progressStmt = $pdo->prepare("SELECT COUNT(DISTINCT lp.lesson_id) FROM lesson_progress lp JOIN lessons l ON l.id = lp.lesson_id JOIN chapters ch ON ch.id = l.chapter_id JOIN enrollments e ON e.course_id = ch.course_id AND e.user_id = :uid WHERE lp.user_id = :uid2 AND lp.is_completed = 1");
     $progressStmt->execute(['uid' => $userId, 'uid2' => $userId]);
     $completedLessons = (int)$progressStmt->fetchColumn();
 
-    $totalLessonsStmt = $pdo->prepare("SELECT COUNT(DISTINCT l.id) FROM lessons l JOIN chapters ch ON ch.id = l.chapter_id JOIN enrollments e ON e.course_id = ch.course_id AND e.user_id = :uid");
+    $totalLessonsStmt = $pdo->prepare("SELECT COUNT(DISTINCT l.id) FROM lessons l JOIN chapters ch ON ch.id = l.chapter_id JOIN enrollments e ON e.course_id = ch.course_id AND e.user_id = :uid WHERE l.is_published = 1");
     $totalLessonsStmt->execute(['uid' => $userId]);
     $totalLessons = (int)$totalLessonsStmt->fetchColumn();
 
