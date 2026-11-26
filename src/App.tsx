@@ -2,7 +2,6 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  * LMS Web - Plateforme Universitaire d'Apprentissage
- * Conforme aux 18 maquettes officielles de référence
  */
 
 import React, { useState, useEffect } from 'react';
@@ -161,7 +160,7 @@ export type ScreenId =
   | 'login';
 
 export default function App() {
-  // Current user state with real university photos
+  // Current user
   const [currentUser, setCurrentUser] = useState<CurrentUser>({
     id: 1,
     name: 'Andry Rakoto (Jean Martin)',
@@ -219,7 +218,7 @@ export default function App() {
   });
   const [adminUserFormError, setAdminUserFormError] = useState('');
 
-  // Registered accounts for Gmail-style quick switcher
+  // Accounts available in the account switcher
   const [registeredAccounts, setRegisteredAccounts] = useState<CurrentUser[]>([
     {
       id: 1,
@@ -348,7 +347,7 @@ export default function App() {
     setShowAdminUserModal(false);
   };
 
-  // Lesson completion state (persisted)
+  // Lesson completion state
   const [completedLessons, setCompletedLessons] = useState<number[]>([1, 2]);
 
   // Quiz state
