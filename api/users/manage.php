@@ -50,8 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $params['status'] = $status;
     }
     if ($search !== '') {
-        $where[] = '(firstname LIKE :search OR lastname LIKE :search OR email LIKE :search)';
-        $params['search'] = '%' . $search . '%';
+        $where[] = '(firstname LIKE :search_first OR lastname LIKE :search_last OR email LIKE :search_email)';
+        $params['search_first'] = '%' . $search . '%';
+        $params['search_last'] = '%' . $search . '%';
+        $params['search_email'] = '%' . $search . '%';
     }
     $sql = 'SELECT id, firstname, lastname, email, role, avatar_initials, avatar_url, phone, bio, status, created_at FROM users';
     if ($where) {
