@@ -61,6 +61,7 @@ function validateCourseInput(array $input): array {
 $userId = (int)$user['id'];
 $role = $user['role'];
 $statusFilter = $_GET['status'] ?? 'all'; // 'en_cours', 'termine', 'all'
+$scope = strtolower((string)($_GET['scope'] ?? 'enrolled'));
 
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     $courseId = (int)($_GET['id'] ?? 0);
@@ -224,7 +225,7 @@ $sql = "
 
 if ($role === 'teacher') {
     $sql = str_replace('WHERE c.is_published = 1', 'WHERE c.is_published = 1 AND c.teacher_id = :teacher_id', $sql);
-} elseif ($role === 'student') {
+} elseif ($role === 'student' && $scope !== 'catalog') {
     $sql = str_replace('WHERE c.is_published = 1', 'WHERE c.is_published = 1 AND e.user_id IS NOT NULL', $sql);
 }
 
