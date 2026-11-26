@@ -2269,60 +2269,9 @@ export default function App() {
                           ))}
                         </div>
                       ))}
-
-                        <div
-                          key={ch.num}
-                          onClick={() => {
-                            if (!ch.locked) {
-                              setSelectedLessonId(ch.num);
-                              setActiveScreen('lesson-reader');
-                            }
-                          }}
-                          className={`bg-white border rounded-xl p-4 shadow-xs flex items-center justify-between transition cursor-pointer ${
-                            ch.current
-                              ? 'border-[#047857] ring-2 ring-[#047857]/20 bg-[#ECFDF5]/10'
-                              : 'border-[#E2E8F0] hover:border-slate-300'
-                          }`}
-                        >
-                          <div className="flex items-center gap-3 min-w-0">
-                            <span className="w-9 h-9 rounded-lg bg-[#ECFDF5] text-[#047857] flex items-center justify-center font-bold text-xs shrink-0">
-                              {ch.type === 'video' ? (
-                                <Video className="w-4 h-4 text-[#047857]" />
-                              ) : ch.type === 'code' ? (
-                                <Terminal className="w-4 h-4 text-[#047857]" />
-                              ) : ch.type === 'lab' ? (
-                                <FileCode className="w-4 h-4 text-[#047857]" />
-                              ) : (
-                                <BookOpen className="w-4 h-4 text-[#047857]" />
-                              )}
-                            </span>
-                            <div className="min-w-0">
-                              <span className="text-xs font-semibold text-[#0F172A] block truncate">{ch.title}</span>
-                              <span className="text-[11px] text-[#64748B] flex items-center gap-2 mt-0.5">
-                                <span className="uppercase text-[9.5px] font-bold text-[#047857] bg-[#ECFDF5] px-1.5 py-0.2 rounded">
-                                  {ch.type}
-                                </span>
-                                <span>{ch.duration}</span>
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="shrink-0 ml-3">
-                            {ch.completed ? (
-                              <CheckCircle2 className="w-5 h-5 text-[#047857]" />
-                            ) : ch.current ? (
-                              <span className="px-2.5 py-1 bg-[#047857] text-white text-[11px] font-semibold rounded-lg flex items-center gap-1">
-                                <Play className="w-3 h-3 fill-white" /> En cours
-                              </span>
-                            ) : (
-                              <Lock className="w-4 h-4 text-[#94A3B8]" />
-                            )}
-                          </div>
-                        </div>
-                      ))}
                     </div>
 
-                    {/* Right Info Box with Professor Photo */}
+                                        {/* Right Info Box with Professor Photo */}
                     <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-xs space-y-5">
                       <div>
                         <h3 className="text-xs font-semibold text-[#0F172A] mb-3">Informations académiques</h3>
@@ -2360,10 +2309,14 @@ export default function App() {
                       </div>
 
                       <button
-                        onClick={() => { setSelectedLessonId(3); setActiveScreen('lesson-reader'); }}
-                        className="w-full py-2 bg-[#047857] hover:bg-[#065F46] text-white text-xs font-semibold rounded-lg transition"
+                        disabled={!courseContent?.chapters?.some((chapter: any) => (chapter.lessons || []).length > 0)}
+                        onClick={() => {
+                          const firstLesson = courseContent?.chapters?.flatMap((chapter: any) => chapter.lessons || [])[0];
+                          if (firstLesson) { setSelectedLessonId(Number(firstLesson.id)); setActiveScreen('lesson-reader'); }
+                        }}
+                        className="w-full rounded-lg bg-[#047857] py-2 text-xs font-semibold text-white transition hover:bg-[#065F46] disabled:cursor-not-allowed disabled:bg-slate-300"
                       >
-                        Reprendre la leçon 3.1
+                        Ouvrir la première leçon
                       </button>
 
                       <div className="border-t border-[#F1F5F9] pt-4 text-center">
