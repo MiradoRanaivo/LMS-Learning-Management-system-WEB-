@@ -136,6 +136,23 @@ type SearchResult = {
 const normalizeSearchText = (value: string) =>
   value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
+async function readApiJson(response: Response, endpoint: string): Promise<any> {
+  const body = await response.text();
+  let data: any;
+  try {
+    data = body ? JSON.parse(body) : {};
+  } catch {
+    const readable = body.replace(/<[^>]*>/g, ' ').replace(/\\s+/g, ' ').trim().slice(0, 280);
+    throw new Error(
+      `${endpoint} a renvoyé une réponse non JSON (HTTP ${response.status}). ${readable || 'Réponse vide.'}`
+    );
+  }
+  if (!response.ok || data.success === false) {
+    throw new Error(data.error || `${endpoint} : erreur HTTP ${response.status}.`);
+  }
+  return data;
+}
+
 export type ScreenId =
   | 'landing'               // Public welcome landing page (default)
   | 'signup'                // Registration form
@@ -964,10 +981,11 @@ export default function App() {
       fetch('/lms/api/courses/list.php?scope=followed', { credentials: 'include', headers: { Accept: 'application/json' } }),
     ])
       .then(async ([catalogResponse, enrolledResponse, followedResponse]) => {
-        const [catalogData, enrolledData, followedData] = await Promise.all([catalogResponse.json(), enrolledResponse.json(), followedResponse.json()]);
-        if (!catalogResponse.ok || !catalogData.success) throw new Error(catalogData.error || 'Impossible de charger le catalogue.');
-        if (!enrolledResponse.ok || !enrolledData.success) throw new Error(enrolledData.error || 'Impossible de charger vos cours.');
-        if (!followedResponse.ok || !followedData.success) throw new Error(followedData.error || 'Impossible de charger les cours des professeurs suivis.');
+        const [catalogData, enrolledData, followedData] = await Promise.all([
+          readApiJson(catalogResponse, 'Catalogue des cours'),
+          readApiJson(enrolledResponse, 'Mes inscriptions'),
+          readApiJson(followedResponse, 'Cours des professeurs suivis'),
+        ]);
         if (!cancelled) {
           setCatalogCourses(Array.isArray(catalogData.courses) ? catalogData.courses : []);
           setMyCourses(Array.isArray(enrolledData.courses) ? enrolledData.courses : []);
