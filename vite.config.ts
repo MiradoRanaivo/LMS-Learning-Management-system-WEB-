@@ -16,9 +16,15 @@ export default defineConfig(() => {
     },
     server: {
       proxy: {
-        '/lms': {
-          target: 'http://localhost',
+        // Current API calls use /api; older screens still use /lms/api.
+        '/api': {
+          target: 'http://127.0.0.1:8000',
           changeOrigin: true,
+        },
+        '/lms': {
+          target: 'http://127.0.0.1:8000',
+          changeOrigin: true,
+          rewrite: (requestPath) => requestPath.replace(/^\/lms/, ''),
         },
       },
     },
