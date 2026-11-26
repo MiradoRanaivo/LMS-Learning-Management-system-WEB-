@@ -183,6 +183,12 @@ export default function App() {
   const [showNotificationsModal, setShowNotificationsModal] = useState(false);
   const [showXamppModal, setShowXamppModal] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState<number>(1);
+  const [catalogCourses, setCatalogCourses] = useState<any[]>([]);
+  const [myCourses, setMyCourses] = useState<any[]>([]);
+  const [coursesLoading, setCoursesLoading] = useState(false);
+  const [coursesError, setCoursesError] = useState('');
+  const [enrollingCourseId, setEnrollingCourseId] = useState<number | null>(null);
+  const [csrfToken, setCsrfToken] = useState('');
   const [selectedLessonId, setSelectedLessonId] = useState<number>(3);
   const [notificationCount, setNotificationCount] = useState<number>(3);
   const [notificationPreferences, setNotificationPreferences] = useState(() => {
@@ -717,93 +723,64 @@ export default function App() {
     { label: 'Admin', email: 'tiana.rasoanaivo@exemple.com', role: 'admin' as UserRole },
   ];
 
-  const handleLoginSubmit = (e?: React.FormEvent, overrides?: { email?: string; password?: string }) => {
+  const mapApiUser = (user: any): CurrentUser => ({
+    id: Number(user.id),
+    name: `${user.firstname || ''} ${user.lastname || ''}`.trim(),
+    firstname: user.firstname || '',
+    lastname: user.lastname || '',
+    email: user.email || '',
+    role: user.role === 'admin' || user.role === 'teacher' ? user.role : 'student',
+    avatarInitials: user.avatar_initials || `${(user.firstname || 'U').charAt(0)}${(user.lastname || '').charAt(0)}`.toUpperCase(),
+    avatarUrl: user.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&h=256&q=80',
+    phone: user.phone || '',
+    bio: user.bio || '',
+  });
+
+  const handleLoginSubmit = async (e?: React.FormEvent, overrides?: { email?: string; password?: string }) => {
     if (e) e.preventDefault();
     setIsLoginSubmitting(true);
     setLoginError('');
-
-    const effectiveEmail = (overrides?.email ?? loginEmail).trim().toLowerCase();
-    const effectivePassword = overrides?.password ?? loginPassword;
-
-    if (effectivePassword !== 'password123') {
-      setLoginError('Identifiants incorrects. Vérifiez votre mot de passe.');
-      setIsLoginSubmitting(false);
-      return;
-    }
-
-
-    // Check if user is among custom registered accounts
-    const registered = registeredAccounts.find((a) => a.email.toLowerCase() === effectiveEmail);
-    if (registered) {
-      setCurrentUser(registered);
-      setIsAuthenticated(true);
-      if (registered.role === 'teacher') {
-        setActiveScreen('dashboard-teacher');
-      } else if (registered.role === 'admin') {
-        setActiveScreen('dashboard-admin');
-      } else {
-        setActiveScreen('dashboard-student');
+    try {
+      const response = await fetch('/lms/api/auth/login.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: (overrides?.email ?? loginEmail).trim().toLowerCase(),
+          password: overrides?.password ?? loginPassword,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success || !data.user) {
+        throw new Error(data.error || 'Identifiants incorrects. Vérifiez votre email et votre mot de passe.');
       }
+      setCurrentUser(mapApiUser(data.user));
+      setCsrfToken(data.csrf_token || '');
+      setIsAuthenticated(true);
+      setActiveScreen(data.user.role === 'admin' ? 'dashboard-admin' : data.user.role === 'teacher' ? 'dashboard-teacher' : 'dashboard-student');
+    } catch (error) {
+      setLoginError(error instanceof Error ? error.message : 'Connexion impossible. Vérifiez que XAMPP et MySQL sont démarrés.');
+    } finally {
       setIsLoginSubmitting(false);
-      return;
     }
-
-    if (effectiveEmail.includes('tiana') || effectiveEmail.includes('admin')) {
-      setCurrentUser({
-        id: 7,
-        name: 'Tiana Rasoanaivo (Admin)',
-        firstname: 'Tiana',
-        lastname: 'Rasoanaivo',
-        email: 'tiana.rasoanaivo@exemple.com',
-        role: 'admin',
-        avatarInitials: 'TR',
-        avatarUrl: 'https://images.unsplash.com/photo-1580894732444-8ecded7900cd?auto=format&fit=crop&w=256&h=256&q=80',
-        phone: '+261 33 11 222 33',
-        bio: 'Administratrice Principale de la Plateforme Numérique Universitaire.'
-      });
-      setIsAuthenticated(true);
-      setActiveScreen('dashboard-admin');
-    } else if (effectiveEmail.includes('tahina') || effectiveEmail.includes('marie') || effectiveEmail.includes('prof')) {
-      setCurrentUser({
-        id: 5,
-        name: 'Dr. Tahina Ramanantsoa',
-        firstname: 'Dr. Tahina',
-        lastname: 'Ramanantsoa',
-        email: 'tahina.ramanantsoa@exemple.com',
-        role: 'teacher',
-        avatarInitials: 'TR',
-        avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=256&h=256&q=80',
-        phone: '+261 34 01 234 56',
-        bio: 'Maître de Conférences en Informatique, spécialité Technologies Web & Bases de Données.'
-      });
-      setIsAuthenticated(true);
-      setActiveScreen('dashboard-teacher');
-    } else if (effectiveEmail.includes('andry') || effectiveEmail.includes('jean') || effectiveEmail.includes('fara') || effectiveEmail.includes('toky')) {
-      setCurrentUser({
-        id: 1,
-        name: 'Andry Rakoto (Jean Martin)',
-        firstname: 'Andry',
-        lastname: 'Rakoto',
-        email: 'andry.rakoto@exemple.com',
-        role: 'student',
-        avatarInitials: 'AR',
-        avatarUrl: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=256&h=256&q=80',
-        phone: '+261 34 12 345 67',
-        bio: 'Étudiant en Licence 3 Informatique, passionné par le Web et les architectures distribuées.'
-      });
-      setIsAuthenticated(true);
-      setActiveScreen('dashboard-student');
-    } else {
-      setLoginError('Utilisateur non trouvé dans l\'annuaire universitaire.');
-    }
-    setIsLoginSubmitting(false);
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    setActiveScreen('landing');
-    setIsAccountMenuOpen(false);
-    setIsMobileMenuOpen(false);
+  const handleLogout = async () => {
+    try {
+      await fetch('/lms/api/auth/logout.php', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+      });
+    } finally {
+      setIsAuthenticated(false);
+      setCsrfToken('');
+      setMyCourses([]);
+      setCatalogCourses([]);
+      setActiveScreen('landing');
+      setIsAccountMenuOpen(false);
+      setIsMobileMenuOpen(false);
+    }
   };
 
   const handleRegisterSuccess = (newUser: CurrentUser) => {
@@ -816,6 +793,83 @@ export default function App() {
       setActiveScreen('dashboard-admin');
     } else {
       setActiveScreen('dashboard-student');
+    }
+  };
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/lms/api/auth/me.php', { credentials: 'include', headers: { Accept: 'application/json' } })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Session indisponible');
+        if (!cancelled && data.authenticated && data.user) {
+          setCurrentUser(mapApiUser(data.user));
+          setCsrfToken(data.csrf_token || '');
+          setIsAuthenticated(true);
+          setActiveScreen(data.user.role === 'admin' ? 'dashboard-admin' : data.user.role === 'teacher' ? 'dashboard-teacher' : 'dashboard-student');
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setIsAuthenticated(false);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated || currentUser.role !== 'student') return;
+    let cancelled = false;
+    setCoursesLoading(true);
+    setCoursesError('');
+    Promise.all([
+      fetch('/lms/api/courses/list.php?scope=catalog', { credentials: 'include', headers: { Accept: 'application/json' } }),
+      fetch('/lms/api/courses/list.php', { credentials: 'include', headers: { Accept: 'application/json' } }),
+    ])
+      .then(async ([catalogResponse, enrolledResponse]) => {
+        const [catalogData, enrolledData] = await Promise.all([catalogResponse.json(), enrolledResponse.json()]);
+        if (!catalogResponse.ok || !catalogData.success) throw new Error(catalogData.error || 'Impossible de charger le catalogue.');
+        if (!enrolledResponse.ok || !enrolledData.success) throw new Error(enrolledData.error || 'Impossible de charger vos cours.');
+        if (!cancelled) {
+          setCatalogCourses(Array.isArray(catalogData.courses) ? catalogData.courses : []);
+          setMyCourses(Array.isArray(enrolledData.courses) ? enrolledData.courses : []);
+        }
+      })
+      .catch((error) => {
+        if (!cancelled) setCoursesError(error instanceof Error ? error.message : 'Erreur lors du chargement des cours.');
+      })
+      .finally(() => { if (!cancelled) setCoursesLoading(false); });
+    return () => { cancelled = true; };
+  }, [isAuthenticated, currentUser.id, currentUser.role, activeScreen]);
+
+  const handleEnrollCourse = async (courseId: number) => {
+    setEnrollingCourseId(courseId);
+    setCoursesError('');
+    try {
+      let token = csrfToken;
+      if (!token) {
+        const sessionResponse = await fetch('/lms/api/auth/me.php', { credentials: 'include' });
+        const sessionData = await sessionResponse.json();
+        token = sessionData.csrf_token || '';
+        setCsrfToken(token);
+      }
+      const response = await fetch('/lms/api/courses/enroll.php', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-Token': token },
+        body: JSON.stringify({ action: 'enroll', course_id: courseId }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) throw new Error(data.error || 'Inscription au cours impossible.');
+      const [catalogResponse, enrolledResponse] = await Promise.all([
+        fetch('/lms/api/courses/list.php?scope=catalog', { credentials: 'include' }),
+        fetch('/lms/api/courses/list.php', { credentials: 'include' }),
+      ]);
+      const [catalogData, enrolledData] = await Promise.all([catalogResponse.json(), enrolledResponse.json()]);
+      setCatalogCourses(catalogData.courses || []);
+      setMyCourses(enrolledData.courses || []);
+    } catch (error) {
+      setCoursesError(error instanceof Error ? error.message : 'Inscription au cours impossible.');
+    } finally {
+      setEnrollingCourseId(null);
     }
   };
 
@@ -1959,75 +2013,76 @@ export default function App() {
                 </div>
               )}
 
-              {/* SCREEN 4: Mes cours – Élève */}
+              {/* SCREEN 4: Catalogue et cours inscrits */}
               {activeScreen === 'courses-student' && (
-                <div className="space-y-6 w-full">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h1 className="text-xl font-bold text-[#0F172A]">Mes cours</h1>
-                      <p className="text-xs text-[#64748B] mt-0.5">Suivez votre progression et accédez à vos modules pédagogiques</p>
+                <div className="space-y-7 w-full">
+                  <div>
+                    <h1 className="text-xl font-bold text-[#0F172A]">Mes cours</h1>
+                    <p className="text-xs text-[#64748B] mt-1">Retrouvez vos cours inscrits ou découvrez le catalogue pour commencer une formation.</p>
+                  </div>
+                  {coursesError && <div role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{coursesError}</div>}
+                  {coursesLoading && <p className="text-sm text-[#64748B]">Chargement des cours depuis la base de données…</p>}
+                  <section className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-base font-semibold text-[#0F172A]">Mes inscriptions <span className="text-xs font-normal text-[#64748B]">({myCourses.length})</span></h2>
                     </div>
-                  </div>
-
-                  {/* Tabs: En cours (4), Terminés (2), Tous (6) */}
-                  <div className="flex items-center gap-2 border-b border-[#E2E8F0]">
-                    <button className="px-4 py-2 border-b-2 border-[#047857] text-[#047857] font-semibold text-xs -mb-px">
-                      En cours (4)
-                    </button>
-                    <button className="px-4 py-2 text-[#64748B] hover:text-[#0F172A] font-medium text-xs">
-                      Terminés (2)
-                    </button>
-                    <button className="px-4 py-2 text-[#64748B] hover:text-[#0F172A] font-medium text-xs">
-                      Tous (6)
-                    </button>
-                  </div>
-
-                  {/* Course rows list matching mockup */}
-                  <div className="space-y-3">
-                    {coursesList.slice(0, 4).map((c) => (
-                      <div
-                        key={c.id}
-                        className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-[#047857]/40 transition"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="relative w-16 h-14 rounded-xl overflow-hidden shrink-0 shadow-xs border border-slate-200">
-                            <img src={c.thumbnailUrl} alt={c.title} className="w-full h-full object-cover" />
-                            <span className="absolute bottom-1 left-1 bg-black/60 text-white text-[9px] px-1 font-semibold rounded backdrop-blur-xs">
-                              {c.code}
-                            </span>
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs font-semibold text-[#047857] bg-[#ECFDF5] px-1.5 py-0.5 rounded">
-                                {c.category}
-                              </span>
-                              <span className="text-xs text-[#64748B]">• {c.level}</span>
+                    {myCourses.length === 0 && !coursesLoading ? (
+                      <div className="rounded-xl border border-dashed border-[#CBD5E1] bg-white p-5 text-sm text-[#64748B]">Vous n’êtes inscrit à aucun cours pour le moment. Choisissez un cours dans le catalogue ci-dessous.</div>
+                    ) : (
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                        {myCourses.map((course) => (
+                          <article key={course.id} className="rounded-xl border border-[#E2E8F0] bg-white p-4">
+                            <div className="flex items-start justify-between gap-3">
+                              <div>
+                                <span className="text-[10px] font-mono font-semibold text-[#047857]">{course.code}</span>
+                                <h3 className="mt-1 text-sm font-semibold text-[#0F172A]">{course.title}</h3>
+                                <p className="mt-1 text-xs text-[#64748B]">{course.category_name || 'Sans catégorie'} · {course.level || 'Niveau non précisé'}</p>
+                                <p className="mt-1 text-xs text-[#64748B]">Enseignant : {course.teacher_firstname || ''} {course.teacher_lastname || ''}</p>
+                              </div>
+                              <span className="rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700">{course.enrollment_status === 'termine' ? 'Terminé' : 'En cours'}</span>
                             </div>
-                            <h3 className="font-semibold text-sm text-[#0F172A] mt-0.5">{c.title}</h3>
-                            <p className="text-xs text-[#64748B]">{c.chapter}</p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-[#F1F5F9]">
-                          <div className="flex items-center gap-2.5 w-36 sm:w-44">
-                            <div className="flex-1 h-2 bg-[#F1F5F9] rounded-full overflow-hidden">
-                              <div className="h-full bg-[#059669] rounded-full" style={{ width: `${c.progress}%` }} />
+                            <div className="mt-3 flex items-center gap-2">
+                              <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-emerald-600" style={{ width: `${Number(course.progress_percent) || 0}%` }} /></div>
+                              <span className="text-xs font-semibold text-slate-700">{Number(course.progress_percent) || 0}%</span>
                             </div>
-                            <span className="text-xs font-semibold text-[#0F172A] w-9 text-right">{c.progress}%</span>
-                          </div>
-
-                          <span className="text-xs text-[#64748B] hidden md:inline">{c.hours}</span>
-
-                          <button
-                            onClick={() => { setSelectedCourseId(c.id); setActiveScreen('course-detail'); }}
-                            className="px-4 py-2 bg-[#047857] hover:bg-[#065F46] text-white text-xs font-semibold rounded-lg transition shrink-0"
-                          >
-                            Continuer
-                          </button>
-                        </div>
+                            <button type="button" onClick={() => { setSelectedCourseId(Number(course.id)); setActiveScreen('course-detail'); }} className="mt-3 rounded-lg bg-[#047857] px-4 py-2 text-xs font-semibold text-white hover:bg-[#065F46]">Ouvrir le cours</button>
+                          </article>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    )}
+                  </section>
+                  <section className="space-y-3">
+                    <div>
+                      <h2 className="text-base font-semibold text-[#0F172A]">Catalogue des cours</h2>
+                      <p className="text-xs text-[#64748B] mt-1">Les cours publiés par les enseignants sont chargés depuis MySQL.</p>
+                    </div>
+                    {catalogCourses.length === 0 && !coursesLoading ? (
+                      <div className="rounded-xl border border-dashed border-[#CBD5E1] bg-white p-5 text-sm text-[#64748B]">Aucun cours publié n’est disponible. Demandez à un enseignant ou à un administrateur de publier un cours.</div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                        {catalogCourses.map((course) => {
+                          const enrolled = myCourses.some((item) => Number(item.id) === Number(course.id));
+                          return (
+                            <article key={course.id} className="flex flex-col rounded-xl border border-[#E2E8F0] bg-white p-4 shadow-xs">
+                              <div className="flex-1">
+                                <span className="rounded bg-[#ECFDF5] px-2 py-1 text-[10px] font-mono font-semibold text-[#047857]">{course.code}</span>
+                                <h3 className="mt-3 text-sm font-semibold text-[#0F172A]">{course.title}</h3>
+                                <p className="mt-2 line-clamp-3 text-xs leading-5 text-[#64748B]">{course.description || 'Aucune description disponible.'}</p>
+                                <div className="mt-3 space-y-1 text-[11px] text-[#64748B]">
+                                  <p>{course.category_name || 'Sans catégorie'} · {course.level || 'Niveau non précisé'}</p>
+                                  <p>Enseignant : {course.teacher_firstname || ''} {course.teacher_lastname || ''}</p>
+                                  <p>{Number(course.total_chapters) || 0} chapitres · {Number(course.total_lessons) || 0} leçons</p>
+                                </div>
+                              </div>
+                              <button type="button" disabled={enrolled || enrollingCourseId === Number(course.id)} onClick={() => handleEnrollCourse(Number(course.id))} className="mt-4 w-full rounded-lg bg-[#047857] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#065F46] disabled:cursor-not-allowed disabled:bg-slate-300">
+                                {enrolled ? 'Déjà inscrit' : enrollingCourseId === Number(course.id) ? 'Inscription…' : 'S’inscrire au cours'}
+                              </button>
+                            </article>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </section>
                 </div>
               )}
 
