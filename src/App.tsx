@@ -184,6 +184,8 @@ export default function App() {
   const [showXamppModal, setShowXamppModal] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState<number>(1);
   const [catalogCourses, setCatalogCourses] = useState<any[]>([]);
+  const [courseContent, setCourseContent] = useState<any | null>(null);
+  const [courseContentLoading, setCourseContentLoading] = useState(false);
   const [myCourses, setMyCourses] = useState<any[]>([]);
   const [coursesLoading, setCoursesLoading] = useState(false);
   const [coursesError, setCoursesError] = useState('');
@@ -627,7 +629,21 @@ export default function App() {
 
   const averageCourseProgress = Math.round(coursesList.reduce((total, course) => total + course.progress, 0) / coursesList.length);
 
-  const currentCourse = coursesList.find((c) => c.id === selectedCourseId) || coursesList[0];
+  const staticCurrentCourse = coursesList.find((c) => c.id === selectedCourseId) || coursesList[0];
+  const currentCourse = courseContent?.course && Number(courseContent.course.id) === selectedCourseId
+    ? {
+        ...staticCurrentCourse,
+        code: courseContent.course.code || staticCurrentCourse.code,
+        title: courseContent.course.title || staticCurrentCourse.title,
+        category: courseContent.course.category_name || staticCurrentCourse.category,
+        level: courseContent.course.level || staticCurrentCourse.level,
+        chaptersCount: courseContent.chapters?.length ?? staticCurrentCourse.chaptersCount,
+        totalHours: `${courseContent.course.hours_total || 0}h de contenu`,
+        instructorName: `${courseContent.course.teacher_firstname || ''} ${courseContent.course.teacher_lastname || ''}`.trim() || staticCurrentCourse.instructorName,
+      }
+    : staticCurrentCourse;
+  const currentLesson = courseContent?.chapters?.flatMap((chapter: any) => chapter.lessons || [])
+    .find((lesson: any) => Number(lesson.id) === selectedLessonId);
   const adminTeacherCount = registeredAccounts.filter((account) => account.role === 'teacher').length;
   const adminStudentCount = registeredAccounts.filter((account) => account.role === 'student').length;
   const adminCount = registeredAccounts.filter((account) => account.role === 'admin').length;
@@ -711,17 +727,11 @@ export default function App() {
     { id: 'login', label: '0. Écran Connexion', group: 'Authentification' }
   ];
 
-  const [loginEmail, setLoginEmail] = useState('andry.rakoto@exemple.com');
-  const [loginPassword, setLoginPassword] = useState('password123');
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [loginShowPassword, setLoginShowPassword] = useState(false);
   const [isLoginSubmitting, setIsLoginSubmitting] = useState(false);
-
-  const demoAccountPresets = [
-    { label: 'Étudiant', email: 'andry.rakoto@exemple.com', role: 'student' as UserRole },
-    { label: 'Enseignant', email: 'tahina.ramanantsoa@exemple.com', role: 'teacher' as UserRole },
-    { label: 'Admin', email: 'tiana.rasoanaivo@exemple.com', role: 'admin' as UserRole },
-  ];
 
   const mapApiUser = (user: any): CurrentUser => ({
     id: Number(user.id),
@@ -839,6 +849,49 @@ export default function App() {
       .finally(() => { if (!cancelled) setCoursesLoading(false); });
     return () => { cancelled = true; };
   }, [isAuthenticated, currentUser.id, currentUser.role, activeScreen]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !['course-detail', 'lesson-reader'].includes(activeScreen)) return;
+    let cancelled = false;
+    setCourseContentLoading(true);
+    fetch(`/lms/api/courses/detail.php?id=${selectedCourseId}`, {
+      credentials: 'include',
+      headers: { Accept: 'application/json' },
+    })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.error || 'Impossible de charger le contenu du cours.');
+        if (!cancelled) setCourseContent(data);
+      })
+      .catch((error) => {
+        if (!cancelled) setCoursesError(error instanceof Error ? error.message : 'Erreur de chargement du cours.');
+      })
+      .finally(() => { if (!cancelled) setCourseContentLoading(false); });
+    return () => { cancelled = true; };
+  }, [isAuthenticated, activeScreen, selectedCourseId]);
+
+  const markLessonComplete = async (lessonId: number, completed: boolean) => {
+    try {
+      const response = await fetch('/lms/api/courses/progress.php', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ lesson_id: lessonId, is_completed: completed ? 1 : 0 }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) throw new Error(data.error || 'Impossible d’enregistrer la progression.');
+      setCourseContent((previous: any) => previous ? ({
+        ...previous,
+        chapters: previous.chapters.map((chapter: any) => ({
+          ...chapter,
+          lessons: (chapter.lessons || []).map((lesson: any) => Number(lesson.id) === lessonId ? { ...lesson, is_completed: completed ? 1 : 0 } : lesson),
+        })),
+      }) : previous);
+      setCompletedLessons((previous) => completed ? [...new Set([...previous, lessonId])] : previous.filter((id) => id !== lessonId));
+    } catch (error) {
+      setCoursesError(error instanceof Error ? error.message : 'Progression non enregistrée.');
+    }
+  };
 
   const handleEnrollCourse = async (courseId: number) => {
     setEnrollingCourseId(courseId);
@@ -990,23 +1043,6 @@ export default function App() {
                   <button type="submit" disabled={isLoginSubmitting}>
                     {isLoginSubmitting ? 'Connexion…' : 'Se connecter'}
                   </button>
-
-                  <div className="mt-4 grid grid-cols-3 gap-2">
-                    {demoAccountPresets.map((account) => (
-                      <button
-                        key={account.email}
-                        type="button"
-                        onClick={() => {
-                          setLoginEmail(account.email);
-                          setLoginPassword('password123');
-                          handleLoginSubmit(undefined, { email: account.email, password: 'password123' });
-                        }}
-                        className="min-h-9 rounded-lg border border-[#CBD5E1] bg-white px-2 text-[10px] font-semibold text-[#0F172A] transition hover:border-[#047857] hover:text-[#047857]"
-                      >
-                        {account.label}
-                      </button>
-                    ))}
-                  </div>
 
                   <p className="modern-auth-register-prompt">
                     Pas encore de compte ?{' '}
@@ -2144,13 +2180,32 @@ export default function App() {
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Chapters List with specialized media icons */}
                     <div className="lg:col-span-2 space-y-3">
-                      {[
-                        { num: 1, title: 'Chapitre 1 : Introduction & Architecture Client-Serveur', type: 'video', duration: '20 min', completed: true, locked: false },
-                        { num: 2, title: 'Chapitre 2 : Modélisation HTML5 Sémantique & CSS Flexbox', type: 'lab', duration: '45 min', completed: true, locked: false },
-                        { num: 3, title: 'Chapitre 3 : JavaScript ES6+ & Manipulation du DOM', type: 'code', duration: '35 min', completed: false, current: true, locked: false },
-                        { num: 4, title: 'Chapitre 4 : PHP 8+ & Sessions Sécurisées (PDO)', type: 'quiz', duration: '25 min', completed: false, locked: true },
-                        { num: 5, title: 'Chapitre 5 : Projet Intégrateur & Soutenance', type: 'project', duration: '2h', completed: false, locked: true },
-                      ].map((ch) => (
+                      {(courseContent?.chapters || []).map((chapter: any) => (
+                        <div key={chapter.id} className="overflow-hidden rounded-xl border border-[#E2E8F0] bg-white">
+                          <div className="border-b border-[#F1F5F9] bg-[#F8FAFC] px-4 py-3">
+                            <h3 className="text-xs font-semibold text-[#0F172A]">{chapter.title}</h3>
+                          </div>
+                          {(chapter.lessons || []).length === 0 ? (
+                            <p className="px-4 py-3 text-xs text-[#64748B]">Aucune leçon publiée dans ce chapitre.</p>
+                          ) : (chapter.lessons || []).map((lesson: any) => (
+                            <button
+                              key={lesson.id}
+                              type="button"
+                              onClick={() => { setSelectedLessonId(Number(lesson.id)); setActiveScreen('lesson-reader'); }}
+                              className="flex w-full items-center justify-between gap-3 border-b border-[#F1F5F9] px-4 py-3 text-left last:border-b-0 hover:bg-[#F8FAFC]"
+                            >
+                              <span className="min-w-0">
+                                <span className="block truncate text-xs font-semibold text-[#0F172A]">{lesson.title}</span>
+                                <span className="mt-1 block text-[11px] text-[#64748B]">{lesson.lesson_type || 'Leçon'}{lesson.duration_minutes ? ` · ${lesson.duration_minutes} min` : ''}</span>
+                              </span>
+                              {Number(lesson.is_completed) === 1
+                                ? <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600" />
+                                : <ChevronRight className="h-4 w-4 shrink-0 text-slate-400" />}
+                            </button>
+                          ))}
+                        </div>
+                      ))}
+
                         <div
                           key={ch.num}
                           onClick={() => {
@@ -2260,90 +2315,36 @@ export default function App() {
 
               {/* SCREEN 6: Lecteur de cours / leçon */}
               {activeScreen === 'lesson-reader' && (
-                <div className="space-y-6 w-full max-w-5xl mx-auto">
-                  <div className="flex items-center justify-between">
-                    <button
-                      onClick={() => setActiveScreen('course-detail')}
-                      className="flex items-center gap-1.5 text-xs text-[#64748B] hover:text-[#0F172A] font-medium"
-                    >
-                      <ArrowLeft className="w-4 h-4" />
-                      Retour au cours
+                <div className="mx-auto w-full max-w-5xl space-y-6">
+                  <div className="flex items-center justify-between gap-3">
+                    <button type="button" onClick={() => setActiveScreen('course-detail')} className="flex items-center gap-1.5 text-xs font-medium text-[#64748B] hover:text-[#0F172A]">
+                      <ArrowLeft className="h-4 w-4" /> Retour au cours
                     </button>
-                    <span className="text-xs text-[#047857] font-semibold bg-[#ECFDF5] px-2.5 py-1 rounded">
-                      Chapitre 3 : JavaScript
-                    </span>
+                    <span className="rounded bg-[#ECFDF5] px-2.5 py-1 text-xs font-semibold text-[#047857]">{courseContent?.chapters?.find((chapter: any) => (chapter.lessons || []).some((lesson: any) => Number(lesson.id) === selectedLessonId))?.title || currentCourse.title}</span>
                   </div>
-
-                  <div className="bg-white border border-[#E2E8F0] rounded-xl p-6 shadow-xs space-y-6">
-                    {/* Header with verified professor badge & photo */}
-                    <div className="border-b border-[#F1F5F9] pb-4 flex items-start justify-between flex-wrap gap-4">
-                      <div>
-                        <h1 className="text-xl font-bold text-[#0F172A]">
-                          Leçon 3.1 : Variables, Types primitifs et Portée
-                        </h1>
-                        <p className="text-xs text-[#64748B] mt-1">
-                          Durée estimée : 25 min • Support interactif avec console intégrée
-                        </p>
+                  {courseContentLoading ? (
+                    <p className="text-sm text-[#64748B]">Chargement de la leçon…</p>
+                  ) : currentLesson ? (
+                    <article className="space-y-5 rounded-xl border border-[#E2E8F0] bg-white p-6 shadow-xs">
+                      <div className="border-b border-[#F1F5F9] pb-4">
+                        <h1 className="text-xl font-bold text-[#0F172A]">{currentLesson.title}</h1>
+                        <p className="mt-2 text-xs text-[#64748B]">{currentLesson.duration_minutes ? `Durée estimée : ${currentLesson.duration_minutes} min` : 'Leçon du cours'} · {currentCourse.title}</p>
                       </div>
-                      <div className="flex items-center gap-2.5 bg-[#F8FAFC] border border-slate-200 rounded-lg px-3 py-1.5">
-                        <img
-                          src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=256&h=256&q=80"
-                          alt="Dr. Tahina"
-                          className="w-8 h-8 rounded-full object-cover border border-emerald-400"
-                        />
-                        <div>
-                          <p className="text-[11px] font-bold text-[#0F172A]">Dr. Tahina Ramanantsoa</p>
-                          <p className="text-[10px] text-[#047857]">Cours validé</p>
-                        </div>
+                      <div className="whitespace-pre-wrap break-words text-sm leading-7 text-[#334155]">
+                        {currentLesson.content || currentLesson.content_html || currentLesson.description || 'Le contenu de cette leçon n’a pas encore été renseigné par l’enseignant.'}
                       </div>
-                    </div>
-
-                    <div className="prose prose-slate text-xs space-y-4 text-[#334155] leading-relaxed">
-                      <h3 className="text-sm font-bold text-[#0F172A]">1. Déclaration moderne en JavaScript ES6+</h3>
-                      <p>
-                        Avant ECMAScript 2015 (ES6), les variables étaient déclarées avec le mot-clé <code>var</code>. Ce mot-clé présentait un inconvénient majeur : sa portée de fonction et son mécanisme de <em>hoisting</em> (remontée implicite), source fréquente d'effets de bord imprévus.
-                      </p>
-
-                      <div className="bg-[#0F172A] text-slate-100 p-4 rounded-lg font-mono text-xs overflow-x-auto">
-                        <p className="text-slate-400">// Syntaxe moderne recommandée pour une variable réassignable :</p>
-                        <p className="text-emerald-400">let <span className="text-white">nom</span> = <span className="text-amber-300">"Jean Martin"</span>;</p>
-                        <p className="text-slate-400 mt-2">// Constante immuable :</p>
-                        <p className="text-emerald-400">const <span className="text-white">UNIVERSITE</span> = <span className="text-amber-300">"Université Numérique"</span>;</p>
+                      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#F1F5F9] pt-4">
+                        <button type="button" onClick={() => markLessonComplete(selectedLessonId, Number(currentLesson.is_completed) !== 1)} className="rounded-lg bg-[#047857] px-4 py-2 text-xs font-semibold text-white hover:bg-[#065F46]">
+                          {Number(currentLesson.is_completed) === 1 ? 'Annuler la validation' : 'Marquer comme terminée'}
+                        </button>
+                        <button type="button" onClick={() => setActiveScreen('quiz')} className="flex items-center gap-2 rounded-lg bg-[#0F172A] px-4 py-2 text-xs font-semibold text-white hover:bg-slate-800">
+                          Accéder aux quiz <ArrowRight className="h-4 w-4" />
+                        </button>
                       </div>
-
-                      <h3 className="text-sm font-bold text-[#0F172A]">2. Portée de bloc (Block Scope)</h3>
-                      <p>
-                        Contrairement à <code>var</code>, <code>let</code> et <code>const</code> respectent scrupuleusement la portée de bloc définie par des accolades <code>{`{ ... }`}</code>. Cela garantit qu'une variable définie au sein d'une boucle <code>for</code> ou d'une condition <code>if</code> ne polluera jamais le scope supérieur.
-                      </p>
-
-                      <div className="bg-[#ECFDF5] border border-emerald-200 rounded-lg p-3 text-[#047857]">
-                        <p className="font-semibold mb-1">Règle de bonne pratique universitaire :</p>
-                        <p>Utilisez toujours <code>const</code> par défaut. N'utilisez <code>let</code> que si la valeur de la variable doit être explicitement réassignée au cours de l'exécution.</p>
-                      </div>
-                    </div>
-
-                    <div className="border-t border-[#F1F5F9] pt-4 flex items-center justify-between">
-                      <button
-                        onClick={() => handleLessonToggle(3)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition ${
-                          completedLessons.includes(3)
-                            ? 'bg-[#ECFDF5] text-[#047857] border border-[#047857]'
-                            : 'bg-[#047857] text-white hover:bg-[#065F46]'
-                        }`}
-                      >
-                        <Check className="w-4 h-4" />
-                        {completedLessons.includes(3) ? 'Leçon terminée' : 'Marquer comme terminée'}
-                      </button>
-
-                      <button
-                        onClick={() => setActiveScreen('quiz')}
-                        className="flex items-center gap-2 px-4 py-2 bg-[#0F172A] hover:bg-slate-800 text-white rounded-lg text-xs font-semibold transition"
-                      >
-                        Passer au Quiz associé
-                        <ArrowRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
+                    </article>
+                  ) : (
+                    <div className="rounded-xl border border-dashed border-[#CBD5E1] bg-white p-5 text-sm text-[#64748B]">Cette leçon n’est pas disponible. Revenez au cours et sélectionnez une leçon publiée.</div>
+                  )}
                 </div>
               )}
 
