@@ -197,6 +197,7 @@ $sql = "
         c.title,
         c.description,
         c.category_id,
+        c.teacher_id,
         c.level,
         c.hours_total,
         c.credits_ects,
