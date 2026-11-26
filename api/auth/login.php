@@ -60,5 +60,6 @@ try {
 sendJsonResponse([
     'success' => true,
     'message' => 'Connexion réussie',
-    'user' => $user
+    'user' => $user,
+    'csrf_token' => getCsrfToken()
 ]);
