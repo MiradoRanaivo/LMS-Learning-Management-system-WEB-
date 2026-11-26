@@ -26,8 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $sql .= ' AND c.is_active = 1';
     }
     if ($search !== '') {
-        $sql .= ' AND (c.name LIKE :search OR c.slug LIKE :search OR c.description LIKE :search)';
-        $params['search'] = '%' . $search . '%';
+        $sql .= ' AND (c.name LIKE :search_name OR c.slug LIKE :search_slug OR c.description LIKE :search_description)';
+        $params['search_name'] = '%' . $search . '%';
+        $params['search_slug'] = '%' . $search . '%';
+        $params['search_description'] = '%' . $search . '%';
     }
     $sql .= ' ORDER BY c.sort_order ASC, c.name ASC';
 
