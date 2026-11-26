@@ -917,10 +917,17 @@ export default function App() {
     setQuizSubmitting(true);
     setQuizError('');
     try {
+      let token = csrfToken;
+      if (!token) {
+        const sessionResponse = await fetch('/lms/api/auth/me.php', { credentials: 'include' });
+        const sessionData = await sessionResponse.json();
+        token = sessionData.csrf_token || '';
+        setCsrfToken(token);
+      }
       const response = await fetch('/lms/api/quizzes/submit.php', {
         method: 'POST',
         credentials: 'include',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-Token': csrfToken },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-Token': token },
         body: JSON.stringify({ quiz_id: Number(activeQuiz.id), answers: quizAnswers }),
       });
       const data = await response.json();
@@ -2211,14 +2218,14 @@ export default function App() {
                         </div>
                         <h1 className="text-xl font-bold text-[#0F172A]">{currentCourse.title}</h1>
                         <p className="text-xs text-[#64748B] mt-1 max-w-xl">
-                          Programme officiel universitaire couvrant les architectures modernes, les bonnes pratiques de conception et les TP notés.
+                          {courseContent?.course?.description || 'Consultez les chapitres et les leçons publiés par votre enseignant.'}
                         </p>
                         <div className="flex items-center gap-4 mt-3">
                           <div className="w-48 sm:w-60 h-2 bg-[#F1F5F9] rounded-full overflow-hidden">
-                            <div className="h-full bg-[#047857] rounded-full" style={{ width: '73%' }} />
+                            <div className="h-full bg-[#047857] rounded-full" style={{ width: `${courseContent?.chapters?.length ? Math.round(courseContent.chapters.reduce((total: number, chapter: any) => total + (chapter.lessons || []).filter((lesson: any) => Number(lesson.is_completed) === 1).length, 0) / Math.max(1, courseContent.chapters.reduce((total: number, chapter: any) => total + (chapter.lessons || []).length, 0)) * 100) : 0}%` }} />
                           </div>
-                          <span className="text-xs font-bold text-[#0F172A]">73%</span>
-                          <span className="text-xs text-[#64748B]">4 / 6 chapitres validés</span>
+                          <span className="text-xs font-bold text-[#0F172A]">{courseContent?.chapters?.length ? Math.round(courseContent.chapters.reduce((total: number, chapter: any) => total + (chapter.lessons || []).filter((lesson: any) => Number(lesson.is_completed) === 1).length, 0) / Math.max(1, courseContent.chapters.reduce((total: number, chapter: any) => total + (chapter.lessons || []).length, 0)) * 100) : 0}%</span>
+                          <span className="text-xs text-[#64748B]">{courseContent?.chapters?.length || 0} chapitres · {courseContent?.chapters?.reduce((total: number, chapter: any) => total + (chapter.lessons || []).length, 0) || 0} leçons</span>
                         </div>
                       </div>
                     </div>
@@ -2278,15 +2285,15 @@ export default function App() {
                         <div className="space-y-2 text-xs text-[#64748B]">
                           <p className="flex items-center gap-2">
                             <BookOpen className="w-4 h-4 text-[#047857]" />
-                            5 chapitres pédagogiques
+                            {courseContent?.chapters?.length || 0} chapitres pédagogiques
                           </p>
                           <p className="flex items-center gap-2">
                             <Clock className="w-4 h-4 text-[#047857]" />
-                            12h de contenu & TPs
+                            {courseContent?.course?.hours_total || 0}h de contenu & TPs
                           </p>
                           <p className="flex items-center gap-2">
                             <Award className="w-4 h-4 text-[#047857]" />
-                            Coefficient 2.0 • 5 Crédits ECTS
+                            {courseContent?.course?.credits_ects || 0} Crédits ECTS
                           </p>
                         </div>
                       </div>
