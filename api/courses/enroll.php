@@ -144,11 +144,11 @@ if ($action === 'enroll') {
 }
 
 if ($action === 'cancel' || $action === 'update_status') {
-    $targetUserId = $role === 'student' ? $userId : (int)($input['user_id'] ?? $userId);
-
-    if ($role === 'student' && $targetUserId !== $userId) {
-        sendJsonResponse(['success' => false, 'error' => 'Vous ne pouvez pas modifier l’inscription d’un autre étudiant.'], 403);
+    if ($role === 'student' && $action !== 'cancel') {
+        sendJsonResponse(['success' => false, 'error' => 'Un étudiant ne peut pas modifier lui-même le statut de validation d’un cours.'], 403);
     }
+
+    $targetUserId = $role === 'student' ? $userId : (int)($input['user_id'] ?? $userId);
 
     if ($role === 'teacher' && (int)$course['teacher_id'] !== $userId) {
         sendJsonResponse(['success' => false, 'error' => 'Vous ne pouvez modifier que les inscriptions de vos cours.'], 403);
