@@ -326,7 +326,7 @@ export default function App() {
       lastname: account.lastname,
       email: account.email,
       phone: account.phone,
-      role: account.role === 'admin' ? 'teacher' : account.role,
+      role: account.role,
     } : { firstname: '', lastname: '', email: '', phone: '', role: 'student' });
     setShowAdminUserModal(true);
   };
@@ -340,8 +340,8 @@ export default function App() {
       setAdminUserFormError('Veuillez renseigner un prénom, un nom et une adresse email valide.');
       return;
     }
-    if (adminUserDraft.role === 'admin') {
-      setAdminUserFormError('Le rôle administrateur est réservé au compte principal.');
+    if (adminUserDraft.role === 'admin' && editingAdminUserId === null) {
+      setAdminUserFormError('Le rôle administrateur ne peut pas être attribué depuis ce formulaire.');
       return;
     }
     if (editingAdminUserId === null && adminUserPassword.length < 12) {
@@ -3157,11 +3157,11 @@ export default function App() {
                               <td className="p-3.5 text-[#64748B] font-mono">{u.phone || '—'}</td>
                               <td className="p-3.5">
                                 <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700">
-                                  Actif
+                                  {u.status === 'active' ? 'Actif' : u.status === 'suspended' ? 'Suspendu' : 'Inactif'}
                                 </span>
                               </td>
                               <td className="p-3.5 text-right">
-                                <button onClick={() => openAdminUserModal({ id: Number(u.id), firstname: u.firstname, lastname: u.lastname, email: u.email, role: u.role, phone: u.phone || '', bio: u.bio || '', avatarInitials: u.avatar_initials || '', avatarUrl: u.avatar_url || '' })} className="text-xs text-[#047857] hover:underline font-semibold">Modifier</button>
+                                <button onClick={() => openAdminUserModal({ id: Number(u.id), name: `${u.firstname} ${u.lastname}`, firstname: u.firstname, lastname: u.lastname, email: u.email, role: u.role, phone: u.phone || '', bio: u.bio || '', avatarInitials: u.avatar_initials || '', avatarUrl: u.avatar_url || '' })} className="text-xs text-[#047857] hover:underline font-semibold">Modifier</button>
                               </td>
                             </tr>
                           ))}
@@ -3542,6 +3542,7 @@ USE `lms_db`;
               <select value={adminUserDraft.role} onChange={(event) => setAdminUserDraft({ ...adminUserDraft, role: event.target.value as UserRole })} className="mt-1 w-full rounded-lg border border-[#CBD5E1] bg-white px-3 py-2 text-sm outline-none focus:border-[#047857]">
                 <option value="student">Étudiant</option>
                 <option value="teacher">Enseignant</option>
+                {editingAdminUserId !== null && adminUsers.some((user) => Number(user.id) === editingAdminUserId && user.role === 'admin') && <option value="admin">Administrateur</option>}
               </select>
               <p className="mt-1 text-[10px] text-[#64748B]">Le rôle administrateur est réservé au compte principal de la plateforme.</p>
             </label>
