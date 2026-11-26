@@ -987,7 +987,7 @@ export default function App() {
         /* Visitor Default: Public Welcome Landing Page */
         <AcademicGreenLanding
           onNavigateToLogin={() => setActiveScreen('login')}
-          onNavigateToSignup={() => { setSignupInitialRole('student'); setActiveScreen('signup'); }}
+          onNavigateToSignup={() => { setSignupInitialRole('student'); setAuthPanel('signup'); setActiveScreen('login'); }}
         />
       )
     ) : activeScreen === 'landing' ? (
@@ -1011,7 +1011,7 @@ export default function App() {
         </div>
         <AcademicGreenLanding
           onNavigateToLogin={() => setActiveScreen('login')}
-          onNavigateToSignup={() => { setSignupInitialRole('student'); setActiveScreen('signup'); }}
+          onNavigateToSignup={() => { setSignupInitialRole('student'); setAuthPanel('signup'); setActiveScreen('login'); }}
         />
       </div>
     ) : (
