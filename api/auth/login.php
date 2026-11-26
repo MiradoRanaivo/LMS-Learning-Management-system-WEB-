@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
-$email = trim((string)($input['email'] ?? ''));
+$email = strtolower(trim((string)($input['email'] ?? '')));
 $password = (string)($input['password'] ?? '');
 
 if (empty($email) || empty($password)) {
