@@ -908,7 +908,7 @@ export default function App() {
     fetch('/lms/api/dashboard/stats.php', { credentials: 'include', headers: { Accept: 'application/json' } })
       .then((response) => readApiJson(response, 'Tableau de bord'))
       .then((data) => {
-        if (!cancelled) setDashboardStats(data.stats || {});
+        if (!cancelled) setDashboardStats({ ...(data.stats || {}), activity: data.activity || [], courses: data.courses || [], recent_users: data.recent_users || [], system_logs: data.system_logs || [] });
       })
       .catch((error) => {
         if (!cancelled) setDashboardError(error instanceof Error ? error.message : 'Impossible de charger le tableau de bord.');
@@ -1977,7 +1977,7 @@ export default function App() {
                     <div className="bg-white border border-[#E2E8F0] rounded-lg px-4 py-3 flex items-center gap-3 shadow-xs" aria-label="Progression globale">
                       <div>
                         <div className="text-xs text-[#64748B]">Progression globale</div>
-                        <div className="text-sm font-bold text-[#0F172A]">—</div>
+                        <div className="text-sm font-bold text-[#0F172A]">{dashboardLoading ? "…" : `${dashboardStats?.global_progress ?? 0}%`}</div>
                       </div>
                     </div>
                   </div>
@@ -1992,10 +1992,10 @@ export default function App() {
 
                     {/* Accès calendrier */}
                     <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-xs">
-                      <div className="flex h-full flex-col items-start justify-between gap-5">
-                        <div><h3 className="text-sm font-semibold text-[#0F172A]">Calendrier universitaire</h3><p className="mt-2 text-sm leading-6 text-[#64748B]">Consultez les dates et événements associés à votre compte.</p></div>
-                        <button type="button" onClick={() => setActiveScreen('calendar')} className="min-h-10 rounded-lg border border-[#CBD5E1] px-4 text-sm font-semibold text-[#064E3B] hover:bg-[#ECFDF5]">Ouvrir le calendrier</button>
-                      </div>
+                      <div className="flex items-center justify-between"><h3 className="text-sm font-semibold text-[#0F172A]">Calendrier</h3><span className="text-xs text-[#64748B]">{new Date().toLocaleDateString('fr-FR',{month:'long',year:'numeric'})}</span></div>
+                      <div className="mt-4 grid grid-cols-7 gap-1 text-center text-[10px] text-[#94A3B8]">{['Lu','Ma','Me','Je','Ve','Sa','Di'].map(day=><span key={day}>{day}</span>)}</div>
+                      <div className="mt-2 grid grid-cols-7 gap-1 text-center text-xs">{Array.from({length:35},(_,i)=>{const first=new Date(new Date().getFullYear(),new Date().getMonth(),1);const offset=(first.getDay()+6)%7;const day=i-offset+1;const valid=day>0&&day<=new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate();return <span key={i} className={`rounded-md py-1.5 ${valid&&day===new Date().getDate()?'bg-[#047857] font-bold text-white':valid?'text-[#334155]':'text-transparent'}`}>{valid?day:'·'}</span>})}</div>
+                      <button type="button" onClick={() => setActiveScreen('calendar')} className="mt-4 w-full min-h-9 rounded-lg border border-[#CBD5E1] px-3 text-xs font-semibold text-[#064E3B] hover:bg-[#ECFDF5]">Ouvrir le calendrier</button>
                     </div>
                   </div>
 
@@ -2010,14 +2010,12 @@ export default function App() {
                         </div>
                         <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#ECFDF5] text-[#047857] rounded text-xs font-semibold">
                           <Clock className="w-3.5 h-3.5" />
-                          —
+                          {dashboardLoading ? "…" : dashboardStats?.learning_hours ?? "0h 0m"}
                         </div>
                       </div>
 
                       {/* Bar chart mockup faithful to screenshot */}
-                      <div className="flex min-h-36 items-center justify-center rounded-lg border border-dashed border-[#E2E8F0] px-4 py-6 text-center">
-                        <p className="max-w-md text-sm leading-6 text-[#64748B]">Aucune durée d’apprentissage n’est disponible pour le compte connecté.</p>
-                      </div>
+                      <div className="flex h-36 items-end justify-around gap-3 border-b border-[#E2E8F0] px-3 pt-3">{(dashboardStats?.learning_minutes_by_day || [0,0,0,0,0,0,0]).map((minutes:number,index:number)=>{const values=dashboardStats?.learning_minutes_by_day||[];const max=Math.max(1,...values);return <div key={index} className="flex h-full flex-1 flex-col items-center justify-end gap-2"><div className="w-full max-w-10 rounded-t-md bg-[#10B981] transition-all" style={{height:`${Math.max(4,minutes/max*100)}%`}} title={`${minutes} minutes`}></div><span className="text-[10px] text-[#64748B]">{['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'][index]}</span></div>})}</div>
                     </div>
 
                     {/* À faire */}
@@ -2079,19 +2077,19 @@ export default function App() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs">
                       <p className="text-xs text-[#64748B]">Mes cours</p>
-                      <p className="text-2xl font-bold text-[#0F172A] mt-1">—</p>
+                      <p className="text-2xl font-bold text-[#0F172A] mt-1">{dashboardLoading ? "…" : dashboardStats?.my_courses ?? 0}</p>
                     </div>
                     <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs">
                       <p className="text-xs text-[#64748B]">Étudiants</p>
-                      <p className="text-2xl font-bold text-[#0F172A] mt-1">—</p>
+                      <p className="text-2xl font-bold text-[#0F172A] mt-1">{dashboardLoading ? "…" : dashboardStats?.my_students ?? 0}</p>
                     </div>
                     <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs">
                       <p className="text-xs text-[#64748B]">Quiz</p>
-                      <p className="text-2xl font-bold text-[#0F172A] mt-1">—</p>
+                      <p className="text-2xl font-bold text-[#0F172A] mt-1">{dashboardLoading ? "…" : dashboardStats?.my_quizzes ?? 0}</p>
                     </div>
                     <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs">
                       <p className="text-xs text-[#64748B]">À corriger</p>
-                      <p className="text-2xl font-bold text-[#0F172A] mt-1">—</p>
+                      <p className="text-2xl font-bold text-[#0F172A] mt-1">{dashboardLoading ? "…" : dashboardStats?.to_grade ?? 0}</p>
                     </div>
                   </div>
 
@@ -2177,19 +2175,19 @@ export default function App() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs">
                       <p className="text-xs text-[#64748B]">Comptes locaux</p>
-                      <p className="text-2xl font-bold text-[#0F172A] mt-1">{registeredAccounts.length}</p>
+                      <p className="text-2xl font-bold text-[#0F172A] mt-1">{dashboardStats?.total_users ?? registeredAccounts.length}</p>
                     </div>
                     <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs">
                       <p className="text-xs text-[#64748B]">Enseignants</p>
-                      <p className="text-2xl font-bold text-[#0F172A] mt-1">{adminTeacherCount}</p>
+                      <p className="text-2xl font-bold text-[#0F172A] mt-1">{dashboardStats?.total_teachers ?? adminTeacherCount}</p>
                     </div>
                     <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs">
                       <p className="text-xs text-[#64748B]">Cours</p>
-                      <p className="text-2xl font-bold text-[#0F172A] mt-1">{coursesList.length}</p>
+                      <p className="text-2xl font-bold text-[#0F172A] mt-1">{dashboardStats?.total_courses ?? coursesList.length}</p>
                     </div>
                     <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs">
                       <p className="text-xs text-[#64748B]">Quiz</p>
-                      <p className="text-2xl font-bold text-[#0F172A] mt-1">—</p>
+                      <p className="text-2xl font-bold text-[#0F172A] mt-1">{dashboardLoading ? "…" : dashboardStats?.total_quizzes ?? 0}</p>
                     </div>
                   </div>
 
