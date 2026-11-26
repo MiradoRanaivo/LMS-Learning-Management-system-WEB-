@@ -44,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    verifyCsrfToken();
     $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
     $title = trim((string)($input['title'] ?? ''));
     $type = (string)($input['event_type'] ?? 'cours');
@@ -52,8 +53,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $desc = trim((string)($input['description'] ?? ''));
     $courseId = !empty($input['course_id']) ? (int)$input['course_id'] : null;
 
-    if (empty($title)) {
-        sendJsonResponse(['success' => false, 'error' => 'Titre de l\'événement requis.'], 400);
+    if ($title === '' || strlen($title) > 200 || !in_array($type, ['quiz', 'devoir', 'cours', 'reunion', 'examen'], true)
+        || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $date) || !preg_match('/^\d{2}:\d{2}$/', $time)
+        || strlen($desc) > 5000) {
+        sendJsonResponse(['success' => false, 'error' => 'Titre, type, date, heure ou description invalide.'], 400);
+    }
+
+    if ($courseId !== null) {
+        $courseStmt = $pdo->prepare('SELECT id, teacher_id FROM courses WHERE id = :course_id LIMIT 1');
+        $courseStmt->execute(['course_id' => $courseId]);
+        $course = $courseStmt->fetch();
+        if (!$course) sendJsonResponse(['success' => false, 'error' => 'Cours introuvable.'], 404);
+        if ($user['role'] === 'teacher' && (int)$course['teacher_id'] !== (int)$user['id']) {
+            sendJsonResponse(['success' => false, 'error' => 'Ce cours ne vous est pas attribué.'], 403);
+        }
+        if ($user['role'] === 'student') {
+            $enrollment = $pdo->prepare("SELECT 1 FROM enrollments WHERE user_id = :user_id AND course_id = :course_id AND status IN ('en_cours','termine') LIMIT 1");
+            $enrollment->execute(['user_id' => (int)$user['id'], 'course_id' => $courseId]);
+            if (!$enrollment->fetchColumn()) sendJsonResponse(['success' => false, 'error' => 'Vous n’êtes pas inscrit à ce cours.'], 403);
+        }
     }
 
     $stmt = $pdo->prepare("

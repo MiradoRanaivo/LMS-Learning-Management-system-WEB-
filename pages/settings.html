@@ -94,7 +94,7 @@
           </div>
 
           <!-- Settings card -->
-          <div class="card" style="padding: 24px;">
+          <form id="preferences-form" class="card" style="padding: 24px;">
             <div style="margin-bottom: 20px;">
               <h1 style="font-size: 16px; font-weight: 700; color: #0F172A;">Paramètres</h1>
               <p style="font-size: 12px; color: #64748B;">Gérez vos préférences et vos options système.</p>
@@ -104,16 +104,16 @@
               <h3 style="font-size: 13px; font-weight: 600; color: #0F172A; margin-bottom: 12px;">Notifications par email</h3>
               <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12.5px; color: #334155;">
                 <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                  <input type="checkbox" checked style="accent-color: #047857;"> Nouveaux cours
+                  <input type="checkbox" name="email_courses" style="accent-color: #047857;"> Nouveaux cours
                 </label>
                 <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                  <input type="checkbox" checked style="accent-color: #047857;"> Résultats de quiz
+                  <input type="checkbox" name="email_quizzes" style="accent-color: #047857;"> Résultats de quiz
                 </label>
                 <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                  <input type="checkbox" checked style="accent-color: #047857;"> Échéances
+                  <input type="checkbox" name="email_deadlines" style="accent-color: #047857;"> Échéances
                 </label>
                 <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                  <input type="checkbox" checked style="accent-color: #047857;"> Messages du forum
+                  <input type="checkbox" name="email_forum" style="accent-color: #047857;"> Messages du forum
                 </label>
               </div>
             </div>
@@ -122,7 +122,7 @@
               <h3 style="font-size: 13px; font-weight: 600; color: #0F172A; margin-bottom: 12px;">Notifications dans l'application</h3>
               <label style="display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; color: #334155; cursor: pointer;">
                 <span>Activer les notifications</span>
-                <input type="checkbox" checked style="accent-color: #047857; width: 18px; height: 18px;">
+                <input type="checkbox" name="in_app" style="accent-color: #047857; width: 18px; height: 18px;">
               </label>
             </div>
 
@@ -130,23 +130,67 @@
               <h3 style="font-size: 13px; font-weight: 600; color: #0F172A; margin-bottom: 12px;">Fréquence de réception</h3>
               <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12.5px; color: #334155;">
                 <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                  <input type="radio" name="freq" checked style="accent-color: #047857;"> Immédiate
+                  <input type="radio" name="notification_frequency" value="instant" style="accent-color: #047857;"> Immédiate
                 </label>
                 <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                  <input type="radio" name="freq" style="accent-color: #047857;"> Récapitulatif quotidien
+                  <input type="radio" name="notification_frequency" value="daily" style="accent-color: #047857;"> Récapitulatif quotidien
                 </label>
               </div>
             </div>
 
             <div style="display: flex; justify-content: flex-end;">
-              <button class="btn btn-primary btn-sm">Enregistrer</button>
+              <button id="preferences-save" type="submit" class="btn btn-primary btn-sm">Enregistrer</button>
             </div>
-          </div>
+            <p id="preferences-status" role="status" aria-live="polite" style="margin-top:12px;font-size:12px;color:#64748B;"></p>
+          </form>
         </div>
       </div>
     </div>
   </div>
 
   <script src="../js/api.js"></script>
+  <script>
+    const preferencesForm = document.getElementById('preferences-form');
+    const preferencesStatus = document.getElementById('preferences-status');
+    const preferenceFields = ['email_courses', 'email_quizzes', 'email_deadlines', 'email_forum', 'in_app'];
+    let savedThemeId = 'marine';
+
+    async function loadPreferences() {
+      try {
+        const [me, response] = await Promise.all([API.getMe(), API.getMyPreferences()]);
+        const user = me.user || {};
+        savedThemeId = response.preferences?.theme_id || 'marine';
+        document.querySelector('.lms-user-name').textContent = `${user.firstname || ''} ${user.lastname || ''}`.trim();
+        document.querySelector('.lms-user-role').textContent = user.role === 'teacher' ? 'Enseignant' : user.role === 'admin' ? 'Administrateur' : 'Étudiant';
+        const preferences = response.preferences || {};
+        preferenceFields.forEach((field) => { preferencesForm.elements[field].checked = Number(preferences[field] ?? 1) === 1; });
+        preferencesForm.querySelector(`input[name="notification_frequency"][value="${preferences.notification_frequency || 'instant'}"]`).checked = true;
+      } catch (error) {
+        preferencesStatus.textContent = `Impossible de charger les préférences : ${error.message}`;
+        preferencesStatus.style.color = '#B91C1C';
+      }
+    }
+
+    preferencesForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const button = document.getElementById('preferences-save');
+      const payload = { theme_id: savedThemeId, notification_frequency: preferencesForm.elements.notification_frequency.value };
+      preferenceFields.forEach((field) => { payload[field] = preferencesForm.elements[field].checked ? 1 : 0; });
+      button.disabled = true;
+      preferencesStatus.textContent = 'Enregistrement…';
+      try {
+        await API.saveMyPreferences(payload);
+        preferencesStatus.textContent = 'Préférences enregistrées.';
+        preferencesStatus.style.color = '#047857';
+      } catch (error) {
+        preferencesStatus.textContent = error.message || 'Impossible d’enregistrer les préférences.';
+        preferencesStatus.style.color = '#B91C1C';
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    loadPreferences();
+  </script>
 </body>
 </html>

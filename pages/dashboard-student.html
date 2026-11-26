@@ -324,12 +324,12 @@
             <div>
               <span style="font-size: 11px; font-weight: 500; color: #64748B;">Prochaine leçon</span>
               <div style="margin-top: 10px;">
-                <h4 style="font-size: 14px; font-weight: 600; color: #0F172A;">PHP Avancé</h4>
-                <p style="font-size: 12px; color: #64748B; margin-top: 4px;">Chapitre 4 : Les sessions</p>
+                <h4 id="next-lesson-title" style="font-size: 14px; font-weight: 600; color: #0F172A;">Chargement…</h4>
+                <p id="next-lesson-course" style="font-size: 12px; color: #64748B; margin-top: 4px;"></p>
               </div>
             </div>
             <div style="margin-top: 16px;">
-              <a href="course-detail.html?id=4" class="btn btn-primary" style="width: 100%;">Accéder</a>
+              <a id="next-lesson-link" href="courses.html" class="btn btn-primary" style="width: 100%;">Accéder</a>
             </div>
           </div>
         </div>
@@ -428,6 +428,32 @@
         const courses = await API.getCourses('en_cours');
         const courseList = Array.isArray(courses?.courses) ? courses.courses : [];
         const topCourses = courseList.slice(0, 3);
+
+        const nextLessonTitle = document.getElementById('next-lesson-title');
+        const nextLessonCourse = document.getElementById('next-lesson-course');
+        const nextLessonLink = document.getElementById('next-lesson-link');
+        let nextLesson = null;
+        for (const course of courseList) {
+          const detail = await API.getCourseDetail(Number(course.id));
+          for (const chapter of detail.chapters || []) {
+            const lesson = (chapter.lessons || []).find((item) => Number(item.is_completed) !== 1);
+            if (lesson) {
+              nextLesson = { course, chapter, lesson };
+              break;
+            }
+          }
+          if (nextLesson) break;
+        }
+        if (nextLesson) {
+          nextLessonTitle.textContent = nextLesson.lesson.title;
+          nextLessonCourse.textContent = `${nextLesson.course.title} · ${nextLesson.chapter.title}`;
+          nextLessonLink.href = `course-detail.html?id=${Number(nextLesson.course.id)}`;
+        } else {
+          nextLessonTitle.textContent = 'Aucune leçon à poursuivre';
+          nextLessonCourse.textContent = courseList.length ? 'Toutes les leçons inscrites sont terminées.' : 'Inscrivez-vous à un cours pour commencer.';
+          nextLessonLink.textContent = 'Voir mes cours';
+          nextLessonLink.href = 'courses.html';
+        }
 
         if (dashboardCourses) {
           dashboardCourses.innerHTML = topCourses.map((course) => {
@@ -546,8 +572,10 @@
     document.querySelectorAll('.account-switch-option').forEach((button) => {
       button.addEventListener('click', async () => {
         const email = button.dataset.accountEmail;
+        const password = prompt(`Mot de passe pour ${email} :`);
+        if (password === null || password === '') return;
         try {
-          const response = await API.login(email, 'password123');
+          const response = await API.login(email, password);
           if (!response?.success || !response.user) throw new Error('Connexion au compte sélectionné impossible.');
           const role = response.user.role;
           window.location.href = role === 'admin' ? 'dashboard-admin.html' : role === 'teacher' ? 'dashboard-teacher.html' : 'dashboard-student.html';

@@ -23,6 +23,22 @@ if ($role === 'admin') {
     $recentLogs = $pdo->query("SELECT sl.*, u.firstname, u.lastname FROM system_logs sl LEFT JOIN users u ON sl.user_id = u.id ORDER BY sl.id DESC LIMIT 6")->fetchAll();
 
     $pendingCorrections = (int)$pdo->query("SELECT COUNT(*) FROM assignment_submissions WHERE status = 'rendu'")->fetchColumn();
+    $activityStmt = $pdo->query("SELECT DATE(created_at) AS activity_date,
+        SUM(action = 'CONNEXION') AS logins,
+        SUM(action <> 'CONNEXION') AS other_activity
+        FROM system_logs
+        WHERE created_at >= CURRENT_DATE - INTERVAL 6 DAY
+        GROUP BY DATE(created_at)
+        ORDER BY activity_date ASC");
+    $activityByDate = [];
+    foreach ($activityStmt->fetchAll() as $row) {
+        $activityByDate[$row['activity_date']] = ['logins' => (int)$row['logins'], 'other_activity' => (int)$row['other_activity']];
+    }
+    $activity = [];
+    for ($dayOffset = 6; $dayOffset >= 0; $dayOffset--) {
+        $date = (new DateTimeImmutable('today'))->modify('-' . $dayOffset . ' days')->format('Y-m-d');
+        $activity[] = ['date' => $date, 'logins' => $activityByDate[$date]['logins'] ?? 0, 'other_activity' => $activityByDate[$date]['other_activity'] ?? 0];
+    }
 
     sendJsonResponse([
         'success' => true,
@@ -36,7 +52,8 @@ if ($role === 'admin') {
             'pending_corrections' => $pendingCorrections,
         ],
         'recent_users' => $recentUsers,
-        'system_logs' => $recentLogs
+        'system_logs' => $recentLogs,
+        'activity' => $activity
     ]);
 } elseif ($role === 'teacher') {
     $coursesStmt = $pdo->prepare("SELECT COUNT(*) FROM courses WHERE teacher_id = :uid");

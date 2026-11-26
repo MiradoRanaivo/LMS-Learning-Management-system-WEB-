@@ -82,6 +82,14 @@ const API = {
     return this.request(`/courses/enroll.php?course_id=${encodeURIComponent(courseId)}`);
   },
 
+  async getMyPreferences() {
+    return this.request('/users/preferences.php');
+  },
+
+  async saveMyPreferences(preferences) {
+    return this.request('/users/preferences.php', { method: 'POST', body: preferences });
+  },
+
   async enrollCourse(courseId) {
     return this.request('/courses/enroll.php', {
       method: 'POST',

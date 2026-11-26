@@ -38,8 +38,9 @@ export const SignupPage: React.FC<SignupPageProps> = ({
   const [success, setSuccess] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -53,8 +54,8 @@ export const SignupPage: React.FC<SignupPageProps> = ({
       return;
     }
 
-    if (password.length < 6) {
-      setError('Le mot de passe doit comporter au moins 6 caractères.');
+    if (password.length < 12) {
+      setError('Le mot de passe doit comporter au moins 12 caractères.');
       return;
     }
 
@@ -68,25 +69,53 @@ export const SignupPage: React.FC<SignupPageProps> = ({
       return;
     }
 
-    setSuccess(true);
+    setIsSubmitting(true);
+    setSuccess(false);
 
+    const normalizedEmail = email.trim().toLowerCase();
     const initials = `${firstname.charAt(0).toUpperCase()}${lastname.charAt(0).toUpperCase()}`;
-    const newUser: CurrentUser = {
-      id: Date.now(),
-      name: `${firstname.trim()} ${lastname.trim()}`,
-      firstname: firstname.trim(),
-      lastname: lastname.trim(),
-      email: email.trim().toLowerCase(),
-      role,
-      avatarInitials: initials,
-      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&h=256&q=80',
-      phone: phone.trim(),
-      bio: `${role === 'teacher' ? 'Enseignant' : role === 'admin' ? 'Administrateur' : 'Étudiant'} inscrit en ${department}. Compte universitaire actif.`,
-    };
+    const bio = `${role === 'teacher' ? 'Enseignant' : role === 'admin' ? 'Administrateur' : 'Étudiant'} inscrit en ${department}. Compte universitaire actif.`;
 
-    setTimeout(() => {
-      onRegisterSuccess(newUser);
-    }, 800);
+    try {
+      const response = await fetch('/lms/api/auth/register.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          firstname: firstname.trim(),
+          lastname: lastname.trim(),
+          email: normalizedEmail,
+          password,
+          confirm_password: confirmPassword,
+          phone: phone.trim(),
+          bio,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success || !data.user) {
+        throw new Error(data.error || 'Impossible de créer le compte.');
+      }
+
+      const newUser: CurrentUser = {
+        id: Number(data.user.id),
+        name: `${data.user.firstname} ${data.user.lastname}`.trim(),
+        firstname: data.user.firstname,
+        lastname: data.user.lastname,
+        email: data.user.email,
+        role: 'student',
+        avatarInitials: data.user.avatar_initials || initials,
+        avatarUrl: data.user.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&h=256&q=80',
+        phone: data.user.phone || phone.trim(),
+        bio,
+      };
+
+      setSuccess(true);
+      setTimeout(() => onRegisterSuccess(newUser), 500);
+    } catch (signupError) {
+      setError(signupError instanceof Error ? signupError.message : 'Impossible de créer le compte.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const formContent = (
@@ -173,13 +202,12 @@ export const SignupPage: React.FC<SignupPageProps> = ({
             </select>
 
             <select
-              value={role}
-              onChange={(e) => setRole(e.target.value as UserRole)}
+              value="student"
+              onChange={() => setRole('student')}
               aria-label="Rôle d'accès"
+              disabled
             >
               <option value="student">Étudiant</option>
-              <option value="teacher">Enseignant</option>
-              <option value="admin">Administrateur</option>
             </select>
 
             <div className="password-field">
@@ -215,7 +243,7 @@ export const SignupPage: React.FC<SignupPageProps> = ({
               <span>J’accepte le règlement LMS</span>
             </label>
 
-            <button type="submit">Finaliser l’inscription</button>
+            <button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Création…' : 'Finaliser l’inscription'}</button>
             {!embedded && (
               <p className="modern-auth-register-prompt">
                 Vous avez déjà un compte ?{' '}

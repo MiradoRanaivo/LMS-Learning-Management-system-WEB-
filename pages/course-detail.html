@@ -106,7 +106,7 @@
               <div id="course-meta" style="display: flex; flex-direction: column; gap: 8px; font-size: 12px; color: #64748B;"></div>
             </div>
 
-            <button class="btn btn-primary" style="width: 100%;">Reprendre</button>
+            <button id="resume-course" class="btn btn-primary" type="button" style="width: 100%;">Reprendre</button>
 
             <div style="border-top: 1px solid #F1F5F9; padding-top: 16px; text-align: center;">
               <span style="font-size: 12px; color: #64748B; display: block; margin-bottom: 10px;">Progression globale</span>
@@ -189,6 +189,11 @@
       document.getElementById('course-progress-circle').textContent = `${progress}%`;
       document.getElementById('course-chapters-count').textContent = `${done} / ${lessons.length} leçons terminées`;
       document.getElementById('course-meta').innerHTML = `<div>${chapters.length} sections</div><div>${escapeHTML(course.hours_total)}h de contenu</div><div>Niveau : ${escapeHTML(course.level)}</div><div>Enseignant : ${escapeHTML(course.teacher_firstname)} ${escapeHTML(course.teacher_lastname)}</div>`;
+      const resumeButton = document.getElementById('resume-course');
+      const firstIncomplete = chapters.flatMap((chapter) => chapter.lessons || []).find((lesson) => Number(lesson.is_completed) !== 1);
+      resumeButton.disabled = !firstIncomplete;
+      resumeButton.textContent = firstIncomplete ? 'Reprendre' : 'Cours terminé';
+      resumeButton.dataset.lessonId = firstIncomplete ? String(firstIncomplete.id) : '';
       if (!chapters.length) {
         chaptersContainer.innerHTML = '<div class="card" style="padding:16px;color:#64748B;">Aucune section disponible pour ce cours.</div>';
         return;
@@ -222,6 +227,20 @@
     }
 
     document.getElementById('add-chapter').addEventListener('click', () => openContentEditor('chapter'));
+    document.getElementById('resume-course').addEventListener('click', async (event) => {
+      const lessonId = Number(event.currentTarget.dataset.lessonId || 0);
+      if (!lessonId) return;
+      try {
+        const response = await API.getLesson(lessonId);
+        const lesson = response.lesson;
+        document.getElementById('preview-title').textContent = lesson.title;
+        document.getElementById('preview-summary').textContent = lesson.summary || '';
+        document.getElementById('preview-content').textContent = lesson.content || '';
+        previewDialog.showModal();
+      } catch (error) {
+        alert(error.message || 'Impossible de reprendre cette leçon.');
+      }
+    });
     document.getElementById('content-form').addEventListener('submit', async (event) => {
       event.preventDefault();
       const form = event.currentTarget;
