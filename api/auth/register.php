@@ -18,6 +18,8 @@ $email = strtolower(trim((string)($input['email'] ?? '')));
 $password = (string)($input['password'] ?? '');
 $confirmPassword = (string)($input['confirm_password'] ?? $input['confirmPassword'] ?? '');
 $phone = trim((string)($input['phone'] ?? ''));
+$studentId = trim((string)($input['student_id'] ?? ''));
+$department = trim((string)($input['department'] ?? ''));
 $bio = trim((string)($input['bio'] ?? ''));
 
 if ($firstname === '' || mb_strlen($firstname) > 100
@@ -25,6 +27,8 @@ if ($firstname === '' || mb_strlen($firstname) > 100
     || filter_var($email, FILTER_VALIDATE_EMAIL) === false
     || mb_strlen($email) > 191
     || strlen($phone) > 30
+    || mb_strlen($studentId) > 50
+    || mb_strlen($department) > 150
     || mb_strlen($bio) > 65535) {
     sendJsonResponse(['success' => false, 'error' => 'Informations d’inscription invalides.'], 400);
 }
@@ -37,18 +41,20 @@ if (!hash_equals($password, $confirmPassword)) {
 }
 
 $pdo = getDB();
-$existing = $pdo->prepare('SELECT id FROM users WHERE email = :email LIMIT 1');
-$existing->execute(['email' => $email]);
+$existing = $pdo->prepare('SELECT id FROM users WHERE email = :email OR (:student_id <> \'\' AND student_id = :student_id_check) LIMIT 1');
+$existing->execute(['email' => $email, 'student_id' => $studentId, 'student_id_check' => $studentId]);
 if ($existing->fetchColumn()) {
-    sendJsonResponse(['success' => false, 'error' => 'Cette adresse email est déjà utilisée.'], 409);
+    sendJsonResponse(['success' => false, 'error' => 'Cette adresse email ou ce numéro étudiant est déjà utilisé.'], 409);
 }
 
-$insert = $pdo->prepare("INSERT INTO users (firstname, lastname, email, password_hash, role, avatar_initials, avatar_url, phone, bio, status) VALUES (:firstname, :lastname, :email, :password_hash, 'student', :initials, NULL, :phone, :bio, 'active')");
+$insert = $pdo->prepare("INSERT INTO users (firstname, lastname, email, student_id, department, password_hash, role, avatar_initials, avatar_url, phone, bio, status) VALUES (:firstname, :lastname, :email, :student_id, :department, :password_hash, 'student', :initials, NULL, :phone, :bio, 'active')");
 try {
     $insert->execute([
         'firstname' => $firstname,
         'lastname' => $lastname,
         'email' => $email,
+        'student_id' => $studentId !== '' ? $studentId : null,
+        'department' => $department !== '' ? $department : null,
         'password_hash' => password_hash($password, PASSWORD_DEFAULT),
         'initials' => mb_strtoupper(mb_substr($firstname, 0, 1) . mb_substr($lastname, 0, 1)),
         'phone' => $phone !== '' ? $phone : null,
