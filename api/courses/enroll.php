@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $params = ['uid' => $userId];
 
         if ($courseId !== null) {
-            $sql .= ' AND e.course_id = :cid';
+            $sql = str_replace(' ORDER BY e.enrolled_at DESC', ' AND e.course_id = :cid ORDER BY e.enrolled_at DESC', $sql);
             $params['cid'] = $courseId;
         }
 
