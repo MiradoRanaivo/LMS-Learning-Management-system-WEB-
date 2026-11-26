@@ -8,7 +8,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "dev:all": "node scripts/dev-all.mjs",
+    "dev:frontend": "vite --port=3000 --host=0.0.0.0"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
