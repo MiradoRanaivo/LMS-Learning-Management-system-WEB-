@@ -184,6 +184,7 @@ export default function App() {
   const [showXamppModal, setShowXamppModal] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState<number>(1);
   const [catalogCourses, setCatalogCourses] = useState<any[]>([]);
+  const [followedCourses, setFollowedCourses] = useState<any[]>([]);
   const [teachers, setTeachers] = useState<any[]>([]);
   const [teacherFollowLoading, setTeacherFollowLoading] = useState<number | null>(null);
   const [courseContent, setCourseContent] = useState<any | null>(null);
@@ -936,6 +937,15 @@ export default function App() {
       setTeachers((previous) => previous.map((teacher) => Number(teacher.id) === teacherId
         ? { ...teacher, is_following: data.is_following ? 1 : 0 }
         : teacher));
+      const followedResponse = await fetch('/lms/api/courses/list.php?scope=followed', {
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+      });
+      const followedData = await followedResponse.json();
+      if (!followedResponse.ok || !followedData.success) {
+        throw new Error(followedData.error || 'Le suivi est enregistré, mais les cours ne peuvent pas être actualisés.');
+      }
+      setFollowedCourses(Array.isArray(followedData.courses) ? followedData.courses : []);
     } catch (error) {
       setCoursesError(error instanceof Error ? error.message : 'Impossible de modifier le suivi.');
     } finally {
@@ -951,14 +961,17 @@ export default function App() {
     Promise.all([
       fetch('/lms/api/courses/list.php?scope=catalog', { credentials: 'include', headers: { Accept: 'application/json' } }),
       fetch('/lms/api/courses/list.php', { credentials: 'include', headers: { Accept: 'application/json' } }),
+      fetch('/lms/api/courses/list.php?scope=followed', { credentials: 'include', headers: { Accept: 'application/json' } }),
     ])
-      .then(async ([catalogResponse, enrolledResponse]) => {
-        const [catalogData, enrolledData] = await Promise.all([catalogResponse.json(), enrolledResponse.json()]);
+      .then(async ([catalogResponse, enrolledResponse, followedResponse]) => {
+        const [catalogData, enrolledData, followedData] = await Promise.all([catalogResponse.json(), enrolledResponse.json(), followedResponse.json()]);
         if (!catalogResponse.ok || !catalogData.success) throw new Error(catalogData.error || 'Impossible de charger le catalogue.');
         if (!enrolledResponse.ok || !enrolledData.success) throw new Error(enrolledData.error || 'Impossible de charger vos cours.');
+        if (!followedResponse.ok || !followedData.success) throw new Error(followedData.error || 'Impossible de charger les cours des professeurs suivis.');
         if (!cancelled) {
           setCatalogCourses(Array.isArray(catalogData.courses) ? catalogData.courses : []);
           setMyCourses(Array.isArray(enrolledData.courses) ? enrolledData.courses : []);
+          setFollowedCourses(Array.isArray(followedData.courses) ? followedData.courses : []);
         }
       })
       .catch((error) => {
@@ -2276,11 +2289,11 @@ export default function App() {
                         <h2 className="text-base font-semibold text-[#0F172A]">Cours des professeurs suivis</h2>
                         <p className="mt-1 text-xs text-[#64748B]">Tous les cours publiés par les enseignants que vous suivez.</p>
                       </div>
-                      {catalogCourses.filter((course) => teachers.some((teacher) => Number(teacher.id) === Number(course.teacher_id) && Number(teacher.is_following) === 1)).length === 0 ? (
+                      {catalogCourses.filter((course) => followedCourses.length === 0 ? (
                         <div className="rounded-xl border border-dashed border-[#CBD5E1] bg-white p-5 text-sm text-[#64748B]">Les professeurs suivis n’ont pas encore publié de cours.</div>
                       ) : (
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-                          {catalogCourses.filter((course) => teachers.some((teacher) => Number(teacher.id) === Number(course.teacher_id) && Number(teacher.is_following) === 1)).map((course) => {
+                          {followedCourses.map((course) => {
                             const enrolled = myCourses.some((item) => Number(item.id) === Number(course.id));
                             return (
                               <article key={course.id} className="flex flex-col rounded-xl border border-emerald-200 bg-white p-4 shadow-xs">
