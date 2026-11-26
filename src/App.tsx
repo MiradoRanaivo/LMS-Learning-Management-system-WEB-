@@ -903,18 +903,23 @@ export default function App() {
   useEffect(() => {
     if (!isAuthenticated || !activeScreen.startsWith('dashboard-')) return;
     let cancelled = false;
-    setDashboardLoading(true);
-    setDashboardError('');
-    fetch('/lms/api/dashboard/stats.php', { credentials: 'include', headers: { Accept: 'application/json' } })
-      .then((response) => readApiJson(response, 'Tableau de bord'))
-      .then((data) => {
-        if (!cancelled) setDashboardStats({ ...(data.stats || {}), activity: data.activity || [], courses: data.courses || [], recent_users: data.recent_users || [], system_logs: data.system_logs || [] });
-      })
-      .catch((error) => {
-        if (!cancelled) setDashboardError(error instanceof Error ? error.message : 'Impossible de charger le tableau de bord.');
-      })
-      .finally(() => { if (!cancelled) setDashboardLoading(false); });
-    return () => { cancelled = true; };
+    const loadDashboard = () => {
+      setDashboardLoading(true);
+      setDashboardError('');
+      fetch('/lms/api/dashboard/stats.php', { credentials: 'include', headers: { Accept: 'application/json' } })
+        .then((response) => readApiJson(response, 'Tableau de bord'))
+        .then((data) => {
+          if (!cancelled) setDashboardStats({ ...(data.stats || {}), activity: data.activity || [], courses: data.stats?.courses || data.courses || [], recent_users: data.recent_users || [], system_logs: data.system_logs || [] });
+        })
+        .catch((error) => {
+          if (!cancelled) setDashboardError(error instanceof Error ? error.message : 'Impossible de charger le tableau de bord.');
+        })
+        .finally(() => { if (!cancelled) setDashboardLoading(false); });
+    };
+    loadDashboard();
+    const refreshTimer = currentUser.role === 'student' && activeScreen === 'dashboard-student'
+      ? window.setInterval(loadDashboard, 60000) : null;
+    return () => { cancelled = true; if (refreshTimer !== null) window.clearInterval(refreshTimer); };
   }, [isAuthenticated, currentUser.id, currentUser.role, activeScreen]);
 
   useEffect(() => {
@@ -1982,6 +1987,14 @@ export default function App() {
                     </div>
                   </div>
 
+
+                  {/* Indicateurs personnels actualisés depuis MySQL */}
+                  <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
+                    <div className="rounded-xl border border-[#E2E8F0] bg-white p-4"><p className="text-[11px] text-[#64748B]">Leçons terminées</p><p className="mt-1 text-xl font-bold text-[#0F172A]">{dashboardLoading?'…':dashboardStats?.completed_lessons ?? 0}<span className="ml-1 text-xs font-medium text-[#94A3B8]">/ {dashboardStats?.total_lessons ?? 0}</span></p></div>
+                    <div className="rounded-xl border border-[#E2E8F0] bg-white p-4"><p className="text-[11px] text-[#64748B]">Cours actifs</p><p className="mt-1 text-xl font-bold text-[#0F172A]">{dashboardLoading?'…':dashboardStats?.active_courses ?? 0}</p></div>
+                    <div className="rounded-xl border border-[#E2E8F0] bg-white p-4"><p className="text-[11px] text-[#64748B]">Quiz réalisés</p><p className="mt-1 text-xl font-bold text-[#0F172A]">{dashboardLoading?'…':dashboardStats?.quiz_attempts ?? 0}</p></div>
+                    <div className="rounded-xl border border-[#E2E8F0] bg-white p-4"><p className="text-[11px] text-[#64748B]">Moyenne publiée</p><p className="mt-1 text-xl font-bold text-[#0F172A]">{dashboardLoading?'…':dashboardStats?.average_grade == null ? '—' : `${dashboardStats.average_grade}/20`}</p></div>
+                  </div>
 
                   {/* Cours récents et accès au calendrier */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
