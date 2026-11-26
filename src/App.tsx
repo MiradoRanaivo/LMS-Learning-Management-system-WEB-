@@ -200,7 +200,6 @@ export default function App() {
   const [showNotificationsModal, setShowNotificationsModal] = useState(false);
   const [showXamppModal, setShowXamppModal] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState<number>(1);
-  const [catalogCourses, setCatalogCourses] = useState<any[]>([]);
   const [followedCourses, setFollowedCourses] = useState<any[]>([]);
   const [teachers, setTeachers] = useState<any[]>([]);
   const [teacherFollowLoading, setTeacherFollowLoading] = useState<number | null>(null);
@@ -858,7 +857,7 @@ export default function App() {
       setIsAuthenticated(false);
       setCsrfToken('');
       setMyCourses([]);
-      setCatalogCourses([]);
+      setFollowedCourses([]);
       setActiveScreen('landing');
       setIsAccountMenuOpen(false);
       setIsMobileMenuOpen(false);
@@ -976,18 +975,15 @@ export default function App() {
     setCoursesLoading(true);
     setCoursesError('');
     Promise.all([
-      fetch('/lms/api/courses/list.php?scope=catalog', { credentials: 'include', headers: { Accept: 'application/json' } }),
       fetch('/lms/api/courses/list.php', { credentials: 'include', headers: { Accept: 'application/json' } }),
       fetch('/lms/api/courses/list.php?scope=followed', { credentials: 'include', headers: { Accept: 'application/json' } }),
     ])
-      .then(async ([catalogResponse, enrolledResponse, followedResponse]) => {
-        const [catalogData, enrolledData, followedData] = await Promise.all([
-          readApiJson(catalogResponse, 'Catalogue des cours'),
+      .then(async ([enrolledResponse, followedResponse]) => {
+        const [enrolledData, followedData] = await Promise.all([
           readApiJson(enrolledResponse, 'Mes inscriptions'),
-          readApiJson(followedResponse, 'Cours des professeurs suivis'),
+          readApiJson(followedResponse, 'Catalogue des cours des professeurs suivis'),
         ]);
         if (!cancelled) {
-          setCatalogCourses(Array.isArray(catalogData.courses) ? catalogData.courses : []);
           setMyCourses(Array.isArray(enrolledData.courses) ? enrolledData.courses : []);
           setFollowedCourses(Array.isArray(followedData.courses) ? followedData.courses : []);
         }
@@ -1131,12 +1127,15 @@ export default function App() {
       });
       const data = await response.json();
       if (!response.ok || !data.success) throw new Error(data.error || 'Inscription au cours impossible.');
-      const [catalogResponse, enrolledResponse] = await Promise.all([
-        fetch('/lms/api/courses/list.php?scope=catalog', { credentials: 'include' }),
+      const [followedResponse, enrolledResponse] = await Promise.all([
+        fetch('/lms/api/courses/list.php?scope=followed', { credentials: 'include' }),
         fetch('/lms/api/courses/list.php', { credentials: 'include' }),
       ]);
-      const [catalogData, enrolledData] = await Promise.all([catalogResponse.json(), enrolledResponse.json()]);
-      setCatalogCourses(catalogData.courses || []);
+      const [followedData, enrolledData] = await Promise.all([followedResponse.json(), enrolledResponse.json()]);
+      if (!followedResponse.ok || !followedData.success || !enrolledResponse.ok || !enrolledData.success) {
+        throw new Error(followedData.error || enrolledData.error || 'Impossible d’actualiser le catalogue.');
+      }
+      setFollowedCourses(followedData.courses || []);
       setMyCourses(enrolledData.courses || []);
     } catch (error) {
       setCoursesError(error instanceof Error ? error.message : 'Inscription au cours impossible.');
@@ -2301,48 +2300,22 @@ export default function App() {
                       </div>
                     )}
                   </section>
-                  {teachers.some((teacher) => Number(teacher.is_following) === 1) && (
-                    <section className="space-y-3">
-                      <div>
-                        <h2 className="text-base font-semibold text-[#0F172A]">Cours des professeurs suivis</h2>
-                        <p className="mt-1 text-xs text-[#64748B]">Tous les cours publiés par les enseignants que vous suivez.</p>
-                      </div>
-                      {followedCourses.length === 0 ? (
-                        <div className="rounded-xl border border-dashed border-[#CBD5E1] bg-white p-5 text-sm text-[#64748B]">Les professeurs suivis n’ont pas encore publié de cours.</div>
-                      ) : (
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-                          {followedCourses.map((course) => {
-                            const enrolled = myCourses.some((item) => Number(item.id) === Number(course.id));
-                            return (
-                              <article key={course.id} className="flex flex-col rounded-xl border border-emerald-200 bg-white p-4 shadow-xs">
-                                <div className="flex-1">
-                                  <span className="rounded bg-[#ECFDF5] px-2 py-1 text-[10px] font-mono font-semibold text-[#047857]">{course.code}</span>
-                                  <h3 className="mt-3 text-sm font-semibold text-[#0F172A]">{course.title}</h3>
-                                  <p className="mt-2 line-clamp-3 text-xs leading-5 text-[#64748B]">{course.description || 'Aucune description disponible.'}</p>
-                                  <p className="mt-3 text-[11px] text-[#64748B]">{course.teacher_firstname} {course.teacher_lastname} · {course.category_name || 'Sans catégorie'} · {course.level || 'Niveau non précisé'}</p>
-                                </div>
-                                <button type="button" disabled={enrolled || enrollingCourseId === Number(course.id)} onClick={() => handleEnrollCourse(Number(course.id))} className="mt-4 w-full rounded-lg bg-[#047857] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#065F46] disabled:cursor-not-allowed disabled:bg-slate-300">
-                                  {enrolled ? 'Déjà inscrit' : enrollingCourseId === Number(course.id) ? 'Inscription…' : 'S’inscrire au cours'}
-                                </button>
-                              </article>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </section>
-                  )}
                   {coursesError && <div role="alert" className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{coursesError}</div>}
                   {coursesLoading && <p className="text-sm text-[#64748B]">Chargement des cours depuis la base de données…</p>}
                   <section className="space-y-3">
                     <div>
                       <h2 className="text-base font-semibold text-[#0F172A]">Catalogue des cours</h2>
-                      <p className="text-xs text-[#64748B] mt-1">Les cours publiés par les enseignants sont chargés depuis MySQL.</p>
+                      <p className="text-xs text-[#64748B] mt-1">Seuls les cours publiés par les professeurs que vous suivez sont affichés.</p>
                     </div>
-                    {catalogCourses.length === 0 && !coursesLoading ? (
-                      <div className="rounded-xl border border-dashed border-[#CBD5E1] bg-white p-5 text-sm text-[#64748B]">Aucun cours publié n’est disponible. Demandez à un enseignant ou à un administrateur de publier un cours.</div>
+                    {followedCourses.length === 0 && !coursesLoading ? (
+                      <div className="rounded-xl border border-dashed border-[#CBD5E1] bg-white p-5 text-sm text-[#64748B]">
+                        {teachers.some((teacher) => Number(teacher.is_following) === 1)
+                          ? 'Les professeurs suivis n’ont pas encore publié de cours.'
+                          : 'Suivez un professeur pour afficher ses cours publiés dans votre catalogue.'}
+                      </div>
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                        {catalogCourses.map((course) => {
+                        {followedCourses.map((course) => {
                           const enrolled = myCourses.some((item) => Number(item.id) === Number(course.id));
                           return (
                             <article key={course.id} className="flex flex-col rounded-xl border border-[#E2E8F0] bg-white p-4 shadow-xs">
