@@ -235,6 +235,10 @@ export default function App() {
     role: 'student' as UserRole,
   });
   const [adminUserFormError, setAdminUserFormError] = useState('');
+  const [adminUsers, setAdminUsers] = useState<any[]>([]);
+  const [adminUsersLoading, setAdminUsersLoading] = useState(false);
+  const [adminUsersError, setAdminUsersError] = useState('');
+  const [adminUserPassword, setAdminUserPassword] = useState('');
 
   // Accounts available in the account switcher
   const [registeredAccounts, setRegisteredAccounts] = useState<CurrentUser[]>([
@@ -315,6 +319,7 @@ export default function App() {
 
   const openAdminUserModal = (account?: CurrentUser) => {
     setAdminUserFormError('');
+    setAdminUserPassword('');
     setEditingAdminUserId(account?.id ?? null);
     setAdminUserDraft(account ? {
       firstname: account.firstname,
@@ -326,7 +331,7 @@ export default function App() {
     setShowAdminUserModal(true);
   };
 
-  const saveAdminUser = (event: React.FormEvent) => {
+  const saveAdminUser = async (event: React.FormEvent) => {
     event.preventDefault();
     const firstname = adminUserDraft.firstname.trim();
     const lastname = adminUserDraft.lastname.trim();
@@ -336,33 +341,57 @@ export default function App() {
       return;
     }
     if (adminUserDraft.role === 'admin') {
-      setAdminUserFormError('Le rôle administrateur est réservé au compte principal et ne peut pas être attribué depuis cette interface.');
+      setAdminUserFormError('Le rôle administrateur est réservé au compte principal.');
       return;
     }
-    if (registeredAccounts.some((account) => account.email.toLowerCase() === email && account.id !== editingAdminUserId)) {
-      setAdminUserFormError('Cette adresse email est déjà associée à un compte.');
+    if (editingAdminUserId === null && adminUserPassword.length < 12) {
+      setAdminUserFormError('Le mot de passe doit contenir au moins 12 caractères.');
       return;
     }
 
-    const existing = registeredAccounts.find((account) => account.id === editingAdminUserId);
-    const user: CurrentUser = {
-      id: existing?.id ?? Date.now(),
-      name: `${firstname} ${lastname}`,
-      firstname,
-      lastname,
-      email,
-      role: adminUserDraft.role,
-      avatarInitials: `${firstname.charAt(0)}${lastname.charAt(0)}`.toUpperCase(),
-      avatarUrl: existing?.avatarUrl ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&h=256&q=80',
-      phone: adminUserDraft.phone.trim(),
-      bio: existing?.bio ?? 'Compte universitaire créé par un administrateur.',
-    };
+    try {
+      let token = csrfToken;
+      if (!token) {
+        const sessionResponse = await fetch('/lms/api/auth/me.php', { credentials: 'include', headers: { Accept: 'application/json' } });
+        const sessionData = await sessionResponse.json();
+        token = sessionData.csrf_token || '';
+        setCsrfToken(token);
+      }
+      const existing = adminUsers.find((account) => Number(account.id) === editingAdminUserId);
+      const payload: Record<string, unknown> = {
+        action: editingAdminUserId === null ? 'create' : 'update',
+        firstname,
+        lastname,
+        email,
+        role: adminUserDraft.role,
+        phone: adminUserDraft.phone.trim(),
+      };
+      if (editingAdminUserId !== null) {
+        payload.id = editingAdminUserId;
+        payload.status = existing?.status || 'active';
+      }
+      if (adminUserPassword) payload.password = adminUserPassword;
 
-    setRegisteredAccounts((accounts) => existing
-      ? accounts.map((account) => account.id === existing.id ? user : account)
-      : [...accounts, user]);
-    if (currentUser.id === user.id) setCurrentUser(user);
-    setShowAdminUserModal(false);
+      const response = await fetch('/lms/api/users/manage.php', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-Token': token },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) throw new Error(data.error || 'Impossible d’enregistrer cet utilisateur.');
+
+      const listResponse = await fetch('/lms/api/users/manage.php', { credentials: 'include', headers: { Accept: 'application/json' } });
+      const listData = await listResponse.json();
+      if (!listResponse.ok || !listData.success) throw new Error(listData.error || 'Utilisateur enregistré, mais la liste n’a pas pu être actualisée.');
+      setAdminUsers(Array.isArray(listData.users) ? listData.users : []);
+      if (listData.csrf_token) setCsrfToken(listData.csrf_token);
+      setShowAdminUserModal(false);
+      setAdminUserPassword('');
+      setAdminUserFormError('');
+    } catch (error) {
+      setAdminUserFormError(error instanceof Error ? error.message : 'Erreur lors de l’enregistrement.');
+    }
   };
 
   // Lesson completion state
@@ -850,6 +879,25 @@ export default function App() {
       });
     return () => { cancelled = true; };
   }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated || currentUser.role !== 'admin' || activeScreen !== 'users-management') return;
+    let cancelled = false;
+    setAdminUsersLoading(true);
+    setAdminUsersError('');
+    fetch('/lms/api/users/manage.php', { credentials: 'include', headers: { Accept: 'application/json' } })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.error || 'Impossible de charger les utilisateurs.');
+        if (!cancelled) {
+          setAdminUsers(Array.isArray(data.users) ? data.users : []);
+          if (data.csrf_token) setCsrfToken(data.csrf_token);
+        }
+      })
+      .catch((error) => { if (!cancelled) setAdminUsersError(error instanceof Error ? error.message : 'Erreur de chargement des utilisateurs.'); })
+      .finally(() => { if (!cancelled) setAdminUsersLoading(false); });
+    return () => { cancelled = true; };
+  }, [isAuthenticated, currentUser.id, currentUser.role, activeScreen]);
 
   useEffect(() => {
     if (!isAuthenticated || currentUser.role !== 'student') return;
@@ -3073,6 +3121,8 @@ export default function App() {
                     </button>
                   </div>
 
+                  {adminUsersError && <p role="alert" className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{adminUsersError}</p>}
+                  {adminUsersLoading && <p className="text-sm text-[#64748B]">Chargement des utilisateurs depuis MySQL…</p>}
                   <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden shadow-xs">
                     <div className="overflow-x-auto w-full">
                       <table className="w-full text-left text-xs border-collapse min-w-150">
@@ -3086,16 +3136,16 @@ export default function App() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-[#F1F5F9] text-xs">
-                          {registeredAccounts.map((u) => (
+                          {adminUsers.map((u) => (
                             <tr key={u.id} className="hover:bg-slate-50 transition">
                               <td className="p-3.5 flex items-center gap-2.5">
                                 <img
-                                  src={u.avatarUrl}
-                                  alt={u.name}
+                                  src={u.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&h=256&q=80'}
+                                  alt={`${u.firstname} ${u.lastname}`}
                                   className="w-8 h-8 rounded-full object-cover border border-[#E2E8F0] shrink-0"
                                 />
                                 <div>
-                                  <p className="font-semibold text-[#0F172A]">{u.name}</p>
+                                  <p className="font-semibold text-[#0F172A]">{u.firstname} {u.lastname}</p>
                                   <p className="text-[11px] text-[#64748B]">{u.email}</p>
                                 </div>
                               </td>
@@ -3104,14 +3154,14 @@ export default function App() {
                                   {u.role}
                                 </span>
                               </td>
-                              <td className="p-3.5 text-[#64748B] font-mono">{u.phone}</td>
+                              <td className="p-3.5 text-[#64748B] font-mono">{u.phone || '—'}</td>
                               <td className="p-3.5">
                                 <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700">
                                   Actif
                                 </span>
                               </td>
                               <td className="p-3.5 text-right">
-                                <button onClick={() => openAdminUserModal(u)} className="text-xs text-[#047857] hover:underline font-semibold">Modifier</button>
+                                <button onClick={() => openAdminUserModal({ id: Number(u.id), firstname: u.firstname, lastname: u.lastname, email: u.email, role: u.role, phone: u.phone || '', bio: u.bio || '', avatarInitials: u.avatar_initials || '', avatarUrl: u.avatar_url || '' })} className="text-xs text-[#047857] hover:underline font-semibold">Modifier</button>
                               </td>
                             </tr>
                           ))}
@@ -3482,6 +3532,10 @@ USE `lms_db`;
             <label className="block text-xs font-medium text-[#475569]">
               Téléphone
               <input value={adminUserDraft.phone} onChange={(event) => setAdminUserDraft({ ...adminUserDraft, phone: event.target.value })} className="mt-1 w-full rounded-lg border border-[#CBD5E1] px-3 py-2 text-sm outline-none focus:border-[#047857]" />
+            </label>
+            <label className="block text-xs font-medium text-[#475569]">
+              {editingAdminUserId === null ? 'Mot de passe initial' : 'Nouveau mot de passe (facultatif)'}
+              <input type="password" value={adminUserPassword} onChange={(event) => setAdminUserPassword(event.target.value)} minLength={editingAdminUserId === null ? 12 : undefined} required={editingAdminUserId === null} autoComplete="new-password" placeholder={editingAdminUserId === null ? '12 caractères minimum' : 'Laisser vide pour conserver le mot de passe'} className="mt-1 w-full rounded-lg border border-[#CBD5E1] px-3 py-2 text-sm outline-none focus:border-[#047857]" />
             </label>
             <label className="block text-xs font-medium text-[#475569]">
               Rôle
