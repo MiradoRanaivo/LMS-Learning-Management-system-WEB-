@@ -2104,7 +2104,7 @@ export default function App() {
                         </button>
                       </div>
 
-                      <p className="rounded-lg border border-dashed border-[#E2E8F0] p-4 text-sm leading-6 text-[#64748B]">Les cours attribués à votre compte s’afficheront ici.</p>
+                      {dashboardStats?.courses?.length ? <div className="space-y-3">{dashboardStats.courses.slice(0,5).map((course:any)=><div key={course.id} className="flex items-center justify-between gap-3 rounded-lg border border-[#E2E8F0] p-3"><div className="min-w-0"><p className="truncate text-sm font-semibold text-[#0F172A]">{course.title}</p><p className="mt-1 text-xs text-[#64748B]">{course.code}</p></div><span className="shrink-0 text-xs font-medium text-[#047857]">{course.students_count} étudiant(s)</span></div>)}</div> : <p className="rounded-lg border border-dashed border-[#E2E8F0] p-4 text-sm leading-6 text-[#64748B]">{dashboardLoading?'Chargement des cours…':'Aucun cours associé à votre compte.'}</p>}
                     </div>
 
                     {/* Actions rapides */}
@@ -2199,12 +2199,15 @@ export default function App() {
                         <h3 className="text-sm font-semibold text-[#0F172A]">Répartition des rôles</h3>
                         <span className="text-xs text-[#64748B]">Cette session</span>
                       </div>
-                      <p className="mb-4 text-xs leading-5 text-[#64748B]">Ces nombres comptent uniquement les comptes chargés dans cette session.</p>
+                      <p className="mb-4 text-xs leading-5 text-[#64748B]">Répartition des comptes enregistrés sur la plateforme.</p>
+                      <div className="mb-4 flex h-36 items-end gap-2 rounded-lg bg-[#F8FAFC] p-4">
+                        {([['Étudiants',dashboardStats?.total_students ?? adminStudentCount],['Enseignants',dashboardStats?.total_teachers ?? adminTeacherCount],['Admins',Math.max(0,(dashboardStats?.total_users ?? registeredAccounts.length)-(dashboardStats?.total_students ?? adminStudentCount)-(dashboardStats?.total_teachers ?? adminTeacherCount))]] as [string,number][]).map(([label,value])=>{const max=Math.max(1,dashboardStats?.total_users ?? registeredAccounts.length);return <div key={label} className="flex h-full flex-1 flex-col items-center justify-end gap-2"><div className="w-full max-w-16 rounded-t-md bg-[#10B981]" style={{height:`${Math.max(5,value/max*100)}%`}} title={String(value)}></div><span className="text-[10px] text-[#64748B]">{label}</span><span className="text-xs font-semibold text-[#0F172A]">{value}</span></div>})}
+                      </div>
                       <div className="divide-y divide-[#E2E8F0]">
                         {([
-                          ['Étudiants', adminStudentCount],
-                          ['Enseignants', adminTeacherCount],
-                          ['Administrateurs', adminCount],
+                          ['Étudiants', dashboardStats?.total_students ?? adminStudentCount],
+                          ['Enseignants', dashboardStats?.total_teachers ?? adminTeacherCount],
+                          ['Administrateurs', Math.max(0, (dashboardStats?.total_users ?? registeredAccounts.length) - (dashboardStats?.total_students ?? adminStudentCount) - (dashboardStats?.total_teachers ?? adminTeacherCount))],
                         ] as const).map(([label, count]) => (
                           <div key={label} className="flex items-center justify-between py-3 text-sm">
                             <span className="text-[#475569]">{label}</span>
