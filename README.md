@@ -23,14 +23,14 @@ LMS Web regroupe les outils nécessaires au suivi des activités pédagogiques :
 - `src/` : application React et composants d’interface
 - `api/` : services PHP et endpoints JSON
 - `database/` : schéma SQL et données de démonstration
+- `scripts/dev-all.mjs` : démarrage local simultané de PHP et Vite
 - `pages/`, `css/`, `js/` : ancienne interface HTML, CSS et JavaScript
 
 ## Prérequis
 
 - Node.js et npm
-- PHP 8 ou version compatible avec le code du projet
-- MySQL ou MariaDB
-- Un serveur web configuré pour exécuter PHP (Apache, Nginx ou environnement local équivalent)
+- PHP 8 ou version compatible, avec les extensions `pdo_mysql` et `mbstring`
+- MySQL ou MariaDB (XAMPP convient)
 
 ## Installation
 
@@ -41,39 +41,41 @@ LMS Web regroupe les outils nécessaires au suivi des activités pédagogiques :
    npm install
    ```
 
-3. Configurer la connexion à la base de données dans l’environnement PHP avec les variables suivantes :
+3. Démarrer MySQL depuis le panneau de contrôle XAMPP.
+4. Créer la base `lms_db` et importer `database/schema.sql`. Pour une base déjà existante, appliquer aussi les migrations qui ne l’ont pas encore été, notamment `database/migrations/006_teacher_follows.sql`.
+5. Vérifier les paramètres de connexion PHP. Par défaut, `api/db.php` utilise `127.0.0.1:3306`, la base `lms_db`, l’utilisateur `root` et un mot de passe vide. Pour une autre configuration, définir les variables d’environnement `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` et `DB_PASS` dans le terminal qui lance PHP. PHP ne lit pas automatiquement le fichier `.env`.
 
-   ```env
-   DB_HOST=localhost
-   DB_PORT=3306
-   DB_NAME=lms_db
-   DB_USER=root
-   DB_PASS=
-   ```
+## Développement local (Windows / XAMPP)
 
-4. Créer la base de données et importer le schéma disponible dans `database/`.
-5. Configurer le serveur web pour que le frontend et le dossier `api/` soient accessibles selon les chemins utilisés par l’application.
+Après avoir démarré **MySQL** dans XAMPP, une seule commande démarre le serveur PHP intégré et Vite :
 
-## Développement
-
-Lancer le serveur de développement frontend :
-
-```bash
-npm run dev
+```powershell
+npm run dev:all
 ```
 
-Vérifier les types TypeScript :
+Le script recherche PHP dans `C:\\xampp\\php\\php.exe` (chemin XAMPP par défaut), puis dans le PATH. Si XAMPP est installé ailleurs, indiquer son chemin avant le lancement :
+
+```powershell
+$env:PHP_BIN = "D:\\xampp\\php\\php.exe"
+npm run dev:all
+```
+
+- Frontend : URL affichée par Vite, généralement `http://localhost:3000`.
+- Backend PHP : `http://127.0.0.1:8000`.
+- Le proxy Vite transmet `/api/*` et les anciens chemins `/lms/api/*` au backend PHP.
+- Arrêter les deux serveurs avec `Ctrl+C`.
+
+Le serveur Apache de XAMPP n’est pas nécessaire pour ce mode de développement : le serveur PHP intégré exécute les endpoints du dossier `api/`. MySQL doit rester démarré dans XAMPP.
+
+Pour lancer uniquement le frontend, utiliser `npm run dev:frontend`, à condition qu’un backend PHP soit déjà disponible sur le port 8000.
+
+## Vérifications
 
 ```bash
 npm run lint
-```
-
-Créer une version de production :
-
-```bash
 npm run build
 ```
 
-## Remarque
+## Données de démonstration
 
 Le fichier `database/seed.sql` contient des données de démonstration. Ne pas l’importer dans une base de production.
