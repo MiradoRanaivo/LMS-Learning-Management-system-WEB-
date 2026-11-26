@@ -1985,16 +1985,17 @@ export default function App() {
 
                   {/* Cours récents et accès au calendrier */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    <div className="md:col-span-2 rounded-xl border border-dashed border-[#CBD5E1] bg-white p-6">
-                      <h2 className="text-base font-semibold text-[#0F172A]">Vos cours apparaîtront ici</h2>
-                      <p className="mt-2 max-w-2xl text-sm leading-6 text-[#64748B]">Aucun cours n’est chargé depuis le compte connecté dans cette interface.</p>
+                    <div className="md:col-span-2 rounded-xl border border-[#E2E8F0] bg-white p-5 shadow-xs">
+                      <div className="mb-4 flex items-center justify-between"><div><h2 className="text-base font-semibold text-[#0F172A]">Reprendre mes cours</h2><p className="mt-1 text-xs text-[#64748B]">Votre progression se met à jour après chaque leçon terminée.</p></div><button onClick={() => setActiveScreen('courses-student')} className="text-xs font-semibold text-[#047857]">Tous mes cours →</button></div>
+                      {dashboardStats?.courses?.length ? <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{dashboardStats.courses.slice(0,4).map((course:any)=><button key={course.id} onClick={()=>{setSelectedCourseId(Number(course.id));setActiveScreen('course-detail');}} className="rounded-lg border border-[#E2E8F0] p-3 text-left transition hover:border-[#10B981] hover:shadow-sm"><div className="flex items-start justify-between gap-2"><div className="min-w-0"><p className="truncate text-sm font-semibold text-[#0F172A]">{course.title}</p><p className="mt-1 truncate text-[11px] text-[#64748B]">{course.code} · {course.teacher_firstname} {course.teacher_lastname}</p></div><span className="text-xs font-bold text-[#047857]">{course.progress}%</span></div><div className="mt-3 h-2 overflow-hidden rounded-full bg-[#E2E8F0]"><div className="h-full rounded-full bg-[#10B981] transition-all duration-500" style={{width:`${course.progress}%`}}/></div><p className="mt-2 text-[10px] text-[#64748B]">{course.completed_lessons}/{course.total_lessons} leçons terminées</p></button>)}</div> : <p className="rounded-lg bg-slate-50 p-4 text-sm text-[#64748B]">{dashboardLoading?'Chargement de vos cours…':'Vous n’êtes inscrit à aucun cours. Découvrez le catalogue pour commencer.'}</p>}
                     </div>
 
                     {/* Accès calendrier */}
                     <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-xs">
                       <div className="flex items-center justify-between"><h3 className="text-sm font-semibold text-[#0F172A]">Calendrier</h3><span className="text-xs text-[#64748B]">{new Date().toLocaleDateString('fr-FR',{month:'long',year:'numeric'})}</span></div>
                       <div className="mt-4 grid grid-cols-7 gap-1 text-center text-[10px] text-[#94A3B8]">{['Lu','Ma','Me','Je','Ve','Sa','Di'].map(day=><span key={day}>{day}</span>)}</div>
-                      <div className="mt-2 grid grid-cols-7 gap-1 text-center text-xs">{Array.from({length:35},(_,i)=>{const first=new Date(new Date().getFullYear(),new Date().getMonth(),1);const offset=(first.getDay()+6)%7;const day=i-offset+1;const valid=day>0&&day<=new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate();return <span key={i} className={`rounded-md py-1.5 ${valid&&day===new Date().getDate()?'bg-[#047857] font-bold text-white':valid?'text-[#334155]':'text-transparent'}`}>{valid?day:'·'}</span>})}</div>
+                      <div className="mt-2 grid grid-cols-7 gap-1 text-center text-xs">{Array.from({length:35},(_,i)=>{const today=new Date();const first=new Date(today.getFullYear(),today.getMonth(),1);const offset=(first.getDay()+6)%7;const day=i-offset+1;const valid=day>0&&day<=new Date(today.getFullYear(),today.getMonth()+1,0).getDate();const date=valid?`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`:'';const hasEvent=(dashboardStats?.calendar_events||[]).some((event:any)=>event.date===date);return <span key={i} title={hasEvent?'Événement prévu':''} className={`relative rounded-md py-1.5 ${valid&&day===today.getDate()?'bg-[#047857] font-bold text-white':valid?'text-[#334155]':'text-transparent'}`}>{valid?day:'·'}{hasEvent&&<i className={`absolute bottom-0.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full ${day===today.getDate()?'bg-white':'bg-emerald-500'}`}/>}</span>})}</div>
+                      <div className="mt-3 space-y-1">{(dashboardStats?.calendar_events||[]).slice(0,2).map((event:any)=><p key={`${event.type}-${event.id}-${event.date}`} className="truncate text-[10px] text-[#64748B]"><span className="font-semibold text-[#047857]">{new Date(event.date+'T00:00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})}</span> · {event.title}</p>)}</div>
                       <button type="button" onClick={() => setActiveScreen('calendar')} className="mt-4 w-full min-h-9 rounded-lg border border-[#CBD5E1] px-3 text-xs font-semibold text-[#064E3B] hover:bg-[#ECFDF5]">Ouvrir le calendrier</button>
                     </div>
                   </div>
@@ -2028,10 +2029,7 @@ export default function App() {
                           </button>
                         </div>
 
-                        <div className="rounded-lg border border-dashed border-[#E2E8F0] p-4">
-                          <p className="text-sm leading-6 text-[#64748B]">Aucune échéance n’est disponible pour ce compte dans l’interface actuelle.</p>
-                          <button type="button" onClick={() => setActiveScreen('assignments')} className="mt-3 min-h-10 text-sm font-semibold text-[#047857] hover:underline">Consulter les devoirs</button>
-                        </div>
+                        {dashboardStats?.upcoming_assignments?.length ? <div className="space-y-3">{dashboardStats.upcoming_assignments.slice(0,4).map((item:any)=><div key={item.id} className="flex items-start gap-3 border-b border-[#E2E8F0] pb-3 last:border-0"><div className="rounded-lg bg-amber-50 p-2 text-amber-700"><CalendarIcon className="h-4 w-4"/></div><div className="min-w-0 flex-1"><p className="text-sm font-semibold text-[#0F172A]">{item.title}</p><p className="mt-1 text-[11px] text-[#64748B]">{item.course_title}</p><p className="mt-1 text-[11px] font-medium text-amber-700">À rendre le {new Date(item.due_date).toLocaleDateString('fr-FR')}</p></div><span className={`rounded-full px-2 py-1 text-[10px] font-semibold ${Number(item.submitted)?'bg-emerald-50 text-emerald-700':'bg-amber-50 text-amber-700'}`}>{Number(item.submitted)?'Rendu':'À faire'}</span></div>)}</div> : <p className="rounded-lg bg-slate-50 p-4 text-sm text-[#64748B]">{dashboardLoading?'Chargement des échéances…':'Aucun devoir à venir. Vous êtes à jour !'}</p>}
                       </div>
                     </div>
                   </div>
@@ -2046,12 +2044,7 @@ export default function App() {
                         </button>
                       </div>
 
-                      <div className="space-y-4">
-                        <div className="flex flex-col items-start gap-4 rounded-lg border border-dashed border-[#E2E8F0] p-5 sm:flex-row sm:items-center sm:justify-between">
-                          <p className="text-sm leading-6 text-[#64748B]">Les cours et leur progression s’afficheront lorsqu’ils seront chargés pour votre compte.</p>
-                          <button type="button" onClick={() => setActiveScreen('courses-student')} className="min-h-10 shrink-0 rounded-lg bg-[#047857] px-4 text-sm font-semibold text-white hover:bg-[#065F46]">Consulter mes cours</button>
-                        </div>
-                      </div>
+                      <div className="space-y-3">{dashboardStats?.courses?.length ? dashboardStats.courses.slice(0,5).map((course:any)=><div key={course.id} className="rounded-lg border border-[#E2E8F0] p-3"><div className="flex items-center justify-between gap-3"><div className="min-w-0"><p className="truncate text-sm font-semibold text-[#0F172A]">{course.title}</p><p className="mt-1 text-[11px] text-[#64748B]">{course.completed_lessons} sur {course.total_lessons} leçons</p></div><span className="text-sm font-bold text-[#047857]">{course.progress}%</span></div><div className="mt-2 h-2 overflow-hidden rounded-full bg-[#E2E8F0]"><div className="h-full rounded-full bg-[#10B981]" style={{width:`${course.progress}%`}}/></div></div>) : <p className="text-sm text-[#64748B]">{dashboardLoading?'Chargement…':'Aucun cours actif pour le moment.'}</p>}</div>
                     </div>
 
                     <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
