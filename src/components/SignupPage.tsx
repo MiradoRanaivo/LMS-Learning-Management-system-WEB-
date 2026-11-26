@@ -88,6 +88,8 @@ export const SignupPage: React.FC<SignupPageProps> = ({
           password,
           confirm_password: confirmPassword,
           phone: phone.trim(),
+          student_id: studentId.trim(),
+          department: department.trim(),
           bio,
         }),
       });
