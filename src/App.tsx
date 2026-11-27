@@ -205,6 +205,7 @@ export default function App() {
   const [teacherFollowLoading, setTeacherFollowLoading] = useState<number | null>(null);
   const [teacherFollowRequests, setTeacherFollowRequests] = useState<any[]>([]);
   const [teacherFollowRequestsLoading, setTeacherFollowRequestsLoading] = useState(false);
+  const [teacherFollowActionLoading, setTeacherFollowActionLoading] = useState<number | null>(null);
   const [courseContent, setCourseContent] = useState<any | null>(null);
   const [quizCatalog, setQuizCatalog] = useState<any[]>([]);
   const [activeQuiz, setActiveQuiz] = useState<any | null>(null);
@@ -946,9 +947,8 @@ export default function App() {
     if (!isAuthenticated || currentUser.role !== 'student') return;
     let cancelled = false;
     fetch('/lms/api/teachers/follow.php', { credentials: 'include', headers: { Accept: 'application/json' } })
-      .then(async (response) => {
-        const data = await response.json();
-        if (!response.ok || !data.success) throw new Error(data.error || 'Impossible de charger les enseignants.');
+      .then((response) => readApiJson(response, 'Suivi des professeurs'))
+      .then((data) => {
         if (!cancelled) setTeachers(Array.isArray(data.teachers) ? data.teachers : []);
       })
       .catch((error) => {
@@ -957,7 +957,23 @@ export default function App() {
     return () => { cancelled = true; };
   }, [isAuthenticated, currentUser.id, currentUser.role, activeScreen]);
 
-  const handleTeacherFollow = async (teacherId: number, isFollowing: boolean) => {
+  useEffect(() => {
+    if (!isAuthenticated || currentUser.role !== 'teacher') return;
+    let cancelled = false;
+    setTeacherFollowRequestsLoading(true);
+    fetch('/lms/api/teachers/follow.php', { credentials: 'include', headers: { Accept: 'application/json' } })
+      .then((response) => readApiJson(response, 'Demandes de suivi'))
+      .then((data) => {
+        if (!cancelled) setTeacherFollowRequests(Array.isArray(data.requests) ? data.requests : []);
+      })
+      .catch((error) => {
+        if (!cancelled) setDashboardError(error instanceof Error ? error.message : 'Impossible de charger les demandes de suivi.');
+      })
+      .finally(() => { if (!cancelled) setTeacherFollowRequestsLoading(false); });
+    return () => { cancelled = true; };
+  }, [isAuthenticated, currentUser.id, currentUser.role, activeScreen]);
+
+  const handleTeacherFollow = async (teacherId: number, followStatus: string | null) => {
     setTeacherFollowLoading(teacherId);
     setCoursesError('');
     try {
@@ -972,7 +988,7 @@ export default function App() {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-Token': token },
-        body: JSON.stringify({ teacher_id: teacherId, action: isFollowing ? 'unfollow' : 'follow' }),
+        body: JSON.stringify({ teacher_id: teacherId, action: followStatus === 'approved' || followStatus === 'pending' ? 'unfollow' : 'follow' }),
       });
       const data = await response.json();
       if (!response.ok || !data.success) throw new Error(data.error || 'Impossible de modifier le suivi.');
@@ -992,6 +1008,35 @@ export default function App() {
       setCoursesError(error instanceof Error ? error.message : 'Impossible de modifier le suivi.');
     } finally {
       setTeacherFollowLoading(null);
+    }
+  };
+
+  const handleTeacherFollowReview = async (studentId: number, action: 'approve' | 'reject') => {
+    if (teacherFollowActionLoading !== null) return;
+    setTeacherFollowActionLoading(studentId);
+    setDashboardError('');
+    try {
+      let token = csrfToken;
+      if (!token) {
+        const sessionResponse = await fetch('/lms/api/auth/me.php', { credentials: 'include', headers: { Accept: 'application/json' } });
+        const sessionData = await readApiJson(sessionResponse, 'Session');
+        token = sessionData.csrf_token || '';
+        setCsrfToken(token);
+      }
+      const response = await fetch('/lms/api/teachers/follow.php', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-Token': token },
+        body: JSON.stringify({ student_id: studentId, action }),
+      });
+      const data = await readApiJson(response, 'Validation de la demande');
+      setTeacherFollowRequests((previous) => previous.map((request) =>
+        Number(request.id) === studentId ? { ...request, status: data.follow_status } : request
+      ));
+    } catch (error) {
+      setDashboardError(error instanceof Error ? error.message : 'Impossible de traiter cette demande.');
+    } finally {
+      setTeacherFollowActionLoading(null);
     }
   };
 
@@ -2081,6 +2126,47 @@ export default function App() {
                   </div>
 
 
+                  <section className="rounded-xl border border-[#E2E8F0] bg-white p-5 shadow-xs">
+                    <div className="mb-4 flex items-center justify-between gap-3">
+                      <div>
+                        <h2 className="text-sm font-semibold text-[#0F172A]">Demandes de suivi des étudiants</h2>
+                        <p className="mt-1 text-xs text-[#64748B]">Approuvez les étudiants pour leur donner accès à vos cours publiés.</p>
+                      </div>
+                      <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
+                        {teacherFollowRequests.filter((request) => request.status === 'pending').length} en attente
+                      </span>
+                    </div>
+                    {teacherFollowRequestsLoading ? (
+                      <p className="text-sm text-[#64748B]">Chargement des demandes…</p>
+                    ) : teacherFollowRequests.length === 0 ? (
+                      <p className="rounded-lg border border-dashed border-[#E2E8F0] p-4 text-sm text-[#64748B]">Aucune demande de suivi pour le moment.</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {teacherFollowRequests.map((request) => (
+                          <div key={request.request_id || request.id} className="flex flex-col gap-3 rounded-lg border border-[#E2E8F0] p-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold text-[#0F172A]">{request.firstname} {request.lastname}</p>
+                              <p className="text-xs text-[#64748B]">{request.email}</p>
+                              <span className={`mt-1 inline-flex rounded-full px-2 py-1 text-[10px] font-semibold ${request.status === 'approved' ? 'bg-emerald-50 text-emerald-700' : request.status === 'rejected' ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700'}`}>
+                                {request.status === 'approved' ? 'Approuvée' : request.status === 'rejected' ? 'Refusée' : 'En attente'}
+                              </span>
+                            </div>
+                            {request.status === 'pending' && (
+                              <div className="flex shrink-0 gap-2">
+                                <button type="button" disabled={teacherFollowActionLoading !== null} onClick={() => handleTeacherFollowReview(Number(request.id), 'approve')} className="rounded-lg bg-[#047857] px-3 py-2 text-xs font-semibold text-white disabled:opacity-50">
+                                  {teacherFollowActionLoading === Number(request.id) ? 'Traitement…' : 'Approuver'}
+                                </button>
+                                <button type="button" disabled={teacherFollowActionLoading !== null} onClick={() => handleTeacherFollowReview(Number(request.id), 'reject')} className="rounded-lg border border-red-200 px-3 py-2 text-xs font-semibold text-red-700 disabled:opacity-50">
+                                  Refuser
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </section>
+
                   {/* 4 Stat KPI Cards */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="bg-white border border-[#E2E8F0] rounded-xl p-4 shadow-xs">
@@ -2340,8 +2426,8 @@ export default function App() {
                               <h3 className="truncate text-sm font-semibold text-[#0F172A]">{teacher.firstname} {teacher.lastname}</h3>
                               <p className="text-[11px] text-[#64748B]">{Number(teacher.published_courses_count) || 0} cours publiés · {Number(teacher.followers_count) || 0} abonnés</p>
                             </div>
-                            <button type="button" disabled={teacherFollowLoading === Number(teacher.id)} onClick={() => handleTeacherFollow(Number(teacher.id), Number(teacher.is_following) === 1)} className={`shrink-0 rounded-lg px-3 py-2 text-xs font-semibold transition disabled:opacity-60 ${Number(teacher.is_following) === 1 ? 'border border-[#CBD5E1] bg-white text-[#475569] hover:bg-slate-50' : 'bg-[#047857] text-white hover:bg-[#065F46]'}`}>
-                              {teacherFollowLoading === Number(teacher.id) ? '...' : Number(teacher.is_following) === 1 ? 'Suivi' : 'Suivre'}
+                            <button type="button" disabled={teacherFollowLoading === Number(teacher.id) || teacher.follow_status === 'pending'} onClick={() => handleTeacherFollow(Number(teacher.id), teacher.follow_status || null)} className={`shrink-0 rounded-lg px-3 py-2 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${teacher.follow_status === 'approved' ? 'border border-[#CBD5E1] bg-white text-[#475569] hover:bg-slate-50' : teacher.follow_status === 'pending' ? 'bg-amber-100 text-amber-800' : teacher.follow_status === 'rejected' ? 'bg-red-50 text-red-700 hover:bg-red-100' : 'bg-[#047857] text-white hover:bg-[#065F46]'}`}>
+                              {teacherFollowLoading === Number(teacher.id) ? '...' : teacher.follow_status === 'pending' ? 'Demande envoyée' : teacher.follow_status === 'approved' ? 'Suivi' : teacher.follow_status === 'rejected' ? 'Refusée · Réessayer' : 'Suivre'}
                             </button>
                           </article>
                         ))}
@@ -2357,7 +2443,7 @@ export default function App() {
                     </div>
                     {followedCourses.length === 0 && !coursesLoading ? (
                       <div className="rounded-xl border border-dashed border-[#CBD5E1] bg-white p-5 text-sm text-[#64748B]">
-                        {teachers.some((teacher) => Number(teacher.is_following) === 1)
+                        {teachers.some((teacher) => teacher.follow_status === 'approved')
                           ? 'Les professeurs suivis n’ont pas encore publié de cours.'
                           : 'Suivez un professeur pour afficher ses cours publiés dans votre catalogue.'}
                       </div>
