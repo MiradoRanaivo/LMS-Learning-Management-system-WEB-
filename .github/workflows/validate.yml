@@ -2,7 +2,7 @@ name: LMS validation
 
 on:
   push:
-    branches: [master]
+    branches: [master, design/lms-refonte-safe]
   pull_request:
     branches: [master]
 
