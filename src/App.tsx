@@ -203,6 +203,8 @@ export default function App() {
   const [followedCourses, setFollowedCourses] = useState<any[]>([]);
   const [teachers, setTeachers] = useState<any[]>([]);
   const [teacherFollowLoading, setTeacherFollowLoading] = useState<number | null>(null);
+  const [teacherFollowRequests, setTeacherFollowRequests] = useState<any[]>([]);
+  const [teacherFollowRequestsLoading, setTeacherFollowRequestsLoading] = useState(false);
   const [courseContent, setCourseContent] = useState<any | null>(null);
   const [quizCatalog, setQuizCatalog] = useState<any[]>([]);
   const [activeQuiz, setActiveQuiz] = useState<any | null>(null);
@@ -975,7 +977,7 @@ export default function App() {
       const data = await response.json();
       if (!response.ok || !data.success) throw new Error(data.error || 'Impossible de modifier le suivi.');
       setTeachers((previous) => previous.map((teacher) => Number(teacher.id) === teacherId
-        ? { ...teacher, is_following: data.is_following ? 1 : 0 }
+        ? { ...teacher, follow_status: data.follow_status }
         : teacher));
       const followedResponse = await fetch('/lms/api/courses/list.php?scope=followed', {
         credentials: 'include',
@@ -1500,8 +1502,6 @@ export default function App() {
                           : 'text-[#475569] hover:bg-[#F1F5F9] hover:text-[#0F172A]'
                       }`}
                     >
-                      <MessageSquare className="w-4 h-4" />
-                      Forum
                     </button>
                     <button
                       onClick={() => { setActiveScreen('resources'); setIsMobileMenuOpen(false); }}

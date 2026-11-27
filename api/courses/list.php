@@ -231,7 +231,7 @@ if ($role === 'teacher') {
 } elseif ($role === 'student' && $scope === 'followed') {
     $sql = str_replace(
         'WHERE c.is_published = 1',
-        'WHERE c.is_published = 1 AND EXISTS (SELECT 1 FROM teacher_follows tf_follow WHERE tf_follow.teacher_id = c.teacher_id AND tf_follow.student_id = :follow_student_id)',
+        'WHERE c.is_published = 1 AND EXISTS (SELECT 1 FROM teacher_follows tf_follow WHERE tf_follow.teacher_id = c.teacher_id AND tf_follow.student_id = :follow_student_id AND tf_follow.status = \'approved\')',
         $sql
     );
 } elseif ($role === 'student' && $scope !== 'catalog') {
