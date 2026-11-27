@@ -990,8 +990,7 @@ export default function App() {
         headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-Token': token },
         body: JSON.stringify({ teacher_id: teacherId, action: followStatus === 'approved' || followStatus === 'pending' ? 'unfollow' : 'follow' }),
       });
-      const data = await response.json();
-      if (!response.ok || !data.success) throw new Error(data.error || 'Impossible de modifier le suivi.');
+      const data = await readApiJson(response, 'Modification du suivi');
       setTeachers((previous) => previous.map((teacher) => Number(teacher.id) === teacherId
         ? { ...teacher, follow_status: data.follow_status }
         : teacher));
@@ -999,10 +998,7 @@ export default function App() {
         credentials: 'include',
         headers: { Accept: 'application/json' },
       });
-      const followedData = await followedResponse.json();
-      if (!followedResponse.ok || !followedData.success) {
-        throw new Error(followedData.error || 'Le suivi est enregistré, mais les cours ne peuvent pas être actualisés.');
-      }
+      const followedData = await readApiJson(followedResponse, 'Actualisation des cours suivis');
       setFollowedCourses(Array.isArray(followedData.courses) ? followedData.courses : []);
     } catch (error) {
       setCoursesError(error instanceof Error ? error.message : 'Impossible de modifier le suivi.');
@@ -1196,16 +1192,15 @@ export default function App() {
         headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-Token': token },
         body: JSON.stringify({ action: 'enroll', course_id: courseId }),
       });
-      const data = await response.json();
-      if (!response.ok || !data.success) throw new Error(data.error || 'Inscription au cours impossible.');
+      const data = await readApiJson(response, 'Inscription au cours');
       const [followedResponse, enrolledResponse] = await Promise.all([
         fetch('/lms/api/courses/list.php?scope=followed', { credentials: 'include' }),
         fetch('/lms/api/courses/list.php', { credentials: 'include' }),
       ]);
-      const [followedData, enrolledData] = await Promise.all([followedResponse.json(), enrolledResponse.json()]);
-      if (!followedResponse.ok || !followedData.success || !enrolledResponse.ok || !enrolledData.success) {
-        throw new Error(followedData.error || enrolledData.error || 'Impossible d’actualiser le catalogue.');
-      }
+      const [followedData, enrolledData] = await Promise.all([
+        readApiJson(followedResponse, 'Cours suivis'),
+        readApiJson(enrolledResponse, 'Mes inscriptions'),
+      ]);
       setFollowedCourses(followedData.courses || []);
       setMyCourses(enrolledData.courses || []);
     } catch (error) {
