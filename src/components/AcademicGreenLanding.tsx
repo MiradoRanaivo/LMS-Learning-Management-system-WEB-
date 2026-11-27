@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   ArrowRight, BookOpen, CalendarDays, CheckCircle2, ChevronRight, ClipboardCheck,
   GraduationCap, LayoutDashboard, LogIn, Menu, PlayCircle, ShieldCheck, Sparkles,
-  Users, X, ChartNoAxesCombined, Clock3
+  Users, X, ChartNoAxesCombined
 } from 'lucide-react';
 
 interface AcademicGreenLandingProps {
@@ -115,7 +115,7 @@ export const AcademicGreenLanding: React.FC<AcademicGreenLandingProps> = ({ onNa
                     </div>
                     <span className="rounded-full bg-emerald-50 px-3 py-1 text-[10px] font-bold text-emerald-700">Espace personnel</span>
                   </div>
-                  <div className="grid gap-4 p-4 sm:grid-cols-[1fr_ .72fr] sm:p-6">
+                  <div className="grid gap-4 p-4 sm:grid-cols-[1fr_0.72fr] sm:p-6">
                     <div className="space-y-4">
                       <div><p className="text-[10px] font-semibold uppercase tracking-[.16em] text-[#66809F]">Bienvenue</p><p className="mt-1 text-xl font-extrabold tracking-tight sm:text-2xl">Prêt à progresser ?</p><p className="mt-1 text-xs text-slate-500">Retrouvez vos activités en un coup d’œil.</p></div>
                       <div className="grid grid-cols-2 gap-3">
