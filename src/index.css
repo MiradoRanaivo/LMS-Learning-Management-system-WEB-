@@ -2,12 +2,12 @@
 
 :root {
 	color-scheme: light;
-	--color-primary: #047857;
-	--color-primary-hover: #065F46;
-	--color-primary-dark: #064E3B;
-	--color-primary-light: #D1FAE5;
-	--color-primary-subtle: #ECFDF5;
-	--color-background: #F8FAFC;
+	--color-primary: #142B4A;
+	--color-primary-hover: #2457A7;
+	--color-primary-dark: #142B4A;
+	--color-primary-light: #DCE8F7;
+	--color-primary-subtle: #EAF1FA;
+	--color-background: #F4F7FB;
 	--color-surface: #FFFFFF;
 	--color-surface-muted: #F1F5F9;
 	--color-text: #0F172A;
@@ -1014,4 +1014,70 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+
+/* LMS university-blue identity: shared by authentication and public pages. */
+.academic-app .modern-auth-shell {
+  background: radial-gradient(circle at 12% 10%, #EAF1FA 0, transparent 34%),
+              linear-gradient(135deg, #F4F7FB 0%, #EAF1FA 55%, #FFFFFF 100%);
+}
+.academic-app .modern-auth-container {
+  border: 1px solid #DCE5F0;
+  box-shadow: 0 24px 64px rgba(20, 43, 74, .14);
+}
+.academic-app .modern-auth-container input:focus,
+.academic-app .modern-auth-container select:focus {
+  border-color: #4F83CC;
+  box-shadow: 0 0 0 4px rgba(79, 131, 204, .14);
+}
+.academic-app .modern-auth-container button:not(.toggle-action):not(.modern-auth-register-link) {
+  background: linear-gradient(135deg, #2457A7 0%, #142B4A 100%);
+  box-shadow: 0 10px 22px rgba(20, 43, 74, .18);
+}
+.academic-app .modern-auth-container button:not(.toggle-action):not(.modern-auth-register-link):hover {
+  box-shadow: 0 14px 26px rgba(20, 43, 74, .22);
+}
+.academic-app .modern-auth-container a,
+.academic-app .modern-auth-container .modern-auth-register-link {
+  color: #2457A7;
+}
+.academic-app .modern-auth-container .modern-auth-register-link {
+  background: transparent;
+}
+.academic-app .modern-auth-container .social-icons .icon {
+  border-color: #DCE8F7;
+  background: #EAF1FA;
+  color: #2457A7;
+}
+.academic-app .modern-auth-container .toggle {
+  background: linear-gradient(135deg, #4F83CC 0%, #2457A7 48%, #142B4A 100%);
+}
+.academic-app .modern-auth-container .modern-auth-error {
+  border-color: #FECACA;
+  background: #FEF2F2;
+}
+.academic-app .modern-auth-container .modern-auth-success {
+  border-color: #BBF7D0;
+  background: #F0FDF4;
+}
+.academic-app .auth-shell {
+  background: #F4F7FB;
+}
+.academic-app .form-panel {
+  border: 1px solid #DCE5F0;
+  background: #F4F7FB;
+  box-shadow: 16px 16px 34px rgba(20, 43, 74, .10), -12px -12px 28px rgba(255, 255, 255, .95);
+}
+.academic-app .auth-shell .logo {
+  color: #2457A7;
+  background: #F4F7FB;
+}
+.academic-app .auth-shell .main-btn {
+  background: linear-gradient(135deg, #2457A7, #142B4A);
+  box-shadow: 0 12px 24px rgba(20, 43, 74, .18);
+}
+.academic-app .auth-shell .text-button,
+.academic-app .auth-shell .switch-circle {
+  color: #2457A7;
 }
