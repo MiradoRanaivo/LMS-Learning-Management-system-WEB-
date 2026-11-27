@@ -297,7 +297,18 @@ const API = {
       headers: { 'X-CSRF-Token': this.userManagementCsrfToken || '' },
       body: { action, ...user }
     });
-  }
+  },
+
+  async getTeacherFollowRequests() {
+    return this.request('/teachers/follow.php');
+  },
+
+  async reviewTeacherFollowRequest(studentId, action) {
+    return this.request('/teachers/follow.php', {
+      method: 'POST',
+      body: { student_id: studentId, action }
+    });
+  },
 };
 
 window.LMS_API = API;

@@ -115,6 +115,12 @@ if ($action === 'enroll') {
         sendJsonResponse(['success' => false, 'error' => 'Seuls les étudiants peuvent s’inscrire à un cours.'], 403);
     }
 
+    $followApproval = $pdo->prepare("SELECT COUNT(*) FROM teacher_follows WHERE student_id = :student_id AND teacher_id = :teacher_id AND status = 'approved'");
+    $followApproval->execute(['student_id' => $userId, 'teacher_id' => (int)$course['teacher_id']]);
+    if ((int)$followApproval->fetchColumn() < 1) {
+        sendJsonResponse(['success' => false, 'error' => 'Vous devez être approuvé par le professeur pour vous inscrire à ce cours.'], 403);
+    }
+
     $existing = $pdo->prepare("SELECT id, status FROM enrollments WHERE user_id = :uid AND course_id = :cid LIMIT 1");
     $existing->execute(['uid' => $userId, 'cid' => $courseId]);
     $currentEnrollment = $existing->fetch();

@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS `teacher_follows` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `student_id` INT UNSIGNED NOT NULL,
   `teacher_id` INT UNSIGNED NOT NULL,
-  `status` ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'approved',
+  `status` ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'pending',
   `followed_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `reviewed_at` DATETIME NULL DEFAULT NULL,
   UNIQUE KEY `uniq_teacher_follow` (`student_id`, `teacher_id`),

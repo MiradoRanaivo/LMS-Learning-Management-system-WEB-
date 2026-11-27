@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if ($action === 'follow') {
-            $stmt = $pdo->prepare("INSERT INTO teacher_follows (student_id, teacher_id, status) VALUES (:student_id, :teacher_id, 'pending') ON DUPLICATE KEY UPDATE status = IF(status = 'rejected', 'pending', status), followed_at = IF(status = 'rejected', CURRENT_TIMESTAMP, followed_at), reviewed_at = NULL");
+            $stmt = $pdo->prepare("INSERT INTO teacher_follows (student_id, teacher_id, status) VALUES (:student_id, :teacher_id, 'pending') ON DUPLICATE KEY UPDATE followed_at = IF(status = 'rejected', CURRENT_TIMESTAMP, followed_at), reviewed_at = IF(status = 'rejected', NULL, reviewed_at), status = IF(status = 'rejected', 'pending', status)");
             $stmt->execute(['student_id' => $userId, 'teacher_id' => $teacherId]);
             sendJsonResponse(['success' => true, 'follow_status' => 'pending', 'message' => 'Demande envoyée. Elle sera visible après validation du professeur.']);
         }
