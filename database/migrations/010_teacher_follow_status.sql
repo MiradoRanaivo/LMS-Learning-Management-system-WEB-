@@ -32,4 +32,18 @@ PREPARE teacher_follow_reviewed_stmt FROM @teacher_follow_reviewed_sql;
 EXECUTE teacher_follow_reviewed_stmt;
 DEALLOCATE PREPARE teacher_follow_reviewed_stmt;
 
-CREATE INDEX idx_teacher_follows_status ON teacher_follows (teacher_id, status);
+SET @teacher_follow_index_sql = (
+  SELECT IF(
+    COUNT(*) = 0,
+    'CREATE INDEX idx_teacher_follows_status ON teacher_follows (teacher_id, status)',
+    'SELECT 1'
+  )
+  FROM INFORMATION_SCHEMA.STATISTICS
+  WHERE TABLE_SCHEMA = DATABASE()
+    AND TABLE_NAME = 'teacher_follows'
+    AND INDEX_NAME = 'idx_teacher_follows_status'
+);
+PREPARE teacher_follow_index_stmt FROM @teacher_follow_index_sql;
+EXECUTE teacher_follow_index_stmt;
+DEALLOCATE PREPARE teacher_follow_index_stmt;
+
