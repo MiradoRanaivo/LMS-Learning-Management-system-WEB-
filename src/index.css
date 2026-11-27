@@ -1081,3 +1081,28 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .academic-app .auth-shell .switch-circle {
   color: #2457A7;
 }
+
+
+/* Shared component polish for the complete LMS workspace. */
+.academic-app :is(button, input, select, textarea) { accent-color: var(--color-primary); }
+.academic-app :is(.academic-dashboard, .academic-app) :is(.bg-violet-50, .bg-violet-100, .bg-purple-50, .bg-purple-100) { background-color: var(--color-primary-subtle); }
+.academic-app :is(.academic-dashboard, .academic-app) :is(.text-violet-600, .text-violet-700, .text-purple-600, .text-purple-700) { color: var(--color-primary); }
+.academic-app :is(.academic-dashboard, .academic-app) :is(.border-violet-200, .border-purple-200) { border-color: var(--color-primary-light); }
+.academic-app :is(.academic-dashboard, .academic-app) :is(.bg-violet-500, .bg-violet-600, .bg-purple-500, .bg-purple-600) { background-color: var(--color-primary); }
+.academic-app .academic-dashboard :is(.bg-emerald-50, .bg-emerald-100) { background-color: var(--color-primary-subtle); }
+.academic-app .academic-dashboard :is(.border-emerald-100, .border-emerald-200) { border-color: var(--color-primary-light); }
+.academic-app .academic-dashboard :is(.text-emerald-500, .text-emerald-600, .text-emerald-700) { color: var(--color-primary); }
+.academic-app .academic-dashboard :is(.bg-indigo-50, .bg-indigo-100) { background-color: var(--color-primary-subtle); }
+.academic-app .academic-dashboard :is(.text-indigo-600, .text-indigo-700) { color: var(--color-primary); }
+.academic-app .academic-dashboard :is(.border-indigo-100, .border-indigo-200) { border-color: var(--color-primary-light); }
+.academic-app .academic-dashboard :is(.bg-indigo-500, .bg-indigo-600) { background-color: var(--color-primary); }
+.academic-app .academic-dashboard a, .academic-app .academic-dashboard button { transition: color .18s ease, background-color .18s ease, border-color .18s ease, box-shadow .18s ease; }
+.academic-app .academic-dashboard :is(input, select, textarea):focus-visible { border-color: var(--color-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 18%, transparent); }
+.academic-app .academic-dashboard :is(table thead, [role="table"] [role="rowgroup"]:first-child) { background: var(--color-primary-subtle); }
+.academic-app .academic-dashboard :is(.recharts-cartesian-grid line, .recharts-cartesian-axis line) { stroke: var(--color-border); }
+.academic-app .academic-dashboard :is(.recharts-cartesian-axis-tick-value, .recharts-legend-item-text) { fill: var(--color-text-muted); }
+@media (max-width: 768px) {
+  .academic-dashboard { overflow-x: clip; }
+  .academic-dashboard main { min-width: 0; }
+  .academic-dashboard main > header { position: sticky; top: 0; z-index: 20; }
+}
