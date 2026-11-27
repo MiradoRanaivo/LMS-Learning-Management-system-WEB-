@@ -32,6 +32,10 @@ PREPARE teacher_follow_reviewed_stmt FROM @teacher_follow_reviewed_sql;
 EXECUTE teacher_follow_reviewed_stmt;
 DEALLOCATE PREPARE teacher_follow_reviewed_stmt;
 
+-- Harmonise également les bases où status existait déjà avec une valeur par défaut différente.
+ALTER TABLE teacher_follows
+  MODIFY COLUMN status ENUM('pending','approved','rejected') NOT NULL DEFAULT 'pending';
+
 SET @teacher_follow_index_sql = (
   SELECT IF(
     COUNT(*) = 0,
